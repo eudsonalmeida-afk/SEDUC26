@@ -143,6 +143,28 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
     </div>
   </div>
   <div class="metrics" id="metrics"></div>
+  <div class="card adaptive-card" id="adaptiveCard">
+    <div class="adaptive-main">
+      <div class="adaptive-head">
+        <div>
+          <div class="eyebrow">Motor de meta semanal</div>
+          <div class="adaptive-big"><span id="adaptiveGoal">—</span> <small>questões</small></div>
+        </div>
+        <div class="adaptive-actions">
+          <button class="ghost" id="adaptiveToggle">Motor adaptativo: ligado</button>
+          <button class="ghost" id="adaptiveLock">Congelar meta</button>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="adaptiveBar"></div></div>
+      <div class="adaptive-sub" id="adaptiveProgressText">Aguardando início do plano.</div>
+      <div class="adaptive-reason" id="adaptiveReason">A meta parte do planejamento original e passa a responder ao volume realmente sustentado.</div>
+    </div>
+    <div class="adaptive-side">
+      <div class="adaptive-kpi"><b id="adaptiveBase">—</b><small>meta-base da semana</small></div>
+      <div class="adaptive-kpi"><b id="adaptiveNext">—</b><small>próxima meta calculada após o fechamento</small></div>
+      <div class="adaptive-kpi"><b id="adaptiveAccuracy">—</b><small>precisão semanal registrada</small></div>
+    </div>
+  </div>
   <div class="grid2">
     <div class="card panel-pad">
       <div class="section-title"><h3>Hoje / próxima sessão</h3><small id="todayDate"></small></div>
@@ -305,6 +327,8 @@ const STATE_KEY = "seduc2026_state_v1";
 const THEME_KEY = "seduc2026_theme";
 let state = JSON.parse(localStorage.getItem(STATE_KEY) || '{"sessions":{},"fragilities":[],"simulations":{}}');
 state.sessions ||= {}; state.fragilities ||= []; state.simulations ||= {};
+state.adaptive ||= {enabled:true,fixedTargets:{}};
+state.adaptive.fixedTargets ||= {};
 let activeSessionId = null;
 let timerHandle = null, timerRemaining = 20;
 
@@ -330,6 +354,81 @@ function statusClass(st){return st==="done"?"status-done":st==="progress"?"statu
 function sessionState(id){ return state.sessions[id] || {status:"not_started",minutes:0,questions:0,correct:0,confidence:"",notes:""}; }
 function allSessions(){ return WEEKS.flatMap(w=>w.sessions.map(s=>({...s,week:w.number,phase:w.phase}))); }
 
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function round5(v){return Math.max(5,Math.round(v/5)*5)}
+function weekStats(w){
+  const sess=w.sessions.filter(s=>s.kind==="study"||s.kind==="exam");
+  let questions=0,correct=0;
+  sess.forEach(s=>{const st=sessionState(s.id);questions+=+st.questions||0;correct+=+st.correct||0});
+  return {questions,correct,accuracy:questions?correct/questions:null};
+}
+function weekEnded(w){return todayISO()>w.end}
+function adaptivePlan(){
+  const enabled=state.adaptive?.enabled!==false;
+  const fixed=state.adaptive?.fixedTargets||{};
+  const result=[];
+  let factor=0, priorAdjustment=0;
+  for(let i=0;i<WEEKS.length;i++){
+    const w=WEEKS[i];
+    let target=w.qGoal, reason="Meta-base do planejamento.";
+    if(i===0 || w.number===13 || !enabled){
+      factor=0; priorAdjustment=0;
+      target=w.qGoal;
+      reason=!enabled?"Motor adaptativo desligado.":(w.number===13?"Semana de taper: meta protegida para reduzir carga antes da prova.":"Semana diagnóstica: meta-base mantida.");
+    } else {
+      const prev=result[i-1];
+      const pw=WEEKS[i-1], ps=weekStats(pw);
+      if(weekEnded(pw) && ps.questions>0){
+        const ratio=ps.questions/prev.target;
+        let raw=clamp((ratio-1)*0.5,-0.10,0.10);
+        const olderAcc=[];
+        for(let j=Math.max(0,i-3);j<i-1;j++){
+          const a=weekStats(WEEKS[j]).accuracy;
+          if(a!==null) olderAcc.push(a);
+        }
+        const recentAcc=olderAcc.length?olderAcc.reduce((a,b)=>a+b,0)/olderAcc.length:null;
+        let quality="sem queda relevante de precisão";
+        if(raw>0){
+          if(ps.accuracy===null){
+            raw=Math.min(raw,0.05); quality="sem precisão registrada; aumento limitado a 5%";
+          } else if(recentAcc!==null && ps.accuracy<recentAcc-0.03){
+            raw=0; quality="volume alto, mas a precisão caiu mais de 3 p.p.; sem aumento";
+          }
+        }
+        const smooth=clamp(raw*0.70+priorAdjustment*0.30,-0.10,0.10);
+        factor=clamp(factor+smooth,-0.25,0.35);
+        priorAdjustment=smooth;
+        target=round5(w.qGoal*(1+factor));
+        const pct=Math.round(ratio*100);
+        const delta=Math.round((target/w.qGoal-1)*100);
+        const move=delta>0?`acima da base (+${delta}%)`:delta<0?`abaixo da base (${delta}%)`:"na base";
+        reason=`Semana anterior: ${ps.questions}/${prev.target}Q (${pct}% da meta); ${quality}. Meta ficou ${move}.`;
+      } else {
+        target=round5(w.qGoal*(1+factor));
+        reason="Sem semana anterior fechada com dados suficientes; mantém a trajetória atual.";
+      }
+    }
+    if(fixed[w.number]){
+      target=+fixed[w.number];
+      reason="Meta desta semana congelada manualmente.";
+    }
+    result.push({week:w.number,base:w.qGoal,target,factor,adjustment:priorAdjustment,reason});
+  }
+  return result;
+}
+function adaptiveInfo(w){return adaptivePlan().find(x=>x.week===w.number)||{base:w.qGoal,target:w.qGoal,reason:"Meta-base.",factor:0}}
+function projectedNextFromWeek(w){
+  const idx=WEEKS.findIndex(x=>x.number===w.number);
+  if(idx<0 || idx>=WEEKS.length-1 || w.number===13) return null;
+  const current=adaptiveInfo(w), st=weekStats(w), next=WEEKS[idx+1];
+  if(!st.questions) return {target:adaptiveInfo(next).target,label:"aguarda dados"};
+  const ratio=st.questions/current.target;
+  let raw=clamp((ratio-1)*0.5,-0.10,0.10);
+  if(raw>0 && st.accuracy===null) raw=Math.min(raw,0.05);
+  const factor=clamp(current.factor+raw,-0.25,0.35);
+  return {target:round5(next.qGoal*(1+factor)),label:weekEnded(w)?"calculada":"projeção parcial"};
+}
+
 function renderNav(){
   $$("#nav button").forEach(b=>b.onclick=()=>{
     $$("#nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");
@@ -354,11 +453,11 @@ function renderDashboard(){
   const days=Math.ceil((EXAM-new Date())/86400000); $("#daysLeft").textContent=days>=0?days:"0";
   const cw=currentWeek(); $("#currentPhase").textContent=cw?`${cw.phase} • Semana ${cw.number}`:(todayISO()<WEEKS[0].start?"Pré-plano":"Pós-prova");
   const plannedHours=(planned/60).toFixed(1), actualHours=(actualMin/60).toFixed(1);
-  const qGoalTotal=WEEKS.reduce((a,w)=>a+w.qGoal,0);
+  const qGoalTotal=adaptivePlan().reduce((a,w)=>a+w.target,0);
   const metrics=[
     ["Sessões",`${doneSessions}/${sessions.length}`,"concluídas"],
     ["Horas",`${actualHours}h`,`${plannedHours}h planejadas`],
-    ["Questões",q.toLocaleString("pt-BR"),`${qGoalTotal.toLocaleString("pt-BR")} meta total`],
+    ["Questões",q.toLocaleString("pt-BR"),`${qGoalTotal.toLocaleString("pt-BR")} meta adaptativa total`],
     ["Precisão",q?acc.toFixed(1)+"%":"—","acertos ponderados"],
     ["Fragilidades",state.fragilities.filter(f=>+f.level>0).length,"ativas/reincidentes"],
     ["Simulados",Object.keys(state.simulations).filter(k=>state.simulations[k]?.saved).length,`${SIMS.length} previstos`]
@@ -427,7 +526,7 @@ function renderSchedule(){
     return `<div class="card week ${open?"":"closed"}" data-week="${w.number}">
       <div class="week-head" onclick="this.parentElement.classList.toggle('closed')">
         <div class="left"><div class="week-num">${w.number}</div><div><h3>${w.title}</h3><p>${fmtDate(w.start)} → ${fmtDate(w.end)} • ${w.phase}</p></div></div>
-        <div class="week-summary"><span>${done}/${sess.length}</span><div class="mini-progress"><i style="width:${p}%"></i></div><span>meta ${w.qGoal}Q</span><span class="chev">⌄</span></div>
+        <div class="week-summary"><span>${done}/${sess.length}</span><div class="mini-progress"><i style="width:${p}%"></i></div><span>meta ${adaptiveInfo(w).target}Q${adaptiveInfo(w).target!==w.qGoal?` <small style="color:var(--muted)">(base ${w.qGoal})</small>`:""}</span><span class="chev">⌄</span></div>
       </div>
       <div class="week-body"><div class="week-mission"><b>Missão:</b> ${w.mission}</div><div class="sessions">${sess.map(renderSession).join("")}</div></div>
     </div>`;
@@ -461,6 +560,24 @@ function openSession(id){
   $("#mStatus").value=st.status||"not_started"; $("#mMinutes").value=st.minutes||""; $("#mQuestions").value=st.questions||""; $("#mCorrect").value=st.correct||""; $("#mConfidence").value=st.confidence||""; $("#mNotes").value=st.notes||"";
   sessionDialog.showModal();
 }
+$("#adaptiveToggle").onclick=()=>{
+  state.adaptive.enabled=state.adaptive.enabled===false?true:false;
+  save();
+  toast(state.adaptive.enabled?"Motor adaptativo ligado.":"Motor adaptativo desligado.");
+};
+$("#adaptiveLock").onclick=()=>{
+  const n=+$("#adaptiveLock").dataset.week;
+  if(state.adaptive.fixedTargets[n]){
+    delete state.adaptive.fixedTargets[n];
+    save();toast("Meta descongelada.");
+  }else{
+    const w=WEEKS.find(x=>x.number===n);
+    if(!w)return;
+    state.adaptive.fixedTargets[n]=adaptiveInfo(w).target;
+    save();toast("Meta desta semana congelada.");
+  }
+};
+
 $("#saveSession").onclick=()=>{
   const q=+$("#mQuestions").value||0,c=+$("#mCorrect").value||0;
   if(c>q){toast("Acertos não podem ser maiores que questões.");return}

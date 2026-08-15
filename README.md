@@ -51,3 +51,16 @@ Abra no **Safari** → Compartilhar → **Adicionar à Tela de Início** → abr
 
 ## Backup extra
 Os botões ⇩/⇧ continuam exportando/importando JSON, mesmo com a nuvem ativada.
+
+## Meta semanal adaptativa
+
+O app mantém apenas metas **semanais** de questões. O motor adaptativo usa a meta-base do plano, o percentual cumprido na semana anterior e a precisão registrada para ajustar o sarrafo.
+
+- ajuste instantâneo limitado a ±10% por fechamento semanal;
+- tendência suavizada (70% semana atual + 30% ajuste anterior);
+- aumento bloqueado se a precisão cair mais de 3 pontos percentuais em relação à tendência recente;
+- sem precisão registrada, aumentos ficam limitados a 5%;
+- fator acumulado protegido entre -25% e +35% da trajetória-base;
+- Semana 0 (diagnóstico) e Semana 13 (taper) ficam protegidas;
+- a meta pode ser congelada manualmente no Dashboard;
+- o motor é salvo no mesmo estado sincronizado pelo Supabase.
