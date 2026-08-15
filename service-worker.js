@@ -1,4 +1,4 @@
-const CACHE="seduc2026-pwa-v4-adaptive-goals";
+const CACHE="seduc2026-pwa-v5-rebalance-feriados";
 const CORE=[
   "./","./index.html","./manifest.webmanifest","./cloud-config.js","./cloud-sync.js","./pwa.js",
   "./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./icons/apple-touch-icon.png"

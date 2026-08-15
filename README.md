@@ -64,3 +64,15 @@ O app mantém apenas metas **semanais** de questões. O motor adaptativo usa a m
 - Semana 0 (diagnóstico) e Semana 13 (taper) ficam protegidas;
 - a meta pode ser congelada manualmente no Dashboard;
 - o motor é salvo no mesmo estado sincronizado pelo Supabase.
+
+## Atualização v5 — rotina real, feriados e rebalanceamento
+
+- 07/09: 6h líquidas, priorizando PNE 2001, Lei 9.784 e Dados; Bio em manutenção.
+- 08–12/09: InterAntares modelado como disponibilidade reduzida; 08 e 12 sem estudo formal e sessões leves nos demais dias.
+- Semana 07–13/09: meta operacional de 140Q e proteção contra redução automática da meta futura.
+- 12/10: 5h apenas no fim da tarde/noite por aniversário da mãe.
+- 13/10 e 02/11: cerca de 6h líquidas com intervalos e prioridade para P1.
+- Semanas com feriado têm ajuste positivo/negativo amortecido no motor adaptativo, evitando interpretar disponibilidade extra como rotina.
+- Conteúdos de Biologia mais familiares foram convertidos em modo MANUTENÇÃO (retrieval + questões → teoria só se houver falha).
+- Tempo economizado em Bio foi redistribuído para Educação, Administração/Legislação e Dados.
+- Simulados continuam preservando a proporção oficial 50 Bio / 30 P1, funcionando como freio contra ilusão de competência em Biologia.
