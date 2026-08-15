@@ -1,7 +1,7 @@
-// Preencha estes dois valores antes de publicar para que todos os aparelhos
-// já conheçam o mesmo projeto Supabase. A publishable/anon key é uma chave
-// pública de cliente; NÃO coloque service_role/secret key neste arquivo.
+// Configuração pública do Supabase para o PWA SEDUC 2026.
+// A publishable key pode ficar no front-end; a segurança dos dados depende do RLS.
+// NÃO coloque service_role, secret key ou senha do banco neste arquivo.
 window.SEDUC_CLOUD_CONFIG = {
-  supabaseUrl: "",
-  supabaseAnonKey: ""
+  supabaseUrl: "https://fzbnntsmvhhxxscshzop.supabase.co",
+  supabaseAnonKey: "sb_publishable_rLTVCIQlYCa2yyUNQe5p2A_2KqQ1JJ0"
 };
