@@ -76,3 +76,11 @@ O app mantém apenas metas **semanais** de questões. O motor adaptativo usa a m
 - Conteúdos de Biologia mais familiares foram convertidos em modo MANUTENÇÃO (retrieval + questões → teoria só se houver falha).
 - Tempo economizado em Bio foi redistribuído para Educação, Administração/Legislação e Dados.
 - Simulados continuam preservando a proporção oficial 50 Bio / 30 P1, funcionando como freio contra ilusão de competência em Biologia.
+
+## Atualização v6 — sexta realista
+
+- Quinta → sexta passa a ser a logística-padrão: dormir no namorado e treinar cedo na sexta.
+- Sexta normal: chegada em casa pouco após 13:30, estudo formal 14:00–15:30, cabelo 16–17h e ensaio 19–21h.
+- As antigas sessões de 2h de sexta foram reduzidas para 1h30.
+- Os 30 min retirados da sexta reaparecem no domingo como segundo contato espaçado (retrieval + questões + feedback), em vez de simplesmente prolongar a mesma sessão.
+- Semana do InterAntares mantém o desenho excepcional já configurado; semana final de taper permanece leve.
