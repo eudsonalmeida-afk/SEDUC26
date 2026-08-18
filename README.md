@@ -84,3 +84,73 @@ O app mantém apenas metas **semanais** de questões. O motor adaptativo usa a m
 - As antigas sessões de 2h de sexta foram reduzidas para 1h30.
 - Os 30 min retirados da sexta reaparecem no domingo como segundo contato espaçado (retrieval + questões + feedback), em vez de simplesmente prolongar a mesma sessão.
 - Semana do InterAntares mantém o desenho excepcional já configurado; semana final de taper permanece leve.
+
+## Atualização v7 — técnicas, segunda e Manaus
+
+- Siglas de técnicas no cronograma agora são clicáveis e abrem nome, explicação e exemplos.
+- Aba Técnicas passou a exibir listas rápidas de atividades-exemplo para cada técnica.
+- Domingo → segunda virou logística-padrão nas semanas normais: dormir no namorado, treinar cedo na segunda e alongar em ~30 min o estudo da noite.
+- 18/09 às 17h → 20/09 por volta de 12h: viagem a Manaus para arbitragem.
+- Semana 14–20/09 passou a disponibilidade reduzida, com meta operacional de 150Q; sexta/sábado sem estudo formal.
+- Simulado de 19/09 foi remanejado para domingo 20/09, junto com PNE 2014 condensado e Bio em manutenção.
+- A viagem não penaliza o motor adaptativo.
+
+## Atualização v8 — Administração Pública detalhada
+
+O cronograma de Administração foi revisado contra o edital e distribuído em 13 pontos:
+1. conceitos e princípios; 2. reformas administrativas; 3. modelos; 4. Constituição/servidores;
+5. Lei 9.784/1999; 6. organização (órgãos, fundos, entidades, Direta/Indireta);
+7. controle administrativo e legislativo; 8. seis poderes administrativos;
+9. PNE 2026–2036; 10. Modelo de Gestão do Ceará; 11. Guia de Modelagem 2ª ed./jul. 2021;
+12. Código de Ética e Conduta; 13. Estatuto dos Servidores do Ceará.
+
+As sessões agora informam os subtemas concretos a estudar e critérios de saída, em vez de rótulos genéricos.
+
+## Atualização v9 — PNE atual em comparação histórica
+
+O bloco do PNE 2026–2036 foi detalhado para exigir comparação explícita com os PNEs 2001 e 2014.
+A sequência agora é: compreender o PNE atual por si só → preencher tabela 2001 × 2014 × 2026 →
+identificar continuidades, mudanças de prioridade, reformulações, ampliações/reduções e similaridades →
+recuperar 3 continuidades + 3 mudanças sem consulta nas revisões posteriores.
+
+## Atualização v10 — auditoria de Educação Brasileira
+
+- Mantida a distribuição original de semanas e carga horária.
+- Detalhamento interno das sessões foi auditado contra o edital.
+- Foram explicitados: organização didática; sala de aula como espaço de aprendizagem; fundamento epistemológico do fazer docente; planejamento de curso/unidade/aula; bases empíricas/metodológicas/epistemológicas das teorias; psicologia do desenvolvimento biopsicossocial; cinco temas contemporâneos; BNCC; formação/pesquisa/ética docente; marcos legais de Educação Integral; DCRC e equidade.
+- Adicionado mapa recolhível de cobertura de Educação no cronograma.
+
+## Atualização v11 — blocos realocados incorporados
+
+Os antigos cartões separados de “Bloco realocado de Bio → ...” foram removidos.
+O conteúdo, tempo, questões e técnicas desses reforços foram incorporados às sessões já existentes
+das respectivas disciplinas/tópicos, reduzindo poluição visual. As sessões de cada semana também
+foram ordenadas cronologicamente por data.
+
+## Atualização V12 — questões extras, progresso semanal e calibração
+
+- Motor de Meta Semanal redesenhado para corrigir layout comprimido.
+- Barra grande de progresso semanal logo abaixo do motor.
+- Questões extras entram na meta semanal e na precisão por área, sem criar sessões no cronograma.
+- Nova aba "Questões extras" para metrô, caminhada, espera, casa etc.
+- Registro: data, área, contexto, fonte, número de questões, acertos, confiança prevista e notas.
+- Calibração compara confiança prevista antes das questões com precisão real.
+- Exibe viés (superestimação/subestimação) e erro médio de calibração ponderado pelo número de questões.
+- A calibração usa tanto sessões planejadas quanto baterias extras quando houver confiança registrada.
+
+## Atualização V13 — Banco de Questões
+
+- Nova aba "Banco de Questões".
+- Cadastro manual e importação JSON em lote (NotebookLM, Gemini, ChatGPT, autoral).
+- Filtros por área, status e dificuldade.
+- Modo treino interno com alternativas, gabarito comentado e confiança prevista por questão.
+- Cada tentativa do banco entra automaticamente:
+  - na meta semanal de questões;
+  - na precisão por área;
+  - na calibração confiança prevista × precisão real.
+- Fila adaptativa:
+  - erro -> revisão no dia seguinte;
+  - acerto com confiança <70% -> revisão em 3 dias;
+  - acerto seguro -> revisão em 7 dias;
+  - sucessivos acertos -> questão passa a consolidada e o intervalo cresce.
+- Exportação do banco para JSON e download de modelo de importação.
