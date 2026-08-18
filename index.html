@@ -284,6 +284,19 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
 @media(max-width:980px){.bank-grid{grid-template-columns:1fr}.bank-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.bank-form .form-grid{grid-template-columns:1fr}.bank-kpis{grid-template-columns:1fr 1fr}.quiz-confidence{grid-template-columns:1fr}}
 
+
+/* V14 — Montagem de blocos no Banco */
+.bank-builder{display:none;margin:0 0 16px;padding:18px}.bank-builder.show{display:block}
+.bank-builder-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:end}
+.bank-builder .field{margin:0}.bank-builder-note{margin-top:12px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:11.5px;line-height:1.45}
+.bank-builder-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.bank-builder-actions .primary{min-width:160px}
+.quiz-block-cal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 14px}
+.quiz-block-cal>div{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.quiz-block-cal b{display:block;font-size:16px;margin-bottom:2px}.quiz-block-cal small{color:var(--muted);font-size:10.5px;line-height:1.3}
+.quiz-confidence.block-locked{grid-template-columns:1fr;margin:12px 0 0}.quiz-confidence.block-locked .field{display:none}
+.bank-block-result{margin-top:12px;padding:12px;border-radius:11px;background:color-mix(in srgb,var(--accent) 7%,transparent);border:1px solid var(--line);font-size:12px;line-height:1.5}
+@media(max-width:900px){.bank-builder-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.bank-builder-grid,.quiz-block-cal{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -450,14 +463,33 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
   <div class="section-title">
     <div><h3>Banco de Questões</h3><small>Seu acervo próprio: IA + NotebookLM + questões autorais, sem substituir as questões reais de banca</small></div>
     <div class="bank-toolbar">
-      <button class="primary" id="bankStartDue">Treinar revisões</button>
-      <button class="ghost" id="bankStartFiltered">Treinar filtradas</button>
+      <button class="primary" id="bankStartDue">Iniciar revisão</button>
+      <button class="ghost" id="bankStartFiltered">Treinar questões filtradas</button>
     </div>
   </div>
 
   <div class="bank-kpis" id="bankKpis"></div>
 
-  <div class="card quiz-card" id="bankQuizCard" style="display:none;margin-bottom:16px">
+  
+  <div class="card bank-builder" id="bankBuilder">
+    <div class="section-title"><div><h3>Montar bloco de questões</h3><small>Escolha o tamanho e registre sua confiança antes de ver a primeira questão</small></div><button class="ghost" id="bankBuilderClose">Cancelar</button></div>
+    <div class="bank-builder-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="field">
+        <label>Número de questões</label>
+        <input id="bankBuilderCount" type="number" min="1" step="1" value="10" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>Confiança prevista do bloco (%)</label>
+        <input id="bankBuilderConfidence" type="number" min="0" max="100" placeholder="Ex.: 75" inputmode="decimal">
+      </div>
+    </div>
+    <div class="bank-builder-note" id="bankBuilderInfo">
+      O app escolhe automaticamente as questões mais adequadas para revisão, considerando vencimento, tempo desde a última tentativa, erros, sequência de acertos e confiança registrada anteriormente.
+    </div>
+    <div class="bank-builder-actions"><button class="primary" id="bankBuilderStart">Iniciar bloco</button></div>
+  </div>
+
+<div class="card quiz-card" id="bankQuizCard" style="display:none;margin-bottom:16px">
     <div class="quiz-top">
       <div>
         <div class="eyebrow">Modo treino</div>
@@ -467,14 +499,7 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
     </div>
     <div class="quiz-question" id="bankQuizQuestion">—</div>
     <div class="quiz-options" id="bankQuizOptions"></div>
-    <div class="quiz-confidence">
-      <div class="field">
-        <label>Confiança prevista antes de responder (%)</label>
-        <input id="bankQuizConfidence" type="number" min="0" max="100" placeholder="Ex.: 75">
-        <small class="field-help">Sua previsão entra na calibração semanal.</small>
-      </div>
-      <button class="primary" id="bankSubmitAnswer">Responder</button>
-    </div>
+    <div class="quiz-block-cal" id="bankQuizBlockCal"><div><b id="bankQuizBlockSize">—</b><small>questões no bloco</small></div><div><b id="bankQuizBlockConfidence">—</b><small>confiança prevista antes de começar</small></div><div><b id="bankQuizBlockRunning">0%</b><small>precisão parcial</small></div></div><div class="quiz-confidence block-locked"><button class="primary" id="bankSubmitAnswer">Responder</button></div>
     <div class="quiz-feedback" id="bankQuizFeedback"></div>
     <div class="quiz-nav">
       <button class="primary" id="bankNextQuestion" style="display:none">Próxima questão</button>
@@ -547,8 +572,7 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
         <select id="bankFilterDifficulty"><option value="">Todas dificuldades</option><option>Fácil</option><option>Média</option><option>Difícil</option></select>
       </div>
       <div class="bank-note" style="margin-bottom:12px">
-        <b>Fila adaptativa:</b> questão errada volta amanhã; acerto com confiança baixa volta em 3 dias; acerto seguro volta em 7 dias. 
-        Após sucessivos acertos, ela vai sendo empurrada para mais longe.
+        <b>Fila adaptativa automática:</b> o app decide quando cada questão volta usando erro/acerto, confiança, precisão recente, sequência de acertos e tempo desde a última tentativa. Você só escolhe o tamanho do bloco e sua confiança prevista antes de começar.
       </div>
       <div class="bank-list" id="bankList"></div>
     </div>
@@ -734,7 +758,7 @@ const EXAM = new Date("2026-11-22T12:00:00-03:00");
 const STATE_KEY = "seduc2026_state_v1";
 const THEME_KEY = "seduc2026_theme";
 let state = JSON.parse(localStorage.getItem(STATE_KEY) || '{"sessions":{},"fragilities":[],"simulations":{}}');
-state.sessions ||= {}; state.fragilities ||= []; state.simulations ||= {}; state.extraQuestions ||= []; state.questionBank ||= []; state.bankAttempts ||= [];
+state.sessions ||= {}; state.fragilities ||= []; state.simulations ||= {}; state.extraQuestions ||= []; state.questionBank ||= []; state.bankAttempts ||= []; state.bankBlocks ||= [];
 state.adaptive ||= {enabled:true,fixedTargets:{}};
 state.adaptive.fixedTargets ||= {};
 let activeSessionId = null;
@@ -797,8 +821,10 @@ function calibrationBatches(w){
     const q=+x.questions||0,c=+x.correct||0,conf=Number(x.confidence);
     if(q>0 && x.confidence!=="" && x.confidence!==null && Number.isFinite(conf)) out.push({q,c,confidence:clamp(conf,0,100),source:"extra"});
   });
-  (state.bankAttempts||[]).filter(a=>+a.week===+w.number).forEach(a=>{
-    const conf=Number(a.confidence); if(a.confidence!==""&&a.confidence!==null&&Number.isFinite(conf)) out.push({q:1,c:a.correct?1:0,confidence:clamp(conf,0,100),source:"bank"});
+  (state.bankBlocks||[]).filter(b=>+b.week===+w.number && b.completed && (+b.answered||0)>0).forEach(b=>{
+    const conf=Number(b.confidence);
+    if(b.confidence!==""&&b.confidence!==null&&Number.isFinite(conf)) out.push({q:+b.answered||0,c:+b.correct||0,confidence:clamp(conf,0,100),source:"bank-block"});
+  });
   });
   return out;
 }
@@ -1167,7 +1193,7 @@ $("#saveExtraQuestions")?.addEventListener("click",()=>{
   save();toast("Questões extras registradas e somadas à meta semanal.");
 });
 
-let bankQuizQueue=[],bankQuizIndex=0,bankSelectedOption=null,bankAnswered=false;
+let bankQuizQueue=[],bankQuizIndex=0,bankSelectedOption=null,bankAnswered=false,bankActiveBlockId=null,bankBuilderMode="due",bankBuilderSpecificIds=null;
 
 function bankToday(){return todayISO()}
 function addDaysISO(iso,days){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
@@ -1245,7 +1271,7 @@ function renderBank(){
     </div>`;
   }).join(""):`<div class="bank-empty">Nenhuma questão encontrada com esses filtros.</div>`;
 
-  $$(".bank-one").forEach(b=>b.onclick=()=>startBankQuiz([b.dataset.qid]));
+  $$(".bank-one").forEach(b=>b.onclick=()=>openBankBuilder("all",[b.dataset.qid]));
   $$(".bank-delete").forEach(b=>b.onclick=()=>{
     const id=b.dataset.qid; state.questionBank=(state.questionBank||[]).filter(q=>q.id!==id);
     state.bankAttempts=(state.bankAttempts||[]).filter(a=>a.questionId!==id); save(); toast("Questão excluída.");
@@ -1306,53 +1332,165 @@ $("#bankTemplateBtn")?.addEventListener("click",()=>{
 });
 ["bankSearch","bankFilterArea","bankFilterStatus","bankFilterDifficulty"].forEach(id=>$("#"+id)?.addEventListener(id==="bankSearch"?"input":"change",renderBank));
 
-function startBankQuiz(ids){
+
+
+function daysBetweenISO(a,b){
+  const d1=new Date(a+"T12:00:00"),d2=new Date(b+"T12:00:00");
+  return Math.round((d2-d1)/86400000);
+}
+function reviewPriority(q){
+  const today=bankToday(), s=bankStatsFor(q), attempts=bankAttemptsFor(q.id);
+  const last=attempts.length?attempts[attempts.length-1]:null;
+  const overdue=q.dueDate?daysBetweenISO(q.dueDate,today):0;
+  const daysSince=last?.date?daysBetweenISO(last.date,today):999;
+  const lastWrong=last && !last.correct ? 1 : 0;
+  const lowConf=last && Number(last.confidence)<70 ? 1 : 0;
+  const lowAcc=s.acc!==null && s.acc<0.75 ? 1 : 0;
+  const unseen=s.attempts===0 ? 1 : 0;
+  // Maior score = maior prioridade.
+  // Vencimento domina; depois erro recente, baixa confiança, baixa precisão e tempo sem contato.
+  return (
+    Math.max(0,overdue)*20 +
+    lastWrong*18 +
+    lowConf*10 +
+    lowAcc*8 +
+    Math.min(daysSince,30)*0.7 +
+    unseen*4 -
+    s.streak*3
+  );
+}
+function automaticReviewPool(){
+  const today=bankToday(), bank=[...(state.questionBank||[])];
+  const due=bank.filter(q=>!q.dueDate || q.dueDate<=today);
+  const future=bank.filter(q=>q.dueDate && q.dueDate>today);
+  due.sort((a,b)=>reviewPriority(b)-reviewPriority(a));
+  future.sort((a,b)=>(a.dueDate||"").localeCompare(b.dueDate||"") || reviewPriority(b)-reviewPriority(a));
+  // Se não houver questões vencidas suficientes, completa com as mais próximas
+  // para o usuário conseguir escolher apenas o tamanho do bloco.
+  return [...due,...future];
+}
+function openBankBuilder(mode="auto",specificIds=null){
+  bankBuilderMode=mode;
+  bankBuilderSpecificIds=specificIds;
+  const pool=specificIds ? specificIds.map(bankQuestionById).filter(Boolean) : (mode==="filtered" ? bankFiltered() : automaticReviewPool());
+  $("#bankBuilderCount").value=Math.min(10,Math.max(1,pool.length||10));
+  $("#bankBuilderConfidence").value="";
+  $("#bankBuilder").classList.add("show");
+  updateBankBuilderInfo();
+  $("#bankBuilder").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function updateBankBuilderInfo(){
+  const pool=bankBuilderSpecificIds
+    ? bankBuilderSpecificIds.map(bankQuestionById).filter(Boolean)
+    : (bankBuilderMode==="filtered" ? bankFiltered() : automaticReviewPool());
+  const count=Math.max(1,+$("#bankBuilderCount").value||1);
+  const dueCount=pool.filter(q=>!q.dueDate||q.dueDate<=bankToday()).length;
+  $("#bankBuilderInfo").innerHTML=`O app selecionará automaticamente <b>${Math.min(count,pool.length)}</b> questão(ões). Há <b>${dueCount}</b> revisão(ões) vencida(s)/disponível(is) agora. A prioridade considera vencimento, tempo desde a última tentativa, erros, sequência de acertos, precisão e confiança anterior.`;
+}
+$("#bankBuilderCount")?.addEventListener("input",updateBankBuilderInfo);
+$("#bankBuilderClose")?.addEventListener("click",()=>$("#bankBuilder").classList.remove("show"));
+$("#bankBuilderStart")?.addEventListener("click",()=>{
+  const pool=bankBuilderSpecificIds
+    ? bankBuilderSpecificIds.map(bankQuestionById).filter(Boolean)
+    : (bankBuilderMode==="filtered" ? bankFiltered() : automaticReviewPool());
+  const count=Math.max(1,+$("#bankBuilderCount").value||1), confRaw=$("#bankBuilderConfidence").value;
+  if(!pool.length){toast("Não há questões disponíveis no banco.");return}
+  if(confRaw===""){toast("Registre a confiança prevista do bloco antes de começar.");return}
+  const confidence=clamp(+confRaw,0,100);
+  const chosen=pool.slice(0,Math.min(count,pool.length));
+  const w=weekForDate(bankToday());
+  const block={
+    id:"bb-"+Date.now()+"-"+Math.random().toString(36).slice(2,6),
+    created:new Date().toISOString(),date:bankToday(),week:w?w.number:-1,
+    mode:bankBuilderMode,confidence,planned:chosen.length,answered:0,correct:0,completed:false,
+    questionIds:chosen.map(q=>q.id)
+  };
+  state.bankBlocks.push(block);
+  bankActiveBlockId=block.id;
+  bankBuilderSpecificIds=null;
+  $("#bankBuilder").classList.remove("show");
+  startBankQuiz(block.questionIds,block.id);
+});
+function activeBankBlock(){return (state.bankBlocks||[]).find(b=>b.id===bankActiveBlockId)||null}
+function finalizeBankBlock(){const b=activeBankBlock();if(!b||b.completed)return;b.completed=true;b.completedAt=new Date().toISOString();const acc=b.answered?b.correct/b.answered*100:0,gap=b.confidence-acc;const html=`<div class="bank-block-result"><b>Bloco concluído:</b> ${b.correct}/${b.answered} acertos (${acc.toFixed(1)}%). Confiança prevista ${b.confidence.toFixed(0)}%. Diferença ${gap>=0?"+":""}${gap.toFixed(1)} p.p. — ${Math.abs(gap)<=5?"boa calibração":gap>5?"você superestimou o domínio neste bloco":"você subestimou o domínio neste bloco"}.</div>`;$("#bankQuizFeedback").innerHTML+=html;$("#bankQuizFeedback").classList.add("show");save()}
+function startBankQuiz(ids,blockId=null){
   const unique=[...new Set(ids)].filter(id=>bankQuestionById(id));
+  if(blockId)bankActiveBlockId=blockId;
   if(!unique.length){toast("Nenhuma questão disponível.");return}
   bankQuizQueue=unique;bankQuizIndex=0;$("#bankQuizCard").style.display="block";showBankQuiz();$("#bankQuizCard").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function showBankQuiz(){
-  bankSelectedOption=null;bankAnswered=false;$("#bankQuizConfidence").value="";$("#bankQuizFeedback").classList.remove("show");$("#bankQuizFeedback").innerHTML="";
+  bankSelectedOption=null;bankAnswered=false;$("#bankQuizFeedback").classList.remove("show");$("#bankQuizFeedback").innerHTML="";
   $("#bankNextQuestion").style.display="none";$("#bankSubmitAnswer").style.display="";
   const q=bankQuestionById(bankQuizQueue[bankQuizIndex]);if(!q)return;
+  const block=activeBankBlock();if(block){$("#bankQuizBlockSize").textContent=block.planned+"Q";$("#bankQuizBlockConfidence").textContent=block.confidence.toFixed(0)+"%";$("#bankQuizBlockRunning").textContent=block.answered?(block.correct/block.answered*100).toFixed(0)+"%":"0%";}
   $("#bankQuizProgress").textContent=`Questão ${bankQuizIndex+1} de ${bankQuizQueue.length} • ${q.area} • ${q.topic}`;
   $("#bankQuizQuestion").textContent=q.question;
   $("#bankQuizOptions").innerHTML=Object.entries(q.options).map(([L,t])=>`<button class="quiz-option" data-letter="${L}"><span class="letter">${L}</span><span>${t}</span></button>`).join("");
   $$(".quiz-option").forEach(b=>b.onclick=()=>{if(bankAnswered)return;bankSelectedOption=b.dataset.letter;$$(".quiz-option").forEach(x=>x.classList.toggle("selected",x===b))});
 }
 function scheduleBankQuestion(q,correct,confidence){
-  const st=bankStatsFor(q);
-  if(!correct){q.status="review";q.dueDate=addDaysISO(bankToday(),1);return}
-  if(confidence<70){q.status="review";q.dueDate=addDaysISO(bankToday(),3);return}
-  const futureStreak=st.streak+1;
-  if(futureStreak>=3){q.status="mastered";q.dueDate=addDaysISO(bankToday(),Math.min(30,7*futureStreak));}
-  else{q.status=futureStreak>=2?"review":"new";q.dueDate=addDaysISO(bankToday(),7);}
+  const attempts=bankAttemptsFor(q.id);
+  const recent=attempts.slice(-5);
+  let streak=0;
+  for(let i=recent.length-1;i>=0;i--){if(recent[i].correct)streak++;else break}
+
+  const accuracy5=recent.length?recent.filter(a=>a.correct).length/recent.length:0;
+  const meanConfidence=recent.length?recent.reduce((a,x)=>a+(Number(x.confidence)||0),0)/recent.length:confidence;
+  const calibrationGap=Math.abs(meanConfidence-(accuracy5*100));
+
+  let days;
+  if(!correct){
+    days=1; // erro: retorno rápido
+    q.status="review";
+  }else if(confidence<60){
+    days=2; // acertou, mas praticamente no chute
+    q.status="review";
+  }else if(confidence<75 || calibrationGap>20){
+    days=3; // confiança frágil ou metacognição desalinhada
+    q.status="review";
+  }else if(streak<=1){
+    days=5;
+    q.status="review";
+  }else if(streak===2){
+    days=7;
+    q.status="review";
+  }else if(streak===3){
+    days=14;
+    q.status="mastered";
+  }else{
+    // conteúdo estável: aumenta gradualmente, com teto de 45 dias
+    days=Math.min(45,14+(streak-3)*7);
+    q.status="mastered";
+  }
+
+  // Se a precisão recente estiver baixa, não deixa espaçar demais.
+  if(accuracy5<0.7)days=Math.min(days,5);
+  q.dueDate=addDaysISO(bankToday(),days);
+  q.lastInterval=days;
 }
 $("#bankSubmitAnswer")?.addEventListener("click",()=>{
   if(bankAnswered)return;
   if(!bankSelectedOption){toast("Escolha uma alternativa.");return}
-  const confRaw=$("#bankQuizConfidence").value;if(confRaw===""){toast("Registre sua confiança antes de responder.");return}
-  const confidence=clamp(+confRaw,0,100),q=bankQuestionById(bankQuizQueue[bankQuizIndex]),correct=bankSelectedOption===q.answer;
+  const block=activeBankBlock(),confidence=block?block.confidence:50,q=bankQuestionById(bankQuizQueue[bankQuizIndex]),correct=bankSelectedOption===q.answer;
   bankAnswered=true;
   $$(".quiz-option").forEach(b=>{if(b.dataset.letter===q.answer)b.classList.add("correct");else if(b.dataset.letter===bankSelectedOption&&!correct)b.classList.add("wrong")});
   const w=weekForDate(bankToday());
   state.bankAttempts.push({
     id:"ba-"+Date.now()+"-"+Math.random().toString(36).slice(2,6),questionId:q.id,date:bankToday(),week:w?w.number:-1,area:q.area,
-    selected:bankSelectedOption,answer:q.answer,correct,confidence
+    selected:bankSelectedOption,answer:q.answer,correct,confidence,blockId:block?.id||null
   });
+  if(block){block.answered+=1;if(correct)block.correct+=1;$("#bankQuizBlockRunning").textContent=(block.correct/block.answered*100).toFixed(0)+"%";}
   scheduleBankQuestion(q,correct,confidence);
   $("#bankQuizFeedback").innerHTML=`<b>${correct?"✓ Acertou":"✗ Errou"}</b> • confiança ${confidence}% • resposta ${q.answer}<br>${q.explanation||"Sem comentário cadastrado."}`;
   $("#bankQuizFeedback").classList.add("show");$("#bankSubmitAnswer").style.display="none";
-  $("#bankNextQuestion").style.display=bankQuizIndex<bankQuizQueue.length-1?"":"none";
+  if(bankQuizIndex<bankQuizQueue.length-1){$("#bankNextQuestion").textContent="Próxima questão";$("#bankNextQuestion").style.display="";}else{finalizeBankBlock();$("#bankNextQuestion").textContent="Concluir bloco";$("#bankNextQuestion").style.display="";}
   save();
 });
-$("#bankNextQuestion")?.addEventListener("click",()=>{if(bankQuizIndex<bankQuizQueue.length-1){bankQuizIndex++;showBankQuiz()}});
-$("#bankCloseQuiz")?.addEventListener("click",()=>{$("#bankQuizCard").style.display="none";bankQuizQueue=[];bankQuizIndex=0;renderBank()});
-$("#bankStartDue")?.addEventListener("click",()=>{
-  const due=(state.questionBank||[]).filter(q=>!q.dueDate||q.dueDate<=bankToday()).sort((a,b)=>(a.dueDate||"").localeCompare(b.dueDate||""));
-  startBankQuiz(due.map(q=>q.id));
-});
-$("#bankStartFiltered")?.addEventListener("click",()=>startBankQuiz(bankFiltered().map(q=>q.id)));
+$("#bankNextQuestion")?.addEventListener("click",()=>{if(bankQuizIndex<bankQuizQueue.length-1){bankQuizIndex++;showBankQuiz()}else{$("#bankQuizCard").style.display="none";bankQuizQueue=[];bankQuizIndex=0;bankActiveBlockId=null;renderBank();toast("Bloco concluído e calibração registrada.")}});
+$("#bankCloseQuiz")?.addEventListener("click",()=>{$("#bankQuizCard").style.display="none";bankQuizQueue=[];bankQuizIndex=0;bankActiveBlockId=null;renderBank()});
+$("#bankStartDue")?.addEventListener("click",()=>openBankBuilder("auto"));
+$("#bankStartFiltered")?.addEventListener("click",()=>openBankBuilder("filtered"));
 function renderFrag(){
   const colors={3:"var(--danger)",2:"var(--warn)",1:"#ffd43b",0:"var(--success)"};
   const labels={3:"Ativa",2:"Reincidente",1:"Hesitação",0:"Controlada"};

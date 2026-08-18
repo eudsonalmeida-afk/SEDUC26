@@ -154,3 +154,35 @@ foram ordenadas cronologicamente por data.
   - acerto seguro -> revisão em 7 dias;
   - sucessivos acertos -> questão passa a consolidada e o intervalo cresce.
 - Exportação do banco para JSON e download de modelo de importação.
+
+## Atualização V14 — blocos de treino personalizados
+
+- “Treinar revisões” não dispara mais todas as questões vencidas.
+- Agora abre um montador de bloco.
+- É possível escolher origem, quantidade exata, confiança prevista do bloco e ordem.
+- A calibração do banco passa a ser feita por bloco: previsão antes de começar × acurácia real ao terminar.
+- Cada questão respondida continua contando na meta semanal e na precisão por área.
+
+## Atualização V15 — revisão automática do banco
+
+- O usuário não escolhe mais origem nem ordem no bloco de revisão.
+- Para revisar, escolhe somente:
+  - número de questões;
+  - confiança prevista do bloco.
+- Seleção das questões é automática.
+- Prioridade leva em conta:
+  - data de vencimento;
+  - tempo desde a última tentativa;
+  - erro recente;
+  - confiança anterior;
+  - precisão recente;
+  - sequência de acertos.
+- Se houver menos questões vencidas que o tamanho solicitado, o bloco é completado com as próximas revisões mais próximas.
+- Intervalos adaptativos:
+  - erro: ~1 dia;
+  - acerto com confiança muito baixa: ~2 dias;
+  - confiança frágil/calibração ruim: ~3 dias;
+  - acerto inicial: ~5 dias;
+  - 2 acertos consecutivos: ~7 dias;
+  - 3 acertos consecutivos: ~14 dias;
+  - domínio estável: intervalos crescentes até 45 dias.
