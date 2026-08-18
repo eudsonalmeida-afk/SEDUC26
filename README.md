@@ -186,3 +186,17 @@ foram ordenadas cronologicamente por data.
   - 2 acertos consecutivos: ~7 dias;
   - 3 acertos consecutivos: ~14 dias;
   - domínio estável: intervalos crescentes até 45 dias.
+
+## Atualização V16 — navegação mobile
+- Ícones/identidade ficam em cima.
+- Abas ficam em uma linha horizontal logo abaixo.
+- As abas rolam horizontalmente quando necessário.
+- Sidebar deixa de roubar largura lateral.
+- Conteúdo usa 100% da largura no celular.
+
+## V17 — correção do index e header mobile
+- Corrigido erro de sintaxe JavaScript que impedia o index de inicializar.
+- No mobile, marca/título e ícones ficam na primeira linha.
+- As abas ficam em uma segunda linha completa, abaixo dos ícones.
+- Ícones foram compactados no celular para liberar largura.
+- Abas têm rolagem horizontal independente.
