@@ -459,6 +459,53 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
   }
 }
 
+
+/* V18 — montagem de bloco por área/disciplina */
+.bank-builder-areas{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  margin-top:12px;
+}
+.bank-area-count{
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:10px;
+  background:var(--panel2);
+}
+.bank-area-count label{
+  display:block;
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+.bank-area-count input{
+  width:100%;
+  min-height:38px;
+}
+.bank-preset-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+.bank-preset-row button{
+  padding:7px 9px;
+  font-size:11px;
+}
+.bank-builder-total{
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+.bank-builder-total b{color:var(--text)}
+@media(max-width:900px){
+  .bank-builder-areas{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:520px){
+  .bank-builder-areas{grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 <body>
@@ -637,16 +684,36 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
     <div class="section-title"><div><h3>Montar bloco de questões</h3><small>Escolha o tamanho e registre sua confiança antes de ver a primeira questão</small></div><button class="ghost" id="bankBuilderClose">Cancelar</button></div>
     <div class="bank-builder-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
       <div class="field">
-        <label>Número de questões</label>
-        <input id="bankBuilderCount" type="number" min="1" step="1" value="10" inputmode="numeric">
-      </div>
-      <div class="field">
         <label>Confiança prevista do bloco (%)</label>
         <input id="bankBuilderConfidence" type="number" min="0" max="100" placeholder="Ex.: 75" inputmode="decimal">
       </div>
+      <div class="field">
+        <label>Modo de seleção</label>
+        <select id="bankBuilderModeSelect">
+          <option value="auto">Automático por revisão</option>
+          <option value="composition">Composição por área</option>
+          <option value="filtered">Questões filtradas</option>
+        </select>
+      </div>
     </div>
+
+    <div class="bank-preset-row">
+      <button class="ghost" id="bankPresetP1">P1 — 30Q (8/8/8/6)</button>
+      <button class="ghost" id="bankPresetBio50">P2 Biologia — 50Q</button>
+      <button class="ghost" id="bankPresetClear">Limpar composição</button>
+    </div>
+
+    <div class="bank-builder-areas" id="bankBuilderAreas">
+      <div class="bank-area-count"><label>Biologia</label><input id="bankCountBio" type="number" min="0" value="0" inputmode="numeric"></div>
+      <div class="bank-area-count"><label>Educação</label><input id="bankCountEdu" type="number" min="0" value="0" inputmode="numeric"></div>
+      <div class="bank-area-count"><label>Administração</label><input id="bankCountAdm" type="number" min="0" value="0" inputmode="numeric"></div>
+      <div class="bank-area-count"><label>Português</label><input id="bankCountPort" type="number" min="0" value="0" inputmode="numeric"></div>
+      <div class="bank-area-count"><label>Dados</label><input id="bankCountDados" type="number" min="0" value="0" inputmode="numeric"></div>
+    </div>
+    <div class="bank-builder-total">Total do bloco: <b id="bankCompositionTotal">0 questões</b></div>
+
     <div class="bank-builder-note" id="bankBuilderInfo">
-      O app escolhe automaticamente as questões mais adequadas para revisão, considerando vencimento, tempo desde a última tentativa, erros, sequência de acertos e confiança registrada anteriormente.
+      No modo automático, o app prioriza revisões pela fila adaptativa. No modo composição, você define quantas questões quer de cada área e o app escolhe automaticamente quais questões entram dentro de cada área.
     </div>
     <div class="bank-builder-actions"><button class="primary" id="bankBuilderStart">Iniciar bloco</button></div>
   </div>
@@ -734,7 +801,7 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
         <select id="bankFilterDifficulty"><option value="">Todas dificuldades</option><option>Fácil</option><option>Média</option><option>Difícil</option></select>
       </div>
       <div class="bank-note" style="margin-bottom:12px">
-        <b>Fila adaptativa automática:</b> o app decide quando cada questão volta usando erro/acerto, confiança, precisão recente, sequência de acertos e tempo desde a última tentativa. Você só escolhe o tamanho do bloco e sua confiança prevista antes de começar.
+        <b>Fila adaptativa automática:</b> o app decide quais questões aparecem e quando voltam. Você pode usar revisão geral ou montar a composição por área (ex.: P1 30Q = 8 Educação + 8 Administração + 8 Português + 6 Dados).
       </div>
       <div class="bank-list" id="bankList"></div>
     </div>
@@ -1495,6 +1562,7 @@ $("#bankTemplateBtn")?.addEventListener("click",()=>{
 
 
 
+
 function daysBetweenISO(a,b){
   const d1=new Date(a+"T12:00:00"),d2=new Date(b+"T12:00:00");
   return Math.round((d2-d1)/86400000);
@@ -1508,63 +1576,123 @@ function reviewPriority(q){
   const lowConf=last && Number(last.confidence)<70 ? 1 : 0;
   const lowAcc=s.acc!==null && s.acc<0.75 ? 1 : 0;
   const unseen=s.attempts===0 ? 1 : 0;
-  // Maior score = maior prioridade.
-  // Vencimento domina; depois erro recente, baixa confiança, baixa precisão e tempo sem contato.
-  return (
-    Math.max(0,overdue)*20 +
-    lastWrong*18 +
-    lowConf*10 +
-    lowAcc*8 +
-    Math.min(daysSince,30)*0.7 +
-    unseen*4 -
-    s.streak*3
-  );
+  return Math.max(0,overdue)*20 + lastWrong*18 + lowConf*10 + lowAcc*8 +
+         Math.min(daysSince,30)*0.7 + unseen*4 - s.streak*3;
 }
-function automaticReviewPool(){
-  const today=bankToday(), bank=[...(state.questionBank||[])];
+function automaticReviewPool(area=null){
+  const today=bankToday();
+  let bank=[...(state.questionBank||[])];
+  if(area)bank=bank.filter(q=>q.area===area);
   const due=bank.filter(q=>!q.dueDate || q.dueDate<=today);
   const future=bank.filter(q=>q.dueDate && q.dueDate>today);
   due.sort((a,b)=>reviewPriority(b)-reviewPriority(a));
   future.sort((a,b)=>(a.dueDate||"").localeCompare(b.dueDate||"") || reviewPriority(b)-reviewPriority(a));
-  // Se não houver questões vencidas suficientes, completa com as mais próximas
-  // para o usuário conseguir escolher apenas o tamanho do bloco.
   return [...due,...future];
 }
+function bankComposition(){
+  return {
+    "Biologia":Math.max(0,+$("#bankCountBio").value||0),
+    "Educação":Math.max(0,+$("#bankCountEdu").value||0),
+    "Administração":Math.max(0,+$("#bankCountAdm").value||0),
+    "Português":Math.max(0,+$("#bankCountPort").value||0),
+    "Dados":Math.max(0,+$("#bankCountDados").value||0)
+  };
+}
+function updateCompositionTotal(){
+  const c=bankComposition(), total=Object.values(c).reduce((a,b)=>a+b,0);
+  $("#bankCompositionTotal").textContent=`${total} questão${total===1?"":"ões"}`;
+}
+["bankCountBio","bankCountEdu","bankCountAdm","bankCountPort","bankCountDados"].forEach(id=>$("#"+id)?.addEventListener("input",()=>{updateCompositionTotal();updateBankBuilderInfo()}));
+
+function setBankComposition(c){
+  $("#bankCountBio").value=c.Biologia||0;
+  $("#bankCountEdu").value=c.Educação||0;
+  $("#bankCountAdm").value=c.Administração||0;
+  $("#bankCountPort").value=c.Português||0;
+  $("#bankCountDados").value=c.Dados||0;
+  $("#bankBuilderModeSelect").value="composition";
+  updateCompositionTotal();updateBankBuilderInfo();
+}
+$("#bankPresetP1")?.addEventListener("click",()=>setBankComposition({"Biologia":0,"Educação":8,"Administração":8,"Português":8,"Dados":6}));
+$("#bankPresetBio50")?.addEventListener("click",()=>setBankComposition({"Biologia":50,"Educação":0,"Administração":0,"Português":0,"Dados":0}));
+$("#bankPresetClear")?.addEventListener("click",()=>setBankComposition({"Biologia":0,"Educação":0,"Administração":0,"Português":0,"Dados":0}));
+
 function openBankBuilder(mode="auto",specificIds=null){
   bankBuilderMode=mode;
   bankBuilderSpecificIds=specificIds;
-  const pool=specificIds ? specificIds.map(bankQuestionById).filter(Boolean) : (mode==="filtered" ? bankFiltered() : automaticReviewPool());
-  $("#bankBuilderCount").value=Math.min(10,Math.max(1,pool.length||10));
+  $("#bankBuilderModeSelect").value=mode==="filtered"?"filtered":(mode==="composition"?"composition":"auto");
   $("#bankBuilderConfidence").value="";
   $("#bankBuilder").classList.add("show");
+  updateCompositionTotal();
   updateBankBuilderInfo();
   $("#bankBuilder").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function updateBankBuilderInfo(){
-  const pool=bankBuilderSpecificIds
-    ? bankBuilderSpecificIds.map(bankQuestionById).filter(Boolean)
-    : (bankBuilderMode==="filtered" ? bankFiltered() : automaticReviewPool());
-  const count=Math.max(1,+$("#bankBuilderCount").value||1);
-  const dueCount=pool.filter(q=>!q.dueDate||q.dueDate<=bankToday()).length;
-  $("#bankBuilderInfo").innerHTML=`O app selecionará automaticamente <b>${Math.min(count,pool.length)}</b> questão(ões). Há <b>${dueCount}</b> revisão(ões) vencida(s)/disponível(is) agora. A prioridade considera vencimento, tempo desde a última tentativa, erros, sequência de acertos, precisão e confiança anterior.`;
+  const mode=$("#bankBuilderModeSelect").value;
+  if(mode==="composition"){
+    const c=bankComposition();
+    const requested=Object.values(c).reduce((a,b)=>a+b,0);
+    const parts=Object.entries(c).filter(([,n])=>n>0).map(([area,n])=>{
+      const avail=automaticReviewPool(area).length;
+      return `${area}: ${n}/${avail}`;
+    });
+    $("#bankBuilderInfo").innerHTML=requested
+      ? `Composição solicitada: <b>${requested} questões</b>. Disponibilidade no banco — ${parts.join(" • ")}. Dentro de cada área, a seleção continua automática pela fila adaptativa.`
+      : `Defina quantas questões quer de cada área. Dentro de cada área, o app escolhe automaticamente as questões prioritárias.`;
+  }else if(mode==="filtered"){
+    const pool=bankFiltered();
+    $("#bankBuilderInfo").innerHTML=`Há <b>${pool.length}</b> questão(ões) nos filtros atuais. O bloco usará esse conjunto como origem.`;
+  }else{
+    const pool=automaticReviewPool();
+    const dueCount=pool.filter(q=>!q.dueDate||q.dueDate<=bankToday()).length;
+    $("#bankBuilderInfo").innerHTML=`Seleção automática geral: <b>${dueCount}</b> revisão(ões) vencida(s)/disponível(is) agora. O app prioriza vencimento, tempo desde a última tentativa, erros, precisão, sequência de acertos e confiança anterior.`;
+  }
 }
-$("#bankBuilderCount")?.addEventListener("input",updateBankBuilderInfo);
+$("#bankBuilderModeSelect")?.addEventListener("change",updateBankBuilderInfo);
 $("#bankBuilderClose")?.addEventListener("click",()=>$("#bankBuilder").classList.remove("show"));
+
+function chooseCompositionQuestions(composition){
+  const chosen=[], shortages=[];
+  Object.entries(composition).forEach(([area,count])=>{
+    if(count<=0)return;
+    const pool=automaticReviewPool(area);
+    const take=pool.slice(0,Math.min(count,pool.length));
+    chosen.push(...take);
+    if(take.length<count)shortages.push(`${area}: faltam ${count-take.length}`);
+  });
+  return {chosen,shortages};
+}
+
 $("#bankBuilderStart")?.addEventListener("click",()=>{
-  const pool=bankBuilderSpecificIds
-    ? bankBuilderSpecificIds.map(bankQuestionById).filter(Boolean)
-    : (bankBuilderMode==="filtered" ? bankFiltered() : automaticReviewPool());
-  const count=Math.max(1,+$("#bankBuilderCount").value||1), confRaw=$("#bankBuilderConfidence").value;
-  if(!pool.length){toast("Não há questões disponíveis no banco.");return}
+  const mode=$("#bankBuilderModeSelect").value, confRaw=$("#bankBuilderConfidence").value;
   if(confRaw===""){toast("Registre a confiança prevista do bloco antes de começar.");return}
   const confidence=clamp(+confRaw,0,100);
-  const chosen=pool.slice(0,Math.min(count,pool.length));
+  let chosen=[], composition=null;
+
+  if(bankBuilderSpecificIds){
+    chosen=bankBuilderSpecificIds.map(bankQuestionById).filter(Boolean);
+  }else if(mode==="composition"){
+    composition=bankComposition();
+    const requested=Object.values(composition).reduce((a,b)=>a+b,0);
+    if(requested<=0){toast("Defina ao menos 1 questão em alguma área.");return}
+    const result=chooseCompositionQuestions(composition);
+    chosen=result.chosen;
+    if(result.shortages.length){toast("Banco insuficiente: "+result.shortages.join(" • "));return}
+  }else if(mode==="filtered"){
+    chosen=bankFiltered();
+  }else{
+    // automático geral: usa total informado pela composição se houver; senão 10
+    const total=Object.values(bankComposition()).reduce((a,b)=>a+b,0) || 10;
+    chosen=automaticReviewPool().slice(0,total);
+  }
+
+  if(!chosen.length){toast("Não há questões disponíveis para esse bloco.");return}
   const w=weekForDate(bankToday());
   const block={
     id:"bb-"+Date.now()+"-"+Math.random().toString(36).slice(2,6),
     created:new Date().toISOString(),date:bankToday(),week:w?w.number:-1,
-    mode:bankBuilderMode,confidence,planned:chosen.length,answered:0,correct:0,completed:false,
-    questionIds:chosen.map(q=>q.id)
+    mode,confidence,planned:chosen.length,answered:0,correct:0,completed:false,
+    composition,questionIds:chosen.map(q=>q.id)
   };
   state.bankBlocks.push(block);
   bankActiveBlockId=block.id;

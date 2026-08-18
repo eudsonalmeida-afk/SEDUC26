@@ -200,3 +200,11 @@ foram ordenadas cronologicamente por data.
 - As abas ficam em uma segunda linha completa, abaixo dos ícones.
 - Ícones foram compactados no celular para liberar largura.
 - Abas têm rolagem horizontal independente.
+
+## V18 — blocos por área/disciplina
+- Montador permite composição exata por área.
+- Preset P1 oficial: 30 questões = 8 Educação + 8 Administração + 8 Português + 6 Dados, Biologia = 0.
+- Preset P2 Biologia: 50 questões de Biologia.
+- Usuário pode montar qualquer distribuição manual.
+- Dentro de cada área, o app continua escolhendo automaticamente as questões prioritárias pela fila adaptativa.
+- O app bloqueia o início se o banco não tiver questões suficientes em alguma área solicitada.
