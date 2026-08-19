@@ -244,3 +244,14 @@ Mudanças:
 - banner de diagnóstico aparece se o script principal não completar o boot;
 - service worker usa cache V21 e estratégia network-first/no-store para reduzir versão antiga presa no Safari/PWA;
 - registro do service worker força `update()`.
+
+## SEDUC2026 — Versão 22: imagens sincronizadas entre aparelhos
+
+- Cada questão pode manter `imageData` sincronizada dentro do próprio state.
+- `bankImageSrc()` prioriza `imageData`, permitindo que desktop/celular mostrem a mesma figura após o sync.
+- Imagens locais antigas (IndexedDB) podem ser migradas pelo botão “Sincronizar imagens deste aparelho”.
+- A V22 também tenta migrar silenciosamente imagens antigas ao abrir no aparelho que possui os arquivos locais.
+- Arquivos grandes são reduzidos antes de entrar no state sincronizado; imagens pequenas são preservadas.
+- Novas importações JSON + imagens já criam simultaneamente a cópia local/offline e a cópia sincronizável.
+- O IndexedDB continua sendo usado como cache local, mas deixa de ser a única fonte da imagem.
+- Para recuperar imagens anexadas em versões anteriores, é necessário abrir a V22 no mesmo aparelho em que elas foram originalmente importadas, enquanto o armazenamento local ainda existir.

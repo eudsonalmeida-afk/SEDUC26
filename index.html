@@ -672,6 +672,17 @@ html[data-theme="dark"] .ipad-compat-warning{
   background:#302a12;color:#ffe891;border-color:#806f23
 }
 
+
+/* SEDUC2026 V22 — imagens sincronizadas entre aparelhos */
+.bank-image-sync-status{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border:1px solid var(--line);
+  border-radius:99px;font-size:9px;color:var(--muted);margin-left:5px
+}
+.bank-image-sync-note{
+  margin-top:8px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel2);font-size:10.5px;line-height:1.45;color:var(--muted)
+}
+
 </style>
 </head>
 <body>
@@ -985,12 +996,18 @@ html[data-theme="dark"] .ipad-compat-warning{
           </label>
           <button class="ghost" id="bankExportBtn">Exportar banco</button>
           <button class="ghost" id="bankExportPortableBtn">Exportar banco + imagens</button>
+          <button class="ghost" id="bankSyncLocalImagesBtn">Sincronizar imagens deste aparelho</button>
           <button class="ghost" id="bankTemplateBtn">Baixar modelo JSON</button>
         </div>
         <div class="package-help">
           <b>Pacote com imagens:</b> selecione de uma vez o arquivo <code>questions.json</code> e todas as imagens usadas nele.
-          No JSON, cada questão pode ter <code>"imageFile":"grafico_01.png"</code>. O app associa pelo nome do arquivo e salva a imagem localmente para funcionar também no PWA/offline.
+          No JSON, cada questão pode ter <code>"imageFile":"grafico_01.png"</code>. O app associa pelo nome do arquivo, mantém uma cópia local para uso offline
+          e salva uma versão otimizada dentro do estado sincronizado para que celular e desktop vejam a mesma imagem.
           Também aceita <code>"imageUrl":"images/grafico_01.png"</code> para imagens hospedadas junto do site.
+        </div>
+        <div class="bank-image-sync-note">
+          <b>Imagens antigas:</b> se você já anexou imagens no celular em uma versão anterior, abra esta V22 naquele mesmo celular e toque em
+          <b>“Sincronizar imagens deste aparelho”</b>. O app recupera as imagens do armazenamento local e passa a enviá-las junto do estado da nuvem.
         </div>
         <details style="margin-top:8px">
           <summary style="cursor:pointer;font-size:11px;color:var(--muted)">Formato aceito</summary>
@@ -1712,7 +1729,49 @@ async function deleteBankImage(id){
   }catch(e){}
   if(bankObjectUrls.has(id)){URL.revokeObjectURL(bankObjectUrls.get(id));bankObjectUrls.delete(id)}
 }
+async function blobToDataUrl(blob){
+  return await new Promise((resolve,reject)=>{
+    const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);
+  });
+}
+
+async function imageBlobToSyncedDataURL(blob){
+  // Arquivos pequenos preservam o original; arquivos grandes são reduzidos para não inflar demais a sincronização.
+  if(!blob)return null;
+  if(blob.size<=700000 || /svg|gif/i.test(blob.type||"")){
+    return await blobToDataUrl(blob);
+  }
+  return await new Promise((resolve)=>{
+    const url=URL.createObjectURL(blob);
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const maxDim=1800;
+        const scale=Math.min(1,maxDim/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+        const w=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));
+        const h=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+        const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext("2d");
+        ctx.drawImage(img,0,0,w,h);
+        let data=canvas.toDataURL("image/webp",0.92);
+        if(!/^data:image\/webp/i.test(data))data=canvas.toDataURL("image/jpeg",0.94);
+        URL.revokeObjectURL(url);resolve(data);
+      }catch(e){
+        URL.revokeObjectURL(url);
+        blobToDataUrl(blob).then(resolve);
+      }
+    };
+    img.onerror=()=>{
+      URL.revokeObjectURL(url);
+      blobToDataUrl(blob).then(resolve);
+    };
+    img.src=url;
+  });
+}
+
 async function bankImageSrc(q){
+  // A versão sincronizada tem prioridade: funciona em qualquer aparelho que receber o state da nuvem.
+  if(q?.imageData)return q.imageData;
   if(q?.imageId){
     if(bankObjectUrls.has(q.imageId))return bankObjectUrls.get(q.imageId);
     const rec=await getBankImageRecord(q.imageId);
@@ -1721,6 +1780,31 @@ async function bankImageSrc(q){
     }
   }
   return q?.imageUrl||null;
+}
+
+async function migrateLocalBankImagesToSyncedState(showToast=false){
+  let migrated=0,missing=0;
+  for(const q of (state.questionBank||[])){
+    if(q.imageData)continue;
+    if(q.imageId){
+      try{
+        const rec=await getBankImageRecord(q.imageId);
+        if(rec?.blob){
+          q.imageData=await imageBlobToSyncedDataURL(rec.blob);
+          q.imageFile=q.imageFile||rec.name||null;
+          migrated++;
+        }else missing++;
+      }catch(e){missing++}
+    }
+  }
+  if(migrated){
+    save();
+    renderBank();
+    if(showToast)toast(`${migrated} imagem(ns) preparada(s) para sincronização com outros aparelhos.`);
+  }else if(showToast){
+    toast(missing?`Nenhuma imagem recuperada. ${missing} arquivo(s) local(is) não foram encontrados neste aparelho.`:"Todas as imagens deste aparelho já estão sincronizáveis.");
+  }
+  return {migrated,missing};
 }
 async function hydrateBankImages(root=document){
   const nodes=[...root.querySelectorAll("[data-bank-image-qid]")];
@@ -1772,6 +1856,7 @@ function normalizeBankQuestion(q){
     imageId:q.imageId||null,
     imageFile:q.imageFile||null,
     imageUrl:q.imageUrl||null,
+    imageData:q.imageData||null,
     imageCaption:String(q.imageCaption||"").trim(),
     status:q.status||"new",
     dueDate:q.dueDate||bankToday()
@@ -1781,7 +1866,7 @@ function bankFiltered(){
   const search=($("#bankSearch")?.value||"").toLowerCase().trim(),area=$("#bankFilterArea")?.value||"",status=$("#bankFilterStatus")?.value||"",dif=$("#bankFilterDifficulty")?.value||"",img=$("#bankFilterImage")?.value||"";
   return (state.questionBank||[]).filter(q=>{
     const hay=(q.question+" "+q.topic+" "+q.area+" "+q.sourceType+" "+(q.tags||[]).join(" ")).toLowerCase();
-    const hasImg=!!(q.imageId||q.imageUrl);
+    const hasImg=!!(q.imageData||q.imageId||q.imageUrl);
     return (!search||hay.includes(search))&&(!area||q.area===area)&&(!status||q.status===status)&&(!dif||q.difficulty===dif)&&(!img||(img==="yes"?hasImg:!hasImg));
   });
 }
@@ -1808,8 +1893,8 @@ function renderBank(){
       <div class="bank-item-head">
         <div>
           <h4>${q.question}</h4>
-          ${(q.imageId||q.imageUrl)?`<img class="bank-thumb" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
-          <p>${q.area} • ${q.topic} • ${q.sourceType} • ${q.difficulty}${(q.imageId||q.imageUrl)?` • 🖼 imagem`:""}</p>
+          ${(q.imageData||q.imageId||q.imageUrl)?`<img class="bank-thumb" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
+          <p>${q.area} • ${q.topic} • ${q.sourceType} • ${q.difficulty}${(q.imageData||q.imageId||q.imageUrl)?` • 🖼 imagem`:""}${q.imageData?` <span class="bank-image-sync-status">☁ sincronizável</span>`:""}</p>
           <div class="bank-tags">${(q.tags||[]).map(t=>`<span class="bank-tag">${t}</span>`).join("")}${dueNow?`<span class="bank-tag due-chip">revisar agora</span>`:""}</div>
         </div>
         <span class="phase-chip">${q.status==="new"?"nova":q.status==="review"?"revisar":"consolidada"}</span>
@@ -1872,11 +1957,15 @@ $("#bankSaveQuestion")?.addEventListener("click",async()=>{
     imageUrl=null;
   }
 
+  let imageData=existing?.imageData||null;
+  if(bankImageRemoved)imageData=null;
+  else if(bankPendingImageFile)imageData=await imageBlobToSyncedDataURL(bankPendingImageFile);
+
   const q=normalizeBankQuestion({
     area:$("#bankArea").value,topic:$("#bankTopic").value.trim(),sourceType:$("#bankSourceType").value,difficulty:$("#bankDifficulty").value,
     question:$("#bankQuestion").value,options:{A:$("#bankA").value,B:$("#bankB").value,C:$("#bankC").value,D:$("#bankD").value,E:$("#bankE").value},
     answer:$("#bankAnswer").value,explanation:$("#bankExplanation").value,tags:$("#bankTags").value,
-    imageId,imageUrl,imageCaption:$("#bankImageCaption").value.trim()
+    imageId,imageUrl,imageData,imageFile:bankPendingImageFile?.name||existing?.imageFile||null,imageCaption:$("#bankImageCaption").value.trim()
   });
   const err=validateBankQuestion(q);if(err){toast(err);return}
   if(editId){
@@ -1918,11 +2007,15 @@ async function importBankPackageFiles(fileList){
         const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
         const blob=new Blob([bytes],{type:mime});
         const f=new File([blob],raw.imageFile||`imagem_${i+1}.png`,{type:mime});
-        raw.imageId=await saveBankImageBlob(f);raw.imageUrl=null;linked++;
+        raw.imageId=await saveBankImageBlob(f);raw.imageData=raw.imageData;raw.imageUrl=null;linked++;
       }catch(e){errors.push(`#${i+1}: imagem incorporada inválida`)}
     }else if(raw.imageFile){
       const f=imageFiles.get(raw.imageFile);
-      if(f){raw.imageId=await saveBankImageBlob(f);raw.imageUrl=null;linked++}
+      if(f){
+        raw.imageId=await saveBankImageBlob(f);
+        raw.imageData=await imageBlobToSyncedDataURL(f);
+        raw.imageUrl=null;linked++;
+      }
       else if(!raw.imageUrl){errors.push(`#${i+1}: imagem "${raw.imageFile}" não foi selecionada`)}
     }
     const q=normalizeBankQuestion(raw),err=validateBankQuestion(q);
@@ -1933,6 +2026,21 @@ async function importBankPackageFiles(fileList){
   $("#bankPackageFiles").value="";
 }
 $("#bankPackageFiles")?.addEventListener("change",e=>importBankPackageFiles(e.target.files));
+
+$("#bankSyncLocalImagesBtn")?.addEventListener("click",async()=>{
+  const btn=$("#bankSyncLocalImagesBtn");
+  const old=btn.textContent;btn.disabled=true;btn.textContent="Sincronizando imagens...";
+  try{
+    await migrateLocalBankImagesToSyncedState(true);
+  }finally{
+    btn.disabled=false;btn.textContent=old;
+  }
+});
+
+window.addEventListener("load",()=>{
+  // Migração silenciosa das imagens antigas existentes neste aparelho.
+  setTimeout(()=>migrateLocalBankImagesToSyncedState(false),1400);
+});
 
 function downloadText(name,content,type="application/json"){
   const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -1951,9 +2059,11 @@ $("#bankExportPortableBtn")?.addEventListener("click",async()=>{
   const questions=[];
   for(const q of (state.questionBank||[])){
     const out={...q};
-    if(q.imageId){
+    if(q.imageData){
+      out.imageData=q.imageData;
+    }else if(q.imageId){
       const rec=await getBankImageRecord(q.imageId);
-      if(rec?.blob){out.imageData=await blobToDataUrl(rec.blob);out.imageFile=rec.name||q.imageFile||"imagem.png";}
+      if(rec?.blob){out.imageData=await imageBlobToSyncedDataURL(rec.blob);out.imageFile=rec.name||q.imageFile||"imagem.png";}
     }
     out.imageId=null;
     questions.push(out);
@@ -2132,7 +2242,7 @@ function showBankQuiz(){
   const block=activeBankBlock();if(block){$("#bankQuizBlockSize").textContent=block.planned+"Q";$("#bankQuizBlockConfidence").textContent=block.confidence.toFixed(0)+"%";$("#bankQuizBlockRunning").textContent=block.answered?(block.correct/block.answered*100).toFixed(0)+"%":"0%";}
   $("#bankQuizProgress").textContent=`Questão ${bankQuizIndex+1} de ${bankQuizQueue.length} • ${q.area} • ${q.topic}`;
   $("#bankQuizQuestion").textContent=q.question;
-  $("#bankQuizImage").innerHTML=(q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">${q.imageCaption?`<div style="text-align:center;color:var(--muted);font-size:10.5px;margin-top:-6px">${q.imageCaption}</div>`:""}`:"";
+  $("#bankQuizImage").innerHTML=(q.imageData||q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">${q.imageCaption?`<div style="text-align:center;color:var(--muted);font-size:10.5px;margin-top:-6px">${q.imageCaption}</div>`:""}`:"";
   hydrateBankImages($("#bankQuizImage"));
   $("#bankQuizOptions").innerHTML=Object.entries(q.options).map(([L,t])=>`<button class="quiz-option" data-letter="${L}"><span class="letter">${L}</span><span>${t}</span></button>`).join("");
   $$(".quiz-option").forEach(b=>b.onclick=()=>{if(bankAnswered)return;bankSelectedOption=b.dataset.letter;$$(".quiz-option").forEach(x=>x.classList.toggle("selected",x===b))});
@@ -2297,7 +2407,7 @@ function openBankErrorReview(blockId){
     const selectedText=q.options?.[a.selected]||"";
     return `<div class="bank-error-item" data-attempt="${a.id}">
       <h4>${i+1}. ${q.question}</h4>
-      ${(q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
+      ${(q.imageData||q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
       <div class="bank-error-meta">${q.area} • ${q.topic||"Sem tópico"}</div>
       <div class="bank-error-answer">
         <b>Sua resposta:</b> ${a.selected}${selectedText?` — ${selectedText}`:""}<br>
