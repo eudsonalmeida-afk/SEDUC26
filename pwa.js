@@ -10,7 +10,7 @@
   const standalone=()=>window.matchMedia?.("(display-mode: standalone)").matches || navigator.standalone===true;
 
   if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname))){
-    window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(e=>console.warn("SW",e)));
+    window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").then(r=>r.update()).catch(e=>console.warn("SW",e)));
   }
 
   window.addEventListener("beforeinstallprompt",e=>{
@@ -47,14 +47,14 @@
       help.textContent="Se a opção ainda não aparecer, recarregue a página depois da primeira visita.";
     }
   }
-  installBtn.onclick=()=>{prepareDialog();dialog.showModal();};
-  document.getElementById("closeInstallDialog").onclick=()=>dialog.close();
-  action.onclick=async()=>{
+  if(installBtn) installBtn.onclick=()=>{prepareDialog();if(dialog?.showModal)dialog.showModal();else if(dialog)dialog.setAttribute("open","");};
+  const closeInstall=document.getElementById("closeInstallDialog");if(closeInstall)closeInstall.onclick=()=>{if(dialog?.close)dialog.close();else dialog?.removeAttribute("open");};
+  if(action) action.onclick=async()=>{
     if(!deferredPrompt) return;
     deferredPrompt.prompt();
     const result=await deferredPrompt.userChoice;
     if(result.outcome==="accepted"){toast("Instalação iniciada.");dialog.close();}
     deferredPrompt=null;
   };
-  if(standalone()) installBtn.hidden=true;
+  if(standalone() && installBtn) installBtn.hidden=true;
 })();

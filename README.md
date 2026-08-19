@@ -231,3 +231,16 @@ Mudanças:
 - O JSON usa `imageFile` para associar cada questão ao nome exato do arquivo.
 - Também aceita `imageUrl` para imagens hospedadas junto ao site (ex.: `images/grafico_01.png`).
 - Exportação portátil "banco + imagens" gera um JSON único com imagens incorporadas, útil para backup ou transferência entre aparelhos.
+
+## SEDUC2026 — Versão 21: compatibilidade iPad / Safari
+
+- detecção automática de iPad, inclusive Safari que se identifica como Mac;
+- header deixa de ser sticky no iPad para evitar sobreposição/área de toque problemática;
+- abas passam a quebrar em múltiplas linhas no iPad, sem depender de rolagem horizontal;
+- alvos de toque ampliados para 44 px;
+- inputs em 16 px para impedir zoom automático do Safari;
+- navegação por abas ganhou fallback independente por event delegation;
+- fallback para `<dialog>` em Safari antigo;
+- banner de diagnóstico aparece se o script principal não completar o boot;
+- service worker usa cache V21 e estratégia network-first/no-store para reduzir versão antiga presa no Safari/PWA;
+- registro do service worker força `update()`.

@@ -1,4 +1,4 @@
-const CACHE="seduc2026-pwa-v20-images";
+const CACHE="seduc2026-pwa-v21-ipad-compat";
 const CORE=[
   "./","./index.html","./manifest.webmanifest","./cloud-config.js","./cloud-sync.js","./pwa.js",
   "./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./icons/apple-touch-icon.png"
@@ -18,11 +18,13 @@ self.addEventListener("fetch",event=>{
     return;
   }
   if(url.origin===self.location.origin){
-    if(url.pathname.endsWith("cloud-config.js")){
-      event.respondWith(fetch(req).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy));return res;}).catch(()=>caches.match(req)));
-    } else {
-      event.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy));return res;})));
-    }
+    event.respondWith(
+      fetch(req,{cache:"no-store"}).then(res=>{
+        const copy=res.clone();
+        caches.open(CACHE).then(c=>c.put(req,copy));
+        return res;
+      }).catch(()=>caches.match(req))
+    );
     return;
   }
   if(url.hostname==="cdn.jsdelivr.net"){
