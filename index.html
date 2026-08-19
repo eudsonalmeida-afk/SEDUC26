@@ -506,6 +506,45 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
   .bank-builder-areas{grid-template-columns:1fr 1fr}
 }
 
+
+/* SEDUC2026 V19 — análise de erros do Banco → Fragilidades */
+.bank-error-review{
+  display:none;
+  margin-bottom:16px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--panel);
+}
+.bank-error-review.show{display:block}
+.bank-error-review-head{
+  display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px
+}
+.bank-error-review-head h3{margin:0 0 4px;font-size:16px}
+.bank-error-review-head p{margin:0;color:var(--muted);font-size:11.5px;line-height:1.45}
+.bank-error-list{display:grid;gap:10px}
+.bank-error-item{
+  border:1px solid var(--line);border-radius:13px;background:var(--panel2);padding:12px
+}
+.bank-error-item h4{margin:0 0 6px;font-size:12.5px;line-height:1.45}
+.bank-error-meta{font-size:10.5px;color:var(--muted);margin-bottom:9px}
+.bank-error-answer{
+  padding:8px 9px;border-radius:9px;background:var(--panel);border:1px solid var(--line);
+  font-size:10.5px;line-height:1.45;margin-bottom:9px
+}
+.bank-error-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bank-error-actions{
+  display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap
+}
+.frag-source{
+  display:inline-flex;padding:2px 6px;border-radius:99px;border:1px solid var(--line);
+  font-size:9px;color:var(--muted);margin-left:5px
+}
+@media(max-width:620px){
+  .bank-error-review{padding:12px}
+  .bank-error-grid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -713,7 +752,7 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
     <div class="bank-builder-total">Total do bloco: <b id="bankCompositionTotal">0 questões</b></div>
 
     <div class="bank-builder-note" id="bankBuilderInfo">
-      No modo automático, o app prioriza revisões pela fila adaptativa. No modo composição, você define quantas questões quer de cada área e o app escolhe automaticamente quais questões entram dentro de cada área.
+      No modo automático, o app prioriza revisões pela fila adaptativa. No modo composição, você define quantas questões quer de cada área e o app escolhe quais entram. Ao iniciar, a ordem das questões é embaralhada entre as disciplinas.
     </div>
     <div class="bank-builder-actions"><button class="primary" id="bankBuilderStart">Iniciar bloco</button></div>
   </div>
@@ -732,6 +771,22 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
     <div class="quiz-feedback" id="bankQuizFeedback"></div>
     <div class="quiz-nav">
       <button class="primary" id="bankNextQuestion" style="display:none">Próxima questão</button>
+    </div>
+  </div>
+
+
+  <div class="bank-error-review" id="bankErrorReview">
+    <div class="bank-error-review-head">
+      <div>
+        <h3>Classifique seus erros</h3>
+        <p>Somente as questões erradas deste bloco aparecem aqui. Ao finalizar, os tópicos serão enviados automaticamente para Fragilidades.</p>
+      </div>
+      <span class="phase-chip" id="bankErrorCount">0 erros</span>
+    </div>
+    <div class="bank-error-list" id="bankErrorList"></div>
+    <div class="bank-error-actions">
+      <button class="ghost" id="bankErrorCancel">Voltar ao resultado</button>
+      <button class="primary" id="bankErrorSave">Finalizar análise e enviar para Fragilidades</button>
     </div>
   </div>
 
@@ -991,6 +1046,7 @@ state.sessions ||= {}; state.fragilities ||= []; state.simulations ||= {}; state
 state.adaptive ||= {enabled:true,fixedTargets:{}};
 state.adaptive.fixedTargets ||= {};
 let activeSessionId = null;
+let bankErrorReviewBlockId=null;
 let timerHandle = null, timerRemaining = 20;
 
 const $ = s => document.querySelector(s);
@@ -1702,11 +1758,20 @@ $("#bankBuilderStart")?.addEventListener("click",()=>{
 });
 function activeBankBlock(){return (state.bankBlocks||[]).find(b=>b.id===bankActiveBlockId)||null}
 function finalizeBankBlock(){const b=activeBankBlock();if(!b||b.completed)return;b.completed=true;b.completedAt=new Date().toISOString();const acc=b.answered?b.correct/b.answered*100:0,gap=b.confidence-acc;const html=`<div class="bank-block-result"><b>Bloco concluído:</b> ${b.correct}/${b.answered} acertos (${acc.toFixed(1)}%). Confiança prevista ${b.confidence.toFixed(0)}%. Diferença ${gap>=0?"+":""}${gap.toFixed(1)} p.p. — ${Math.abs(gap)<=5?"boa calibração":gap>5?"você superestimou o domínio neste bloco":"você subestimou o domínio neste bloco"}.</div>`;$("#bankQuizFeedback").innerHTML+=html;$("#bankQuizFeedback").classList.add("show");save()}
+
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
 function startBankQuiz(ids,blockId=null){
   const unique=[...new Set(ids)].filter(id=>bankQuestionById(id));
   if(blockId)bankActiveBlockId=blockId;
   if(!unique.length){toast("Nenhuma questão disponível.");return}
-  bankQuizQueue=unique;bankQuizIndex=0;$("#bankQuizCard").style.display="block";showBankQuiz();$("#bankQuizCard").scrollIntoView({behavior:"smooth",block:"start"});
+  bankQuizQueue=shuffleArray(unique);bankQuizIndex=0;$("#bankQuizCard").style.display="block";showBankQuiz();$("#bankQuizCard").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function showBankQuiz(){
   bankSelectedOption=null;bankAnswered=false;$("#bankQuizFeedback").classList.remove("show");$("#bankQuizFeedback").innerHTML="";
@@ -1776,23 +1841,188 @@ $("#bankSubmitAnswer")?.addEventListener("click",()=>{
   if(bankQuizIndex<bankQuizQueue.length-1){$("#bankNextQuestion").textContent="Próxima questão";$("#bankNextQuestion").style.display="";}else{finalizeBankBlock();$("#bankNextQuestion").textContent="Concluir bloco";$("#bankNextQuestion").style.display="";}
   save();
 });
-$("#bankNextQuestion")?.addEventListener("click",()=>{if(bankQuizIndex<bankQuizQueue.length-1){bankQuizIndex++;showBankQuiz()}else{$("#bankQuizCard").style.display="none";bankQuizQueue=[];bankQuizIndex=0;bankActiveBlockId=null;renderBank();toast("Bloco concluído e calibração registrada.")}});
-$("#bankCloseQuiz")?.addEventListener("click",()=>{$("#bankQuizCard").style.display="none";bankQuizQueue=[];bankQuizIndex=0;bankActiveBlockId=null;renderBank()});
+$("#bankNextQuestion")?.addEventListener("click",()=>{
+  if(bankQuizIndex<bankQuizQueue.length-1){
+    bankQuizIndex++;showBankQuiz();return;
+  }
+  const block=activeBankBlock();
+  if(block && openBankErrorReview(block.id)){
+    return;
+  }
+  $("#bankQuizCard").style.display="none";
+  bankQuizQueue=[];bankQuizIndex=0;bankActiveBlockId=null;
+  renderBank();toast("Bloco concluído e calibração registrada.");
+});
+$("#bankCloseQuiz")?.addEventListener("click",()=>{
+  $("#bankQuizCard").style.display="none";
+  $("#bankErrorReview")?.classList.remove("show");
+  bankQuizQueue=[];bankQuizIndex=0;bankActiveBlockId=null;bankErrorReviewBlockId=null;renderBank();
+});
 $("#bankStartDue")?.addEventListener("click",()=>openBankBuilder("auto"));
 $("#bankStartFiltered")?.addEventListener("click",()=>openBankBuilder("filtered"));
+
+const BANK_ERROR_TYPES=[
+  ["conceptual","Erro conceitual"],
+  ["confusion","Confusão entre conceitos"],
+  ["unknown","Não sabia / ausência de conhecimento"],
+  ["interpretation","Interpretação do enunciado"],
+  ["attention","Desatenção"],
+  ["procedure","Cálculo / procedimento"],
+  ["memory","Memória / recuperação"],
+  ["guess","Chute"]
+];
+
+function bankWrongAttemptsForBlock(blockId){
+  return (state.bankAttempts||[]).filter(a=>a.blockId===blockId && !a.correct);
+}
+function bankErrorLabel(code){
+  return BANK_ERROR_TYPES.find(x=>x[0]===code)?.[1]||code||"Não classificado";
+}
+function fragLevelForError(code){
+  return ["conceptual","unknown"].includes(code)?3:
+         ["confusion","procedure","memory"].includes(code)?2:1;
+}
+function normalizeFragKey(s){
+  return (s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");
+}
+function upsertFragilityFromBank(q,errorType,attempt){
+  const key=normalizeFragKey(q.topic||q.question);
+  const same=(state.fragilities||[]).find(f=>f.area===q.area && normalizeFragKey(f.topic)===key);
+  const level=fragLevelForError(errorType);
+  const label=bankErrorLabel(errorType);
+  const now=new Date().toISOString();
+
+  if(same){
+    same.level=Math.max(+same.level||0,level);
+    same.occurrences=(+same.occurrences||1)+1;
+    same.lastSeen=now;
+    same.source=same.source||"Banco de Questões";
+    same.errorTypes=Array.isArray(same.errorTypes)?same.errorTypes:[];
+    if(!same.errorTypes.includes(errorType))same.errorTypes.push(errorType);
+    same.questionIds=Array.isArray(same.questionIds)?same.questionIds:[];
+    if(q.id && !same.questionIds.includes(q.id))same.questionIds.push(q.id);
+    same.lastErrorType=errorType;
+    const auto=`Banco: ${same.occurrences} ocorrência(s) • último erro: ${label}`;
+    if(same.manualNote){
+      same.note=`${same.manualNote} • ${auto}`;
+    }else if(same.note && !same.note.startsWith("Banco:")){
+      same.manualNote=same.note;
+      same.note=`${same.manualNote} • ${auto}`;
+    }else{
+      same.note=auto;
+    }
+    return;
+  }
+
+  state.fragilities.push({
+    area:q.area,
+    topic:q.topic||q.question.slice(0,90),
+    level,
+    note:`Banco: 1 ocorrência • erro: ${label}`,
+    source:"Banco de Questões",
+    occurrences:1,
+    errorTypes:[errorType],
+    lastErrorType:errorType,
+    questionIds:q.id?[q.id]:[],
+    created:now,
+    lastSeen:now,
+    bankAttemptId:attempt?.id||null
+  });
+}
+function openBankErrorReview(blockId){
+  const wrong=bankWrongAttemptsForBlock(blockId);
+  if(!wrong.length)return false;
+  bankErrorReviewBlockId=blockId;
+  $("#bankQuizCard").style.display="none";
+  $("#bankErrorReview").classList.add("show");
+  $("#bankErrorCount").textContent=`${wrong.length} erro${wrong.length===1?"":"s"}`;
+  $("#bankErrorList").innerHTML=wrong.map((a,i)=>{
+    const q=bankQuestionById(a.questionId);
+    if(!q)return"";
+    const correctText=q.options?.[q.answer]||"";
+    const selectedText=q.options?.[a.selected]||"";
+    return `<div class="bank-error-item" data-attempt="${a.id}">
+      <h4>${i+1}. ${q.question}</h4>
+      <div class="bank-error-meta">${q.area} • ${q.topic||"Sem tópico"}</div>
+      <div class="bank-error-answer">
+        <b>Sua resposta:</b> ${a.selected}${selectedText?` — ${selectedText}`:""}<br>
+        <b>Correta:</b> ${q.answer}${correctText?` — ${correctText}`:""}
+      </div>
+      <div class="bank-error-grid">
+        <div class="field">
+          <label>Natureza do erro</label>
+          <select class="bank-error-type" data-attempt="${a.id}">
+            <option value="">Selecione...</option>
+            ${BANK_ERROR_TYPES.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field">
+          <label>Observação opcional</label>
+          <input class="bank-error-note" data-attempt="${a.id}" placeholder="Ex.: confundi delegação com avocação">
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  $("#bankErrorReview").scrollIntoView({behavior:"smooth",block:"start"});
+  return true;
+}
+function closeBankTrainingAfterReview(msg="Bloco concluído."){
+  $("#bankErrorReview").classList.remove("show");
+  $("#bankQuizCard").style.display="none";
+  bankQuizQueue=[];bankQuizIndex=0;bankActiveBlockId=null;bankErrorReviewBlockId=null;
+  renderBank();renderFrag();toast(msg);
+}
+$("#bankErrorCancel")?.addEventListener("click",()=>{
+  $("#bankErrorReview").classList.remove("show");
+  $("#bankQuizCard").style.display="block";
+  $("#bankQuizCard").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("#bankErrorSave")?.addEventListener("click",()=>{
+  const blockId=bankErrorReviewBlockId;
+  const wrong=bankWrongAttemptsForBlock(blockId);
+  if(!wrong.length){closeBankTrainingAfterReview("Bloco concluído.");return}
+  const selected={};
+  let missing=false;
+  wrong.forEach(a=>{
+    const sel=document.querySelector(`.bank-error-type[data-attempt="${a.id}"]`);
+    const note=document.querySelector(`.bank-error-note[data-attempt="${a.id}"]`);
+    if(!sel?.value)missing=true;
+    selected[a.id]={type:sel?.value||"",note:note?.value.trim()||""};
+  });
+  if(missing){toast("Classifique a natureza de todos os erros.");return}
+
+  wrong.forEach(a=>{
+    const q=bankQuestionById(a.questionId),data=selected[a.id];
+    if(!q)return;
+    a.errorType=data.type;
+    a.errorNote=data.note;
+    a.errorClassifiedAt=new Date().toISOString();
+    upsertFragilityFromBank(q,data.type,a);
+    if(data.note){
+      const frag=(state.fragilities||[]).find(f=>f.area===q.area&&normalizeFragKey(f.topic)===normalizeFragKey(q.topic||q.question));
+      if(frag){
+        frag.lastErrorNote=data.note;
+        if(frag.note && !frag.note.includes(data.note))frag.note+=` • ${data.note}`;
+      }
+    }
+  });
+  save();
+  closeBankTrainingAfterReview(`${wrong.length} erro(s) enviado(s) para Fragilidades.`);
+});
 function renderFrag(){
   const colors={3:"var(--danger)",2:"var(--warn)",1:"#ffd43b",0:"var(--success)"};
   const labels={3:"Ativa",2:"Reincidente",1:"Hesitação",0:"Controlada"};
   const list=state.fragilities.map((f,idx)=>({...f,_idx:idx})).sort((a,b)=>+b.level-+a.level);
   $("#fragList").innerHTML=list.length?list.map((f,i)=>`<div class="frag-card">
     <div class="frag-level" style="background:${colors[f.level]}"></div>
-    <div><h4>${f.topic} <span class="area-chip" style="color:${areaColor(f.area)}"><span class="dot"></span>${f.area}</span></h4><p>${labels[f.level]} • ${f.note||"Sem nota"}</p></div>
+    <div><h4>${f.topic} <span class="area-chip" style="color:${areaColor(f.area)}"><span class="dot"></span>${f.area}</span>${f.source==="Banco de Questões"?`<span class="frag-source">Banco • ${f.occurrences||1}x</span>`:""}</h4><p>${labels[f.level]} • ${f.note||"Sem nota"}</p></div>
     <div class="frag-controls"><button onclick="shiftFrag(${f._idx},1)" title="Aumentar prioridade">↑</button><button onclick="shiftFrag(${f._idx},-1)" title="Reduzir prioridade">↓</button><button onclick="delFrag(${f._idx})">×</button></div>
   </div>`).join(""):`<div class="today-item"><b>Mapa vazio.</b><small>Registre microtemas específicos: “média ponderada”, “avocação”, “floema”, não “Dados” ou “Biologia”.</small></div>`;
 }
 $("#addFrag").onclick=()=>{
   const topic=$("#fragTopic").value.trim(); if(!topic){toast("Digite um microtema.");return}
-  state.fragilities.push({area:$("#fragArea").value,topic,level:$("#fragLevel").value,note:$("#fragNote").value.trim(),created:new Date().toISOString()});
+  const manualNote=$("#fragNote").value.trim();
+  state.fragilities.push({area:$("#fragArea").value,topic,level:$("#fragLevel").value,note:manualNote,manualNote,source:"Manual",created:new Date().toISOString()});
   $("#fragTopic").value="";$("#fragNote").value="";save();toast("Fragilidade adicionada.");
 };
 window.shiftFrag=(i,delta)=>{let f=state.fragilities[i];f.level=Math.max(0,Math.min(3,+f.level+delta));save()}

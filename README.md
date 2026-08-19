@@ -208,3 +208,14 @@ foram ordenadas cronologicamente por data.
 - Usuário pode montar qualquer distribuição manual.
 - Dentro de cada área, o app continua escolhendo automaticamente as questões prioritárias pela fila adaptativa.
 - O app bloqueia o início se o banco não tiver questões suficientes em alguma área solicitada.
+
+## SEDUC2026 — Versão 19: Banco de Questões → Fragilidades
+
+Mudanças:
+- blocos do Banco de Questões agora são embaralhados entre as disciplinas;
+- ao clicar em "Concluir bloco", se houver erros, abre uma etapa obrigatória de classificação;
+- categorias: erro conceitual, confusão entre conceitos, ausência de conhecimento, interpretação, desatenção, cálculo/procedimento, memória/recuperação e chute;
+- ao finalizar a análise, os tópicos errados entram automaticamente em Fragilidades;
+- erros repetidos do mesmo tópico reforçam a fragilidade existente em vez de criar cartões duplicados;
+- fragilidades vindas do Banco mostram origem e número de ocorrências;
+- a tentativa da questão continua alimentando normalmente a fila adaptativa/revisão do Banco.
