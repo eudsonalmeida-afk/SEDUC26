@@ -219,3 +219,15 @@ Mudanças:
 - erros repetidos do mesmo tópico reforçam a fragilidade existente em vez de criar cartões duplicados;
 - fragilidades vindas do Banco mostram origem e número de ocorrências;
 - a tentativa da questão continua alimentando normalmente a fila adaptativa/revisão do Banco.
+
+## SEDUC2026 — Versão 20: questões com imagens
+
+- Questões do Banco agora podem ter gráfico/tabela/figura.
+- Cadastro manual aceita arquivo de imagem ou URL/caminho relativo.
+- Imagens locais são armazenadas em IndexedDB, separadas do localStorage, para não inflar o estado principal.
+- As imagens aparecem no acervo, no quiz e na classificação de erros.
+- Novo filtro: somente questões com imagem.
+- Importação em pacote: selecionar ao mesmo tempo 1 JSON + todos os arquivos de imagem.
+- O JSON usa `imageFile` para associar cada questão ao nome exato do arquivo.
+- Também aceita `imageUrl` para imagens hospedadas junto ao site (ex.: `images/grafico_01.png`).
+- Exportação portátil "banco + imagens" gera um JSON único com imagens incorporadas, útil para backup ou transferência entre aparelhos.

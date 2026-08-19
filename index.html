@@ -545,6 +545,31 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
   .bank-error-grid{grid-template-columns:1fr}
 }
 
+
+/* SEDUC2026 V20 — imagens no Banco de Questões */
+.bank-image-box{
+  margin:10px 0;padding:10px;border:1px dashed var(--line);border-radius:12px;background:var(--panel2)
+}
+.bank-image-preview{
+  display:none;margin-top:9px;max-width:100%;max-height:340px;object-fit:contain;
+  border-radius:10px;border:1px solid var(--line);background:#fff
+}
+.bank-image-preview.show{display:block}
+.bank-question-image{
+  display:block;max-width:100%;max-height:520px;object-fit:contain;margin:12px auto;
+  border-radius:12px;border:1px solid var(--line);background:#fff
+}
+.bank-thumb{
+  display:block;max-width:220px;max-height:135px;object-fit:contain;margin:8px 0;
+  border-radius:9px;border:1px solid var(--line);background:#fff
+}
+.package-help{
+  margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);
+  font-size:10.5px;line-height:1.5;color:var(--muted)
+}
+.package-help code{font-size:10px}
+.file-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border-radius:99px;border:1px solid var(--line);font-size:9.5px;color:var(--muted)}
+
 </style>
 </head>
 <body>
@@ -766,6 +791,7 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
       <button class="ghost" id="bankCloseQuiz">Encerrar</button>
     </div>
     <div class="quiz-question" id="bankQuizQuestion">—</div>
+    <div id="bankQuizImage"></div>
     <div class="quiz-options" id="bankQuizOptions"></div>
     <div class="quiz-block-cal" id="bankQuizBlockCal"><div><b id="bankQuizBlockSize">—</b><small>questões no bloco</small></div><div><b id="bankQuizBlockConfidence">—</b><small>confiança prevista antes de começar</small></div><div><b id="bankQuizBlockRunning">0%</b><small>precisão parcial</small></div></div><div class="quiz-confidence block-locked"><button class="primary" id="bankSubmitAnswer">Responder</button></div>
     <div class="quiz-feedback" id="bankQuizFeedback"></div>
@@ -808,6 +834,18 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
         </div>
       </div>
       <div class="field"><label>Enunciado</label><textarea id="bankQuestion" placeholder="Cole o enunciado completo"></textarea></div>
+      <div class="bank-image-box">
+        <div class="section-title"><h3>Imagem da questão <span class="file-pill">opcional</span></h3><small>gráfico, tabela, mapa, figura etc.</small></div>
+        <input id="bankImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml">
+        <div class="form-grid" style="margin-top:8px">
+          <div class="field"><label>Legenda / descrição</label><input id="bankImageCaption" placeholder="Ex.: Taxa de aprovação por ano"></div>
+          <div class="field"><label>Ou URL/caminho da imagem</label><input id="bankImageUrl" placeholder="Ex.: images/grafico_01.png ou https://..."></div>
+        </div>
+        <img id="bankImagePreview" class="bank-image-preview" alt="Prévia da imagem">
+        <div class="bank-toolbar" style="margin-top:8px">
+          <button class="ghost" type="button" id="bankRemoveImage">Remover imagem</button>
+        </div>
+      </div>
       <div class="field"><label>Alternativa A</label><input id="bankA"></div>
       <div class="field"><label>Alternativa B</label><input id="bankB"></div>
       <div class="field"><label>Alternativa C</label><input id="bankC"></div>
@@ -825,8 +863,18 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
         <textarea id="bankImportJson" placeholder='Cole aqui um array JSON de questões'></textarea>
         <div class="bank-toolbar" style="margin:8px 0 0">
           <button class="ghost" id="bankImportBtn">Importar JSON</button>
+          <label class="ghost" style="cursor:pointer">
+            Importar JSON + imagens juntos
+            <input id="bankPackageFiles" type="file" multiple accept=".json,application/json,image/*" style="display:none">
+          </label>
           <button class="ghost" id="bankExportBtn">Exportar banco</button>
+          <button class="ghost" id="bankExportPortableBtn">Exportar banco + imagens</button>
           <button class="ghost" id="bankTemplateBtn">Baixar modelo JSON</button>
+        </div>
+        <div class="package-help">
+          <b>Pacote com imagens:</b> selecione de uma vez o arquivo <code>questions.json</code> e todas as imagens usadas nele.
+          No JSON, cada questão pode ter <code>"imageFile":"grafico_01.png"</code>. O app associa pelo nome do arquivo e salva a imagem localmente para funcionar também no PWA/offline.
+          Também aceita <code>"imageUrl":"images/grafico_01.png"</code> para imagens hospedadas junto do site.
         </div>
         <details style="margin-top:8px">
           <summary style="cursor:pointer;font-size:11px;color:var(--muted)">Formato aceito</summary>
@@ -840,7 +888,10 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
     "options":{"A":"...","B":"...","C":"...","D":"...","E":"..."},
     "answer":"B",
     "explanation":"Comentário...",
-    "tags":["porcentagem","contraste"]
+    "tags":["porcentagem","contraste"],
+    "imageFile":"grafico_01.png",
+    "imageCaption":"Gráfico usado no enunciado"
+
   }
 ]</div>
         </details>
@@ -854,6 +905,7 @@ body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)
         <select id="bankFilterArea"><option value="">Todas as áreas</option><option>Biologia</option><option>Educação</option><option>Administração</option><option>Português</option><option>Dados</option></select>
         <select id="bankFilterStatus"><option value="">Todos os status</option><option value="new">Novas</option><option value="review">Revisar</option><option value="mastered">Consolidadas</option></select>
         <select id="bankFilterDifficulty"><option value="">Todas dificuldades</option><option>Fácil</option><option>Média</option><option>Difícil</option></select>
+        <select id="bankFilterImage"><option value="">Com ou sem imagem</option><option value="yes">Somente com imagem</option><option value="no">Somente sem imagem</option></select>
       </div>
       <div class="bank-note" style="margin-bottom:12px">
         <b>Fila adaptativa automática:</b> o app decide quais questões aparecem e quando voltam. Você pode usar revisão geral ou montar a composição por área (ex.: P1 30Q = 8 Educação + 8 Administração + 8 Português + 6 Dados).
@@ -1490,6 +1542,100 @@ function bankStatsFor(q){
   const acc=a.length?correct/a.length:null;
   return {attempts:a.length,correct,acc,streak};
 }
+
+const BANK_IMAGE_DB="seduc2026_bank_media_v1";
+const BANK_IMAGE_STORE="questionImages";
+let bankPendingImageFile=null;
+let bankEditingImageId=null;
+let bankImageRemoved=false;
+const bankObjectUrls=new Map();
+
+function openBankImageDB(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(BANK_IMAGE_DB,1);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains(BANK_IMAGE_STORE))db.createObjectStore(BANK_IMAGE_STORE,{keyPath:"id"});
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function saveBankImageBlob(file,id=null){
+  const db=await openBankImageDB();
+  const imageId=id||("img-"+Date.now()+"-"+Math.random().toString(36).slice(2,8));
+  const rec={id:imageId,name:file.name||"imagem",type:file.type||"application/octet-stream",blob:file,updated:new Date().toISOString()};
+  await new Promise((resolve,reject)=>{
+    const tx=db.transaction(BANK_IMAGE_STORE,"readwrite");
+    tx.objectStore(BANK_IMAGE_STORE).put(rec);
+    tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+  });
+  db.close();
+  if(bankObjectUrls.has(imageId)){URL.revokeObjectURL(bankObjectUrls.get(imageId));bankObjectUrls.delete(imageId)}
+  return imageId;
+}
+async function getBankImageRecord(id){
+  if(!id)return null;
+  const db=await openBankImageDB();
+  const rec=await new Promise((resolve,reject)=>{
+    const req=db.transaction(BANK_IMAGE_STORE,"readonly").objectStore(BANK_IMAGE_STORE).get(id);
+    req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
+  });
+  db.close();return rec;
+}
+async function deleteBankImage(id){
+  if(!id)return;
+  try{
+    const db=await openBankImageDB();
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction(BANK_IMAGE_STORE,"readwrite");
+      tx.objectStore(BANK_IMAGE_STORE).delete(id);
+      tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+    });
+    db.close();
+  }catch(e){}
+  if(bankObjectUrls.has(id)){URL.revokeObjectURL(bankObjectUrls.get(id));bankObjectUrls.delete(id)}
+}
+async function bankImageSrc(q){
+  if(q?.imageId){
+    if(bankObjectUrls.has(q.imageId))return bankObjectUrls.get(q.imageId);
+    const rec=await getBankImageRecord(q.imageId);
+    if(rec?.blob){
+      const url=URL.createObjectURL(rec.blob);bankObjectUrls.set(q.imageId,url);return url;
+    }
+  }
+  return q?.imageUrl||null;
+}
+async function hydrateBankImages(root=document){
+  const nodes=[...root.querySelectorAll("[data-bank-image-qid]")];
+  for(const el of nodes){
+    const q=bankQuestionById(el.dataset.bankImageQid); if(!q)continue;
+    const src=await bankImageSrc(q);
+    if(src){
+      el.src=src;el.style.display="block";
+      el.alt=q.imageCaption||"Imagem da questão";
+    }else el.style.display="none";
+  }
+}
+function previewManualBankImage(src,caption=""){
+  const img=$("#bankImagePreview");
+  if(!img)return;
+  if(src){img.src=src;img.alt=caption||"Prévia da imagem";img.classList.add("show")}
+  else{img.removeAttribute("src");img.classList.remove("show")}
+}
+$("#bankImageFile")?.addEventListener("change",e=>{
+  const f=e.target.files?.[0]||null;
+  bankPendingImageFile=f;bankImageRemoved=false;
+  if(f)previewManualBankImage(URL.createObjectURL(f),$("#bankImageCaption").value);
+});
+$("#bankImageUrl")?.addEventListener("input",e=>{
+  if(!bankPendingImageFile && e.target.value.trim())previewManualBankImage(e.target.value.trim(),$("#bankImageCaption").value);
+});
+$("#bankRemoveImage")?.addEventListener("click",()=>{
+  bankPendingImageFile=null;bankImageRemoved=true;
+  $("#bankImageFile").value="";$("#bankImageUrl").value="";$("#bankImageCaption").value="";
+  previewManualBankImage(null);
+});
 function normalizeBankQuestion(q){
   const opts=q.options||{};
   const letters=["A","B","C","D","E"];
@@ -1507,15 +1653,20 @@ function normalizeBankQuestion(q){
     answer:String(q.answer||"").trim().toUpperCase(),
     explanation:String(q.explanation||"").trim(),
     tags:Array.isArray(q.tags)?q.tags.map(String):String(q.tags||"").split(",").map(x=>x.trim()).filter(Boolean),
+    imageId:q.imageId||null,
+    imageFile:q.imageFile||null,
+    imageUrl:q.imageUrl||null,
+    imageCaption:String(q.imageCaption||"").trim(),
     status:q.status||"new",
     dueDate:q.dueDate||bankToday()
   };
 }
 function bankFiltered(){
-  const search=($("#bankSearch")?.value||"").toLowerCase().trim(),area=$("#bankFilterArea")?.value||"",status=$("#bankFilterStatus")?.value||"",dif=$("#bankFilterDifficulty")?.value||"";
+  const search=($("#bankSearch")?.value||"").toLowerCase().trim(),area=$("#bankFilterArea")?.value||"",status=$("#bankFilterStatus")?.value||"",dif=$("#bankFilterDifficulty")?.value||"",img=$("#bankFilterImage")?.value||"";
   return (state.questionBank||[]).filter(q=>{
     const hay=(q.question+" "+q.topic+" "+q.area+" "+q.sourceType+" "+(q.tags||[]).join(" ")).toLowerCase();
-    return (!search||hay.includes(search))&&(!area||q.area===area)&&(!status||q.status===status)&&(!dif||q.difficulty===dif);
+    const hasImg=!!(q.imageId||q.imageUrl);
+    return (!search||hay.includes(search))&&(!area||q.area===area)&&(!status||q.status===status)&&(!dif||q.difficulty===dif)&&(!img||(img==="yes"?hasImg:!hasImg));
   });
 }
 function renderBank(){
@@ -1541,7 +1692,8 @@ function renderBank(){
       <div class="bank-item-head">
         <div>
           <h4>${q.question}</h4>
-          <p>${q.area} • ${q.topic} • ${q.sourceType} • ${q.difficulty}</p>
+          ${(q.imageId||q.imageUrl)?`<img class="bank-thumb" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
+          <p>${q.area} • ${q.topic} • ${q.sourceType} • ${q.difficulty}${(q.imageId||q.imageUrl)?` • 🖼 imagem`:""}</p>
           <div class="bank-tags">${(q.tags||[]).map(t=>`<span class="bank-tag">${t}</span>`).join("")}${dueNow?`<span class="bank-tag due-chip">revisar agora</span>`:""}</div>
         </div>
         <span class="phase-chip">${q.status==="new"?"nova":q.status==="review"?"revisar":"consolidada"}</span>
@@ -1556,15 +1708,19 @@ function renderBank(){
   }).join(""):`<div class="bank-empty">Nenhuma questão encontrada com esses filtros.</div>`;
 
   $$(".bank-one").forEach(b=>b.onclick=()=>openBankBuilder("all",[b.dataset.qid]));
-  $$(".bank-delete").forEach(b=>b.onclick=()=>{
-    const id=b.dataset.qid; state.questionBank=(state.questionBank||[]).filter(q=>q.id!==id);
-    state.bankAttempts=(state.bankAttempts||[]).filter(a=>a.questionId!==id); save(); toast("Questão excluída.");
+  $$(".bank-delete").forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.qid,q=bankQuestionById(id);if(q?.imageId)await deleteBankImage(q.imageId);
+    state.questionBank=(state.questionBank||[]).filter(q=>q.id!==id);
+    state.bankAttempts=(state.bankAttempts||[]).filter(a=>a.questionId!==id);save();toast("Questão excluída.");
   });
   $$(".bank-edit").forEach(b=>b.onclick=()=>loadBankForEdit(b.dataset.qid));
+  hydrateBankImages($("#bankList"));
 }
 function clearBankForm(){
   $("#bankQuestion").value="";["A","B","C","D","E"].forEach(L=>$("#bank"+L).value="");
   $("#bankExplanation").value="";$("#bankTags").value="";$("#bankTopic").value="";
+  $("#bankImageFile").value="";$("#bankImageUrl").value="";$("#bankImageCaption").value="";
+  bankPendingImageFile=null;bankEditingImageId=null;bankImageRemoved=false;previewManualBankImage(null);
   $("#bankSaveQuestion").dataset.editId="";
   $("#bankSaveQuestion").textContent="Salvar no banco";
 }
@@ -1573,6 +1729,9 @@ function loadBankForEdit(id){
   $("#bankArea").value=q.area;$("#bankTopic").value=q.topic;$("#bankSourceType").value=q.sourceType;$("#bankDifficulty").value=q.difficulty;
   $("#bankQuestion").value=q.question;["A","B","C","D","E"].forEach(L=>$("#bank"+L).value=q.options?.[L]||"");
   $("#bankAnswer").value=q.answer;$("#bankTags").value=(q.tags||[]).join(", ");$("#bankExplanation").value=q.explanation;
+  $("#bankImageCaption").value=q.imageCaption||"";$("#bankImageUrl").value=q.imageUrl||"";
+  bankEditingImageId=q.imageId||null;bankPendingImageFile=null;bankImageRemoved=false;$("#bankImageFile").value="";
+  bankImageSrc(q).then(src=>previewManualBankImage(src,q.imageCaption||""));
   $("#bankSaveQuestion").dataset.editId=id;$("#bankSaveQuestion").textContent="Salvar alterações";
   window.scrollTo({top:document.getElementById("banco").offsetTop-10,behavior:"smooth"});
 }
@@ -1582,39 +1741,116 @@ function validateBankQuestion(q){
   if(!q.answer||!q.options[q.answer])return"O gabarito precisa apontar para uma alternativa existente.";
   return null;
 }
-$("#bankSaveQuestion")?.addEventListener("click",()=>{
+$("#bankSaveQuestion")?.addEventListener("click",async()=>{
+  const editId=$("#bankSaveQuestion").dataset.editId;
+  const existing=editId?bankQuestionById(editId):null;
+  let imageId=existing?.imageId||null;
+  let imageUrl=$("#bankImageUrl").value.trim()||null;
+
+  if(bankImageRemoved){
+    if(imageId)await deleteBankImage(imageId);
+    imageId=null;imageUrl=null;
+  }else if(bankPendingImageFile){
+    if(imageId)await deleteBankImage(imageId);
+    imageId=await saveBankImageBlob(bankPendingImageFile);
+    imageUrl=null;
+  }
+
   const q=normalizeBankQuestion({
     area:$("#bankArea").value,topic:$("#bankTopic").value.trim(),sourceType:$("#bankSourceType").value,difficulty:$("#bankDifficulty").value,
     question:$("#bankQuestion").value,options:{A:$("#bankA").value,B:$("#bankB").value,C:$("#bankC").value,D:$("#bankD").value,E:$("#bankE").value},
-    answer:$("#bankAnswer").value,explanation:$("#bankExplanation").value,tags:$("#bankTags").value
+    answer:$("#bankAnswer").value,explanation:$("#bankExplanation").value,tags:$("#bankTags").value,
+    imageId,imageUrl,imageCaption:$("#bankImageCaption").value.trim()
   });
   const err=validateBankQuestion(q);if(err){toast(err);return}
-  const editId=$("#bankSaveQuestion").dataset.editId;
   if(editId){
-    const i=state.questionBank.findIndex(x=>x.id===editId); if(i>=0)state.questionBank[i]={...state.questionBank[i],...q,id:editId,created:state.questionBank[i].created};
+    const i=state.questionBank.findIndex(x=>x.id===editId);
+    if(i>=0)state.questionBank[i]={...state.questionBank[i],...q,id:editId,created:state.questionBank[i].created};
     toast("Questão atualizada.");
   }else{
-    state.questionBank.push(q); toast("Questão salva no banco.");
+    state.questionBank.push(q);toast("Questão salva no banco.");
   }
-  clearBankForm(); save();
+  clearBankForm();save();
 });
+
 function importBankJson(raw){
-  let arr; try{arr=JSON.parse(raw)}catch(e){toast("JSON inválido.");return}
+  let arr;try{arr=JSON.parse(raw)}catch(e){toast("JSON inválido.");return}
+  if(arr?.questions && Array.isArray(arr.questions))arr=arr.questions;
   if(!Array.isArray(arr))arr=[arr];
   const valid=[],errors=[];
   arr.forEach((x,i)=>{const q=normalizeBankQuestion(x),err=validateBankQuestion(q);if(err)errors.push(`#${i+1}: ${err}`);else valid.push(q)});
   state.questionBank.push(...valid);save();toast(`${valid.length} questão(ões) importada(s)${errors.length?` • ${errors.length} rejeitada(s)`:``}.`);
 }
 $("#bankImportBtn")?.addEventListener("click",()=>importBankJson($("#bankImportJson").value));
+
+async function importBankPackageFiles(fileList){
+  const files=[...fileList];if(!files.length)return;
+  const jsonFiles=files.filter(f=>f.name.toLowerCase().endsWith(".json"));
+  if(jsonFiles.length!==1){toast("Selecione exatamente 1 JSON junto das imagens.");return}
+  let data;
+  try{data=JSON.parse(await jsonFiles[0].text())}catch(e){toast("O arquivo JSON é inválido.");return}
+  let arr=Array.isArray(data)?data:(Array.isArray(data.questions)?data.questions:[data]);
+  const imageFiles=new Map(files.filter(f=>f.type.startsWith("image/")).map(f=>[f.name,f]));
+  const valid=[],errors=[];let linked=0;
+
+  for(let i=0;i<arr.length;i++){
+    const raw={...arr[i]};
+    if(raw.imageData && typeof raw.imageData==="string"){
+      try{
+        const [meta,b64]=raw.imageData.split(",");
+        const mime=(meta.match(/data:([^;]+)/)||[])[1]||"image/png";
+        const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+        const blob=new Blob([bytes],{type:mime});
+        const f=new File([blob],raw.imageFile||`imagem_${i+1}.png`,{type:mime});
+        raw.imageId=await saveBankImageBlob(f);raw.imageUrl=null;linked++;
+      }catch(e){errors.push(`#${i+1}: imagem incorporada inválida`)}
+    }else if(raw.imageFile){
+      const f=imageFiles.get(raw.imageFile);
+      if(f){raw.imageId=await saveBankImageBlob(f);raw.imageUrl=null;linked++}
+      else if(!raw.imageUrl){errors.push(`#${i+1}: imagem "${raw.imageFile}" não foi selecionada`)}
+    }
+    const q=normalizeBankQuestion(raw),err=validateBankQuestion(q);
+    if(err)errors.push(`#${i+1}: ${err}`);else valid.push(q);
+  }
+  state.questionBank.push(...valid);save();
+  toast(`${valid.length} questão(ões) importada(s) • ${linked} imagem(ns) vinculada(s)${errors.length?` • ${errors.length} aviso(s)`:``}.`);
+  $("#bankPackageFiles").value="";
+}
+$("#bankPackageFiles")?.addEventListener("change",e=>importBankPackageFiles(e.target.files));
+
 function downloadText(name,content,type="application/json"){
   const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-$("#bankExportBtn")?.addEventListener("click",()=>downloadText("banco_questoes_seduc2026.json",JSON.stringify(state.questionBank||[],null,2)));
-$("#bankTemplateBtn")?.addEventListener("click",()=>{
-  const tpl=[{area:"Dados",topic:"U06 — porcentagem",sourceType:"NotebookLM",difficulty:"Média",question:"Enunciado da questão",options:{A:"Alternativa A",B:"Alternativa B",C:"Alternativa C",D:"Alternativa D",E:"Alternativa E"},answer:"B",explanation:"Justificativa da resposta correta e pegadinha das demais.",tags:["contraste","cálculo"]}];
-  downloadText("MODELO_IMPORTACAO_BANCO_QUESTOES.json",JSON.stringify(tpl,null,2));
+$("#bankExportBtn")?.addEventListener("click",()=>{
+  const plain=(state.questionBank||[]).map(q=>({...q,imageId:null}));
+  downloadText("banco_questoes_seduc2026.json",JSON.stringify(plain,null,2));
 });
-["bankSearch","bankFilterArea","bankFilterStatus","bankFilterDifficulty"].forEach(id=>$("#"+id)?.addEventListener(id==="bankSearch"?"input":"change",renderBank));
+
+async function blobToDataUrl(blob){
+  return await new Promise((resolve,reject)=>{
+    const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);
+  });
+}
+$("#bankExportPortableBtn")?.addEventListener("click",async()=>{
+  const questions=[];
+  for(const q of (state.questionBank||[])){
+    const out={...q};
+    if(q.imageId){
+      const rec=await getBankImageRecord(q.imageId);
+      if(rec?.blob){out.imageData=await blobToDataUrl(rec.blob);out.imageFile=rec.name||q.imageFile||"imagem.png";}
+    }
+    out.imageId=null;
+    questions.push(out);
+  }
+  const pkg={format:"SEDUC2026_BANK_WITH_IMAGES_V1",exportedAt:new Date().toISOString(),questions};
+  downloadText("banco_questoes_seduc2026_COM_IMAGENS.json",JSON.stringify(pkg,null,2));
+  toast("Banco portátil exportado com as imagens incorporadas.");
+});
+$("#bankTemplateBtn")?.addEventListener("click",()=>{
+  const tpl=[{area:"Dados",topic:"U06 — porcentagem",sourceType:"NotebookLM",difficulty:"Média",question:"Observe o gráfico e responda.",options:{A:"Alternativa A",B:"Alternativa B",C:"Alternativa C",D:"Alternativa D",E:"Alternativa E"},answer:"B",explanation:"Justificativa da resposta correta e pegadinha das demais.",tags:["gráfico","interpretação"],imageFile:"grafico_01.png",imageCaption:"Gráfico usado no enunciado"}];
+  downloadText("MODELO_IMPORTACAO_BANCO_QUESTOES_COM_IMAGEM.json",JSON.stringify(tpl,null,2));
+});
+["bankSearch","bankFilterArea","bankFilterStatus","bankFilterDifficulty","bankFilterImage"].forEach(id=>$("#"+id)?.addEventListener(id==="bankSearch"?"input":"change",renderBank));
 
 
 
@@ -1780,6 +2016,8 @@ function showBankQuiz(){
   const block=activeBankBlock();if(block){$("#bankQuizBlockSize").textContent=block.planned+"Q";$("#bankQuizBlockConfidence").textContent=block.confidence.toFixed(0)+"%";$("#bankQuizBlockRunning").textContent=block.answered?(block.correct/block.answered*100).toFixed(0)+"%":"0%";}
   $("#bankQuizProgress").textContent=`Questão ${bankQuizIndex+1} de ${bankQuizQueue.length} • ${q.area} • ${q.topic}`;
   $("#bankQuizQuestion").textContent=q.question;
+  $("#bankQuizImage").innerHTML=(q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">${q.imageCaption?`<div style="text-align:center;color:var(--muted);font-size:10.5px;margin-top:-6px">${q.imageCaption}</div>`:""}`:"";
+  hydrateBankImages($("#bankQuizImage"));
   $("#bankQuizOptions").innerHTML=Object.entries(q.options).map(([L,t])=>`<button class="quiz-option" data-letter="${L}"><span class="letter">${L}</span><span>${t}</span></button>`).join("");
   $$(".quiz-option").forEach(b=>b.onclick=()=>{if(bankAnswered)return;bankSelectedOption=b.dataset.letter;$$(".quiz-option").forEach(x=>x.classList.toggle("selected",x===b))});
 }
@@ -1943,6 +2181,7 @@ function openBankErrorReview(blockId){
     const selectedText=q.options?.[a.selected]||"";
     return `<div class="bank-error-item" data-attempt="${a.id}">
       <h4>${i+1}. ${q.question}</h4>
+      ${(q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
       <div class="bank-error-meta">${q.area} • ${q.topic||"Sem tópico"}</div>
       <div class="bank-error-answer">
         <b>Sua resposta:</b> ${a.selected}${selectedText?` — ${selectedText}`:""}<br>
@@ -1963,6 +2202,7 @@ function openBankErrorReview(blockId){
       </div>
     </div>`;
   }).join("");
+  hydrateBankImages($("#bankErrorList"));
   $("#bankErrorReview").scrollIntoView({behavior:"smooth",block:"start"});
   return true;
 }
