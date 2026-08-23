@@ -255,3 +255,12 @@ Mudanças:
 - Novas importações JSON + imagens já criam simultaneamente a cópia local/offline e a cópia sincronizável.
 - O IndexedDB continua sendo usado como cache local, mas deixa de ser a única fonte da imagem.
 - Para recuperar imagens anexadas em versões anteriores, é necessário abrir a V22 no mesmo aparelho em que elas foram originalmente importadas, enquanto o armazenamento local ainda existir.
+
+## SEDUC2026 — Versão 23: Banco somente por importação JSON
+
+- formulário manual de criação removido;
+- botão Editar removido;
+- novas questões entram somente por:
+  - Importar JSON;
+  - Importar JSON + imagens juntos;
+- permanecem exportação, modelo JSON, sincronização de imagens, exclusão, filtros, blocos adaptativos e classificação de erros em Fragilidades.

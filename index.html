@@ -945,51 +945,15 @@ html[data-theme="dark"] .ipad-compat-warning{
 
   <div class="bank-grid">
     <div class="card panel-pad bank-form">
-      <div class="section-title"><h3>Adicionar questão</h3><small>manual ou colada de outra IA</small></div>
-      <div class="form-grid">
-        <div class="field"><label>Área</label>
-          <select id="bankArea">
-            <option>Biologia</option><option>Educação</option><option>Administração</option><option>Português</option><option>Dados</option>
-          </select>
-        </div>
-        <div class="field"><label>Unidade / tópico</label><input id="bankTopic" placeholder="Ex.: U06 — porcentagem"></div>
-        <div class="field"><label>Origem</label>
-          <select id="bankSourceType"><option>IA + fontes</option><option>NotebookLM</option><option>ChatGPT</option><option>Gemini</option><option>Autoral</option><option>Outro</option></select>
-        </div>
-        <div class="field"><label>Dificuldade</label>
-          <select id="bankDifficulty"><option>Fácil</option><option selected>Média</option><option>Difícil</option></select>
-        </div>
+      <div class="section-title"><h3>Importar questões</h3><small>JSON ou JSON + imagens</small></div>
+      <div class="bank-note" style="margin-bottom:12px">
+        O Banco de Questões é alimentado exclusivamente por importação em JSON. Para questões visuais, selecione o JSON e os arquivos de imagem juntos.
       </div>
-      <div class="field"><label>Enunciado</label><textarea id="bankQuestion" placeholder="Cole o enunciado completo"></textarea></div>
-      <div class="bank-image-box">
-        <div class="section-title"><h3>Imagem da questão <span class="file-pill">opcional</span></h3><small>gráfico, tabela, mapa, figura etc.</small></div>
-        <input id="bankImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml">
-        <div class="form-grid" style="margin-top:8px">
-          <div class="field"><label>Legenda / descrição</label><input id="bankImageCaption" placeholder="Ex.: Taxa de aprovação por ano"></div>
-          <div class="field"><label>Ou URL/caminho da imagem</label><input id="bankImageUrl" placeholder="Ex.: images/grafico_01.png ou https://..."></div>
-        </div>
-        <img id="bankImagePreview" class="bank-image-preview" alt="Prévia da imagem">
-        <div class="bank-toolbar" style="margin-top:8px">
-          <button class="ghost" type="button" id="bankRemoveImage">Remover imagem</button>
-        </div>
-      </div>
-      <div class="field"><label>Alternativa A</label><input id="bankA"></div>
-      <div class="field"><label>Alternativa B</label><input id="bankB"></div>
-      <div class="field"><label>Alternativa C</label><input id="bankC"></div>
-      <div class="field"><label>Alternativa D</label><input id="bankD"></div>
-      <div class="field"><label>Alternativa E (opcional)</label><input id="bankE"></div>
-      <div class="form-grid">
-        <div class="field"><label>Gabarito</label><select id="bankAnswer"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select></div>
-        <div class="field"><label>Tags</label><input id="bankTags" placeholder="ex.: contraste, pegadinha, cálculo"></div>
-      </div>
-      <div class="field"><label>Comentário / justificativa</label><textarea id="bankExplanation" placeholder="Por que a correta está certa e onde está a pegadinha?"></textarea></div>
-      <button class="primary" id="bankSaveQuestion" style="width:100%">Salvar no banco</button>
-
-      <div class="import-box">
-        <div class="section-title"><h3>Importação em lote</h3><small>JSON gerado pelo NotebookLM, Gemini ou ChatGPT</small></div>
+<div class="import-box">
+        <div class="section-title"><h3>Importação JSON</h3><small>único método de entrada de questões no banco</small></div>
         <textarea id="bankImportJson" placeholder='Cole aqui um array JSON de questões'></textarea>
         <div class="bank-toolbar" style="margin:8px 0 0">
-          <button class="ghost" id="bankImportBtn">Importar JSON</button>
+          <button class="primary" id="bankImportBtn">Importar JSON</button>
           <label class="ghost" style="cursor:pointer">
             Importar JSON + imagens juntos
             <input id="bankPackageFiles" type="file" multiple accept=".json,application/json,image/*" style="display:none">
@@ -1823,19 +1787,9 @@ function previewManualBankImage(src,caption=""){
   if(src){img.src=src;img.alt=caption||"Prévia da imagem";img.classList.add("show")}
   else{img.removeAttribute("src");img.classList.remove("show")}
 }
-$("#bankImageFile")?.addEventListener("change",e=>{
-  const f=e.target.files?.[0]||null;
-  bankPendingImageFile=f;bankImageRemoved=false;
-  if(f)previewManualBankImage(URL.createObjectURL(f),$("#bankImageCaption").value);
-});
-$("#bankImageUrl")?.addEventListener("input",e=>{
-  if(!bankPendingImageFile && e.target.value.trim())previewManualBankImage(e.target.value.trim(),$("#bankImageCaption").value);
-});
-$("#bankRemoveImage")?.addEventListener("click",()=>{
-  bankPendingImageFile=null;bankImageRemoved=true;
-  $("#bankImageFile").value="";$("#bankImageUrl").value="";$("#bankImageCaption").value="";
-  previewManualBankImage(null);
-});
+
+
+
 function normalizeBankQuestion(q){
   const opts=q.options||{};
   const letters=["A","B","C","D","E"];
@@ -1902,7 +1856,6 @@ function renderBank(){
       <p>${s.attempts?`${s.correct}/${s.attempts} acertos • ${(s.acc*100).toFixed(0)}% • sequência ${s.streak}`:"Nunca respondida"}${q.dueDate?` • próxima: ${q.dueDate.split("-").reverse().join("/")}`:""}</p>
       <div class="bank-item-actions">
         <button class="ghost bank-one" data-qid="${q.id}">Treinar</button>
-        <button class="ghost bank-edit" data-qid="${q.id}">Editar</button>
         <button class="ghost bank-delete" data-qid="${q.id}">Excluir</button>
       </div>
     </div>`;
@@ -1914,27 +1867,7 @@ function renderBank(){
     state.questionBank=(state.questionBank||[]).filter(q=>q.id!==id);
     state.bankAttempts=(state.bankAttempts||[]).filter(a=>a.questionId!==id);save();toast("Questão excluída.");
   });
-  $$(".bank-edit").forEach(b=>b.onclick=()=>loadBankForEdit(b.dataset.qid));
   hydrateBankImages($("#bankList"));
-}
-function clearBankForm(){
-  $("#bankQuestion").value="";["A","B","C","D","E"].forEach(L=>$("#bank"+L).value="");
-  $("#bankExplanation").value="";$("#bankTags").value="";$("#bankTopic").value="";
-  $("#bankImageFile").value="";$("#bankImageUrl").value="";$("#bankImageCaption").value="";
-  bankPendingImageFile=null;bankEditingImageId=null;bankImageRemoved=false;previewManualBankImage(null);
-  $("#bankSaveQuestion").dataset.editId="";
-  $("#bankSaveQuestion").textContent="Salvar no banco";
-}
-function loadBankForEdit(id){
-  const q=bankQuestionById(id);if(!q)return;
-  $("#bankArea").value=q.area;$("#bankTopic").value=q.topic;$("#bankSourceType").value=q.sourceType;$("#bankDifficulty").value=q.difficulty;
-  $("#bankQuestion").value=q.question;["A","B","C","D","E"].forEach(L=>$("#bank"+L).value=q.options?.[L]||"");
-  $("#bankAnswer").value=q.answer;$("#bankTags").value=(q.tags||[]).join(", ");$("#bankExplanation").value=q.explanation;
-  $("#bankImageCaption").value=q.imageCaption||"";$("#bankImageUrl").value=q.imageUrl||"";
-  bankEditingImageId=q.imageId||null;bankPendingImageFile=null;bankImageRemoved=false;$("#bankImageFile").value="";
-  bankImageSrc(q).then(src=>previewManualBankImage(src,q.imageCaption||""));
-  $("#bankSaveQuestion").dataset.editId=id;$("#bankSaveQuestion").textContent="Salvar alterações";
-  window.scrollTo({top:document.getElementById("banco").offsetTop-10,behavior:"smooth"});
 }
 function validateBankQuestion(q){
   if(!q.question)return"Informe o enunciado.";
@@ -1942,41 +1875,7 @@ function validateBankQuestion(q){
   if(!q.answer||!q.options[q.answer])return"O gabarito precisa apontar para uma alternativa existente.";
   return null;
 }
-$("#bankSaveQuestion")?.addEventListener("click",async()=>{
-  const editId=$("#bankSaveQuestion").dataset.editId;
-  const existing=editId?bankQuestionById(editId):null;
-  let imageId=existing?.imageId||null;
-  let imageUrl=$("#bankImageUrl").value.trim()||null;
 
-  if(bankImageRemoved){
-    if(imageId)await deleteBankImage(imageId);
-    imageId=null;imageUrl=null;
-  }else if(bankPendingImageFile){
-    if(imageId)await deleteBankImage(imageId);
-    imageId=await saveBankImageBlob(bankPendingImageFile);
-    imageUrl=null;
-  }
-
-  let imageData=existing?.imageData||null;
-  if(bankImageRemoved)imageData=null;
-  else if(bankPendingImageFile)imageData=await imageBlobToSyncedDataURL(bankPendingImageFile);
-
-  const q=normalizeBankQuestion({
-    area:$("#bankArea").value,topic:$("#bankTopic").value.trim(),sourceType:$("#bankSourceType").value,difficulty:$("#bankDifficulty").value,
-    question:$("#bankQuestion").value,options:{A:$("#bankA").value,B:$("#bankB").value,C:$("#bankC").value,D:$("#bankD").value,E:$("#bankE").value},
-    answer:$("#bankAnswer").value,explanation:$("#bankExplanation").value,tags:$("#bankTags").value,
-    imageId,imageUrl,imageData,imageFile:bankPendingImageFile?.name||existing?.imageFile||null,imageCaption:$("#bankImageCaption").value.trim()
-  });
-  const err=validateBankQuestion(q);if(err){toast(err);return}
-  if(editId){
-    const i=state.questionBank.findIndex(x=>x.id===editId);
-    if(i>=0)state.questionBank[i]={...state.questionBank[i],...q,id:editId,created:state.questionBank[i].created};
-    toast("Questão atualizada.");
-  }else{
-    state.questionBank.push(q);toast("Questão salva no banco.");
-  }
-  clearBankForm();save();
-});
 
 function importBankJson(raw){
   let arr;try{arr=JSON.parse(raw)}catch(e){toast("JSON inválido.");return}
