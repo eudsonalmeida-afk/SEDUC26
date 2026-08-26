@@ -264,3 +264,22 @@ Mudanças:
   - Importar JSON;
   - Importar JSON + imagens juntos;
 - permanecem exportação, modelo JSON, sincronização de imagens, exclusão, filtros, blocos adaptativos e classificação de erros em Fragilidades.
+
+
+## SEDUC2026 V24 — correção crítica de salvamento/sincronização
+
+Causa corrigida:
+- V22/V23 colocavam `imageData` (base64) dentro do `state`.
+- O `state` é salvo inteiro em `localStorage`.
+- Com imagens suficientes, o limite do navegador podia ser excedido.
+- Quando `localStorage.setItem()` falhava, o `save()` global quebrava, afetando cronograma, blocos, tentativas e demais registros.
+
+V24:
+- remove automaticamente `imageData` legado do state;
+- o progresso volta a ser leve;
+- `save()` é protegido contra falhas de quota;
+- imagens continuam no IndexedDB local;
+- imagens entre aparelhos passam a usar `public.question_images`, separada de `study_state`;
+- falha de sincronização de imagem NÃO bloqueia mais a sincronização do progresso;
+- mantém Banco somente por importação JSON / JSON + imagens;
+- inclui `SUPABASE_V24_ADICIONAR_SYNC_IMAGENS.sql` para habilitar a sincronização visual entre aparelhos.

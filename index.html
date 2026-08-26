@@ -965,13 +965,13 @@ html[data-theme="dark"] .ipad-compat-warning{
         </div>
         <div class="package-help">
           <b>Pacote com imagens:</b> selecione de uma vez o arquivo <code>questions.json</code> e todas as imagens usadas nele.
-          No JSON, cada questão pode ter <code>"imageFile":"grafico_01.png"</code>. O app associa pelo nome do arquivo, mantém uma cópia local para uso offline
-          e salva uma versão otimizada dentro do estado sincronizado para que celular e desktop vejam a mesma imagem.
+          No JSON, cada questão pode ter <code>"imageFile":"grafico_01.png"</code>. O app associa pelo nome do arquivo e mantém a imagem no armazenamento próprio de mídia.
+          A sincronização entre aparelhos é feita separadamente do progresso, evitando que imagens ocupem o <code>localStorage</code> e bloqueiem o registro do app.
           Também aceita <code>"imageUrl":"images/grafico_01.png"</code> para imagens hospedadas junto do site.
         </div>
         <div class="bank-image-sync-note">
-          <b>Imagens antigas:</b> se você já anexou imagens no celular em uma versão anterior, abra esta V22 naquele mesmo celular e toque em
-          <b>“Sincronizar imagens deste aparelho”</b>. O app recupera as imagens do armazenamento local e passa a enviá-las junto do estado da nuvem.
+          <b>Imagens antigas:</b> se elas ainda aparecem no celular, os arquivos continuam no IndexedDB. Na V24, toque em
+          <b>“Sincronizar imagens deste aparelho”</b> para enviá-las à área de imagens da nuvem, sem misturá-las ao progresso do app.
         </div>
         <details style="margin-top:8px">
           <summary style="cursor:pointer;font-size:11px;color:var(--muted)">Formato aceito</summary>
@@ -1194,6 +1194,8 @@ let state = JSON.parse(localStorage.getItem(STATE_KEY) || '{"sessions":{},"fragi
 state.sessions ||= {}; state.fragilities ||= []; state.simulations ||= {}; state.extraQuestions ||= []; state.questionBank ||= []; state.bankAttempts ||= []; state.bankBlocks ||= [];
 state.adaptive ||= {enabled:true,fixedTargets:{}};
 state.adaptive.fixedTargets ||= {};
+// V24: remove base64 legado do estado para recuperar o localStorage e destravar registros.
+stripLegacyEmbeddedImagesOnBoot();
 let activeSessionId = null;
 let bankErrorReviewBlockId=null;
 let timerHandle = null, timerRemaining = 20;
@@ -1208,7 +1210,52 @@ const todayISO = () => {
   const d = new Date(); const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
 };
-function save(){ localStorage.setItem(STATE_KEY,JSON.stringify(state)); renderAll(); }
+function stripEmbeddedBankImageData(target){
+  let changed=false;
+  (target?.questionBank||[]).forEach(q=>{
+    if(Object.prototype.hasOwnProperty.call(q,"imageData")){
+      delete q.imageData;changed=true;
+    }
+  });
+  return changed;
+}
+function persistStateSafely(){
+  stripEmbeddedBankImageData(state);
+  try{
+    localStorage.setItem(STATE_KEY,JSON.stringify(state));
+    return true;
+  }catch(e){
+    console.error("Falha ao salvar estado local",e);
+    // Última proteção contra resíduos de versões que gravavam imagens no localStorage.
+    try{
+      (state.questionBank||[]).forEach(q=>{delete q.imageData});
+      localStorage.setItem(STATE_KEY,JSON.stringify(state));
+      return true;
+    }catch(e2){
+      console.error("Falha crítica no armazenamento local",e2);
+      toast("O armazenamento local está cheio. Seus dados atuais permanecem na tela; sincronize com a nuvem.");
+      return false;
+    }
+  }
+}
+function save(){
+  const ok=persistStateSafely();
+  renderAll();
+  return ok;
+}
+function stripLegacyEmbeddedImagesOnBoot(){
+  let changed=false;
+  (state.questionBank||[]).forEach(q=>{
+    if(Object.prototype.hasOwnProperty.call(q,"imageData")){
+      delete q.imageData;changed=true;
+    }
+  });
+  if(changed){
+    try{localStorage.setItem(STATE_KEY,JSON.stringify(state));}
+    catch(e){console.warn("Não foi possível compactar o estado legado imediatamente.",e)}
+  }
+}
+
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
 
 function areaColor(area){
@@ -1734,8 +1781,6 @@ async function imageBlobToSyncedDataURL(blob){
 }
 
 async function bankImageSrc(q){
-  // A versão sincronizada tem prioridade: funciona em qualquer aparelho que receber o state da nuvem.
-  if(q?.imageData)return q.imageData;
   if(q?.imageId){
     if(bankObjectUrls.has(q.imageId))return bankObjectUrls.get(q.imageId);
     const rec=await getBankImageRecord(q.imageId);
@@ -1743,32 +1788,33 @@ async function bankImageSrc(q){
       const url=URL.createObjectURL(rec.blob);bankObjectUrls.set(q.imageId,url);return url;
     }
   }
+  // Se a imagem não existir neste aparelho, tenta buscar na nuvem separada.
+  if(window.fetchCloudBankImage){
+    try{
+      const cloudSrc=await window.fetchCloudBankImage(q);
+      if(cloudSrc)return cloudSrc;
+    }catch(e){console.warn("Imagem na nuvem indisponível",e)}
+  }
   return q?.imageUrl||null;
 }
 
 async function migrateLocalBankImagesToSyncedState(showToast=false){
-  let migrated=0,missing=0;
-  for(const q of (state.questionBank||[])){
-    if(q.imageData)continue;
-    if(q.imageId){
-      try{
-        const rec=await getBankImageRecord(q.imageId);
-        if(rec?.blob){
-          q.imageData=await imageBlobToSyncedDataURL(rec.blob);
-          q.imageFile=q.imageFile||rec.name||null;
-          migrated++;
-        }else missing++;
-      }catch(e){missing++}
+  // V24: imagens sincronizam em tabela separada; nunca entram no state/localStorage.
+  if(window.syncBankImagesNow){
+    try{
+      const result=await window.syncBankImagesNow(true);
+      if(showToast){
+        if(result?.ok)toast(`${result.uploaded||0} imagem(ns) sincronizada(s) com a nuvem.`);
+        else toast(result?.message||"Não foi possível sincronizar as imagens.");
+      }
+      return result||{ok:false};
+    }catch(e){
+      if(showToast)toast("Falha ao sincronizar imagens. O restante do app continua salvo normalmente.");
+      return {ok:false,error:e};
     }
   }
-  if(migrated){
-    save();
-    renderBank();
-    if(showToast)toast(`${migrated} imagem(ns) preparada(s) para sincronização com outros aparelhos.`);
-  }else if(showToast){
-    toast(missing?`Nenhuma imagem recuperada. ${missing} arquivo(s) local(is) não foram encontrados neste aparelho.`:"Todas as imagens deste aparelho já estão sincronizáveis.");
-  }
-  return {migrated,missing};
+  if(showToast)toast("A sincronização de imagens ainda não está disponível nesta sessão.");
+  return {ok:false};
 }
 async function hydrateBankImages(root=document){
   const nodes=[...root.querySelectorAll("[data-bank-image-qid]")];
@@ -1810,7 +1856,6 @@ function normalizeBankQuestion(q){
     imageId:q.imageId||null,
     imageFile:q.imageFile||null,
     imageUrl:q.imageUrl||null,
-    imageData:q.imageData||null,
     imageCaption:String(q.imageCaption||"").trim(),
     status:q.status||"new",
     dueDate:q.dueDate||bankToday()
@@ -1820,7 +1865,7 @@ function bankFiltered(){
   const search=($("#bankSearch")?.value||"").toLowerCase().trim(),area=$("#bankFilterArea")?.value||"",status=$("#bankFilterStatus")?.value||"",dif=$("#bankFilterDifficulty")?.value||"",img=$("#bankFilterImage")?.value||"";
   return (state.questionBank||[]).filter(q=>{
     const hay=(q.question+" "+q.topic+" "+q.area+" "+q.sourceType+" "+(q.tags||[]).join(" ")).toLowerCase();
-    const hasImg=!!(q.imageData||q.imageId||q.imageUrl);
+    const hasImg=!!(q.imageId||q.imageUrl);
     return (!search||hay.includes(search))&&(!area||q.area===area)&&(!status||q.status===status)&&(!dif||q.difficulty===dif)&&(!img||(img==="yes"?hasImg:!hasImg));
   });
 }
@@ -1847,8 +1892,8 @@ function renderBank(){
       <div class="bank-item-head">
         <div>
           <h4>${q.question}</h4>
-          ${(q.imageData||q.imageId||q.imageUrl)?`<img class="bank-thumb" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
-          <p>${q.area} • ${q.topic} • ${q.sourceType} • ${q.difficulty}${(q.imageData||q.imageId||q.imageUrl)?` • 🖼 imagem`:""}${q.imageData?` <span class="bank-image-sync-status">☁ sincronizável</span>`:""}</p>
+          ${(q.imageId||q.imageUrl)?`<img class="bank-thumb" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
+          <p>${q.area} • ${q.topic} • ${q.sourceType} • ${q.difficulty}${(q.imageId||q.imageUrl)?` • 🖼 imagem`:""}</p>
           <div class="bank-tags">${(q.tags||[]).map(t=>`<span class="bank-tag">${t}</span>`).join("")}${dueNow?`<span class="bank-tag due-chip">revisar agora</span>`:""}</div>
         </div>
         <span class="phase-chip">${q.status==="new"?"nova":q.status==="review"?"revisar":"consolidada"}</span>
@@ -1864,6 +1909,7 @@ function renderBank(){
   $$(".bank-one").forEach(b=>b.onclick=()=>openBankBuilder("all",[b.dataset.qid]));
   $$(".bank-delete").forEach(b=>b.onclick=async()=>{
     const id=b.dataset.qid,q=bankQuestionById(id);if(q?.imageId)await deleteBankImage(q.imageId);
+    if(window.deleteCloudBankImage)window.deleteCloudBankImage(id);
     state.questionBank=(state.questionBank||[]).filter(q=>q.id!==id);
     state.bankAttempts=(state.bankAttempts||[]).filter(a=>a.questionId!==id);save();toast("Questão excluída.");
   });
@@ -1906,13 +1952,13 @@ async function importBankPackageFiles(fileList){
         const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
         const blob=new Blob([bytes],{type:mime});
         const f=new File([blob],raw.imageFile||`imagem_${i+1}.png`,{type:mime});
-        raw.imageId=await saveBankImageBlob(f);raw.imageData=raw.imageData;raw.imageUrl=null;linked++;
+        raw.imageId=await saveBankImageBlob(f);delete raw.imageData;raw.imageUrl=null;linked++;
       }catch(e){errors.push(`#${i+1}: imagem incorporada inválida`)}
     }else if(raw.imageFile){
       const f=imageFiles.get(raw.imageFile);
       if(f){
         raw.imageId=await saveBankImageBlob(f);
-        raw.imageData=await imageBlobToSyncedDataURL(f);
+        delete raw.imageData;
         raw.imageUrl=null;linked++;
       }
       else if(!raw.imageUrl){errors.push(`#${i+1}: imagem "${raw.imageFile}" não foi selecionada`)}
@@ -1936,10 +1982,7 @@ $("#bankSyncLocalImagesBtn")?.addEventListener("click",async()=>{
   }
 });
 
-window.addEventListener("load",()=>{
-  // Migração silenciosa das imagens antigas existentes neste aparelho.
-  setTimeout(()=>migrateLocalBankImagesToSyncedState(false),1400);
-});
+
 
 function downloadText(name,content,type="application/json"){
   const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -1958,9 +2001,7 @@ $("#bankExportPortableBtn")?.addEventListener("click",async()=>{
   const questions=[];
   for(const q of (state.questionBank||[])){
     const out={...q};
-    if(q.imageData){
-      out.imageData=q.imageData;
-    }else if(q.imageId){
+    if(q.imageId){
       const rec=await getBankImageRecord(q.imageId);
       if(rec?.blob){out.imageData=await imageBlobToSyncedDataURL(rec.blob);out.imageFile=rec.name||q.imageFile||"imagem.png";}
     }
@@ -2141,7 +2182,7 @@ function showBankQuiz(){
   const block=activeBankBlock();if(block){$("#bankQuizBlockSize").textContent=block.planned+"Q";$("#bankQuizBlockConfidence").textContent=block.confidence.toFixed(0)+"%";$("#bankQuizBlockRunning").textContent=block.answered?(block.correct/block.answered*100).toFixed(0)+"%":"0%";}
   $("#bankQuizProgress").textContent=`Questão ${bankQuizIndex+1} de ${bankQuizQueue.length} • ${q.area} • ${q.topic}`;
   $("#bankQuizQuestion").textContent=q.question;
-  $("#bankQuizImage").innerHTML=(q.imageData||q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">${q.imageCaption?`<div style="text-align:center;color:var(--muted);font-size:10.5px;margin-top:-6px">${q.imageCaption}</div>`:""}`:"";
+  $("#bankQuizImage").innerHTML=(q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">${q.imageCaption?`<div style="text-align:center;color:var(--muted);font-size:10.5px;margin-top:-6px">${q.imageCaption}</div>`:""}`:"";
   hydrateBankImages($("#bankQuizImage"));
   $("#bankQuizOptions").innerHTML=Object.entries(q.options).map(([L,t])=>`<button class="quiz-option" data-letter="${L}"><span class="letter">${L}</span><span>${t}</span></button>`).join("");
   $$(".quiz-option").forEach(b=>b.onclick=()=>{if(bankAnswered)return;bankSelectedOption=b.dataset.letter;$$(".quiz-option").forEach(x=>x.classList.toggle("selected",x===b))});
@@ -2306,7 +2347,7 @@ function openBankErrorReview(blockId){
     const selectedText=q.options?.[a.selected]||"";
     return `<div class="bank-error-item" data-attempt="${a.id}">
       <h4>${i+1}. ${q.question}</h4>
-      ${(q.imageData||q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
+      ${(q.imageId||q.imageUrl)?`<img class="bank-question-image" data-bank-image-qid="${q.id}" alt="${q.imageCaption||"Imagem da questão"}" style="display:none">`:""}
       <div class="bank-error-meta">${q.area} • ${q.topic||"Sem tópico"}</div>
       <div class="bank-error-answer">
         <b>Sua resposta:</b> ${a.selected}${selectedText?` — ${selectedText}`:""}<br>
