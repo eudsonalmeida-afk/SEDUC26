@@ -283,3 +283,30 @@ V24:
 - falha de sincronização de imagem NÃO bloqueia mais a sincronização do progresso;
 - mantém Banco somente por importação JSON / JSON + imagens;
 - inclui `SUPABASE_V24_ADICIONAR_SYNC_IMAGENS.sql` para habilitar a sincronização visual entre aparelhos.
+
+## SEDUC2026 V25 — ajuste de rotina segunda → terça
+
+Mudança de logística a partir de 31/08/2026:
+- removida a rotina de dormir no namorado de domingo para segunda;
+- nova rotina: dormir de segunda para terça;
+- segunda volta a ter academia após o trabalho;
+- terça passa a ter treino cedo;
+- terças normais começam 30 min mais cedo, preservando a duração dos blocos e permitindo terminar mais cedo;
+- no bloco especial de 01/09, os 30 min liberados na terça foram incorporados ao primeiro bloco;
+- a segunda de performance (09/11) perdeu os 30 min extras que dependiam do treino cedo na segunda;
+- quinta → sexta permanece inalterado.
+
+
+## SEDUC2026 V26 — meta semanal de horas flexível
+
+Mudança de lógica:
+- a duração definida no cronograma passa a ser explicitamente uma **sugestão de tempo**, calculada a partir da disponibilidade planejada;
+- marcar uma sessão como concluída NÃO soma automaticamente a duração sugerida;
+- o usuário registra o tempo real estudado na sessão em horas + minutos;
+- a meta semanal de horas usa como alvo a soma das sugestões das sessões daquela semana;
+- o progresso semanal usa exclusivamente o tempo real registrado;
+- uma sessão pode ser concluída com menos ou mais tempo do que a sugestão sem alterar o restante do cronograma;
+- o cabeçalho de cada semana mostra horas reais/meta;
+- o Dashboard ganhou um cartão próprio de Meta semanal de horas;
+- o histórico "Progresso semanal" virou "Horas por semana";
+- estrutura de dados continua compatível: o tempo real permanece armazenado em `state.sessions[id].minutes`, portanto dados antigos são preservados.
