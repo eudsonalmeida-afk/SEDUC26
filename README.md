@@ -310,3 +310,21 @@ Mudança de lógica:
 - o Dashboard ganhou um cartão próprio de Meta semanal de horas;
 - o histórico "Progresso semanal" virou "Horas por semana";
 - estrutura de dados continua compatível: o tempo real permanece armazenado em `state.sessions[id].minutes`, portanto dados antigos são preservados.
+
+
+## SEDUC2026 V27 — filtro por data + treino de questões selecionadas
+
+Banco de Questões:
+- novo filtro `Adicionadas em` por data de inclusão (`created`);
+- botões `Hoje` e `Limpar data`;
+- cada questão do acervo ganhou checkbox;
+- seleção permanece ativa ao trocar filtros;
+- botão `Selecionar visíveis`;
+- botão `Limpar seleção`;
+- botão `Treinar selecionadas`;
+- o construtor mostra quantas questões foram selecionadas e a composição por área;
+- ao iniciar o bloco, a ordem das selecionadas continua embaralhada;
+- questões recém-importadas por JSON ou JSON + imagens são automaticamente selecionadas;
+- após a importação, o filtro de data é ajustado para hoje, facilitando treino imediato;
+- cada item do acervo mostra a data/hora em que foi adicionado;
+- exclusão de questão também remove a questão da seleção transitória.
