@@ -328,3 +328,16 @@ Banco de Questões:
 - após a importação, o filtro de data é ajustado para hoje, facilitando treino imediato;
 - cada item do acervo mostra a data/hora em que foi adicionado;
 - exclusão de questão também remove a questão da seleção transitória.
+
+## SEDUC2026 V28 — novas janelas de estudo na Biblioteca Pública
+
+A partir de 03/09/2026, em dias regulares:
+- segunda: Biblioteca 16:00–19:30; sugestão 3h15 efetivas;
+- terça: Biblioteca 15:00–19:30; dois blocos (2h + 2h15), com 15 min de pausa;
+- quarta: Biblioteca 17:00–19:30; sugestão 2h15 efetivas;
+- quinta: sem alteração;
+- sexta: Biblioteca 13:30–16:00; sugestão 2h15 efetivas;
+- semanas/dias especiais (feriados, InterAntares, Manaus e semana de prova) preservam as exceções já planejadas;
+- na semana final, terça e sexta mantêm taper mesmo com a janela física maior;
+- a logística segunda→terça foi atualizada: segunda não reserva mais academia pós-aula; a janela pós-aula fica para a biblioteca;
+- a meta semanal de horas continua baseada nas sugestões, mas só o tempo real registrado entra no progresso.
