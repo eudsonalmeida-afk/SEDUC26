@@ -341,3 +341,15 @@ A partir de 03/09/2026, em dias regulares:
 - na semana final, terça e sexta mantêm taper mesmo com a janela física maior;
 - a logística segunda→terça foi atualizada: segunda não reserva mais academia pós-aula; a janela pós-aula fica para a biblioteca;
 - a meta semanal de horas continua baseada nas sugestões, mas só o tempo real registrado entra no progresso.
+
+
+## SEDUC2026 V29 — ferramentas no modo treino
+
+Adicionado somente o conjunto pedido:
+- `Passar`: move a questão atual, sem responder, para o final da fila do bloco;
+- `Riscar / Desriscar`: cada alternativa tem um controle independente; alternativa riscada não pode ser selecionada até ser desriscada;
+- os riscos persistem se a questão for passada e voltar mais tarde no mesmo bloco;
+- `Marcar para revisar`: marca/desmarca a questão manualmente, coloca-a em status `review` e com revisão disponível no dia atual;
+- a marca manual fica visível no acervo como `★ revisão manual`;
+- o resumo do bloco informa quantas questões ficaram marcadas para revisar;
+- passar ou riscar não gera tentativa, erro, pontuação ou Fragilidade.
