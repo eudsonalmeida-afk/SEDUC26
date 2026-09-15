@@ -353,3 +353,18 @@ Adicionado somente o conjunto pedido:
 - a marca manual fica visível no acervo como `★ revisão manual`;
 - o resumo do bloco informa quantas questões ficaram marcadas para revisar;
 - passar ou riscar não gera tentativa, erro, pontuação ou Fragilidade.
+
+
+## SEDUC2026 V30 — correção de sincronização + accordion do cronograma
+
+Correções:
+- removida a dependência do `supabase-js` carregado por CDN;
+- autenticação e sincronização usam REST/XHR diretamente com o mesmo Supabase;
+- configuração embutida do projeto tem prioridade sobre configuração antiga salva no navegador;
+- uma configuração local antiga e divergente é descartada automaticamente;
+- login/sync têm mensagens de erro mais úteis e retry de sessão após 401;
+- cronograma não usa mais `onclick` inline;
+- todas as semanas usam listeners reais para abrir/fechar;
+- cada semana ganhou botão explícito `Abrir / Fechar`;
+- teclado Enter/Espaço também abre/fecha a semana;
+- estado atual e semanas antigas continuam expansíveis após cada re-render.

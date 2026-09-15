@@ -1,4 +1,4 @@
-const CACHE="seduc2026-pwa-v29-ferramentas-treino";
+const CACHE="seduc2026-pwa-v30-sync-accordion-fix";
 const CORE=[
   "./","./index.html","./manifest.webmanifest","./cloud-config.js","./cloud-sync.js","./pwa.js",
   "./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./icons/apple-touch-icon.png"
@@ -26,11 +26,5 @@ self.addEventListener("fetch",event=>{
       }).catch(()=>caches.match(req))
     );
     return;
-  }
-  if(url.hostname==="cdn.jsdelivr.net"){
-    event.respondWith(caches.match(req).then(cached=>{
-      const network=fetch(req).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy));return res;}).catch(()=>cached);
-      return cached||network;
-    }));
   }
 });

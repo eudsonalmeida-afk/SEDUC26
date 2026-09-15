@@ -54,7 +54,7 @@ button,input,select,textarea{font:inherit} button{cursor:pointer}
 .area-chip{background:var(--panel2)} .tech-chip{color:var(--muted)} .phase-chip{color:var(--accent2)}
 .dot{width:7px;height:7px;border-radius:99px;background:currentColor}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.filters input,.filters select{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:11px;padding:10px 12px;min-height:42px}.filters input{flex:1;min-width:220px}
-.week{margin-bottom:14px;overflow:hidden}.week-head{padding:15px 17px;display:flex;align-items:center;gap:12px;justify-content:space-between}.week-head .left{display:flex;gap:11px;align-items:center}.week-num{width:46px;height:46px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-weight:900}.week-head h3{margin:0 0 3px;font-size:16px}.week-head p{margin:0;color:var(--muted);font-size:12px}.week-summary{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:12px}.chev{font-size:22px;transition:.2s}.week.closed .chev{transform:rotate(-90deg)}.week-body{border-top:1px solid var(--line);padding:14px}.week.closed .week-body{display:none}
+.week{margin-bottom:14px;overflow:hidden}.week-head{padding:15px 17px;display:flex;align-items:center;gap:12px;justify-content:space-between;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}.week-head .left{display:flex;gap:11px;align-items:center}.week-num{width:46px;height:46px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-weight:900}.week-head h3{margin:0 0 3px;font-size:16px}.week-head p{margin:0;color:var(--muted);font-size:12px}.week-summary{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:12px}.chev{font-size:22px;transition:.2s}.week.closed .chev{transform:rotate(-90deg)}.week-body{border-top:1px solid var(--line);padding:14px}.week.closed .week-body{display:none}
 .week-mission{padding:11px 13px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);margin-bottom:12px;font-size:13px;line-height:1.5}
 .sessions{display:grid;gap:10px}.session{border:1px solid var(--line);background:var(--panel2);border-radius:15px;padding:14px;display:grid;grid-template-columns:9px 1fr auto;gap:12px}.session-accent{border-radius:99px;background:var(--rev)}.session h4{margin:0 0 5px;font-size:14px}.session p{margin:6px 0 0;color:var(--muted);line-height:1.5;font-size:12.5px}.session-meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center;color:var(--muted);font-size:11px}.session-actions{display:flex;flex-direction:column;align-items:end;gap:8px}.status-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:7px 9px;border-radius:9px;font-size:11px}.status-done{color:var(--success)}.status-progress{color:var(--warn)}.status-postponed{color:var(--danger)}
 .criteria{margin-top:8px;padding:9px 10px;background:color-mix(in srgb,var(--accent) 7%, transparent);border-left:3px solid var(--accent);border-radius:8px;color:var(--muted);font-size:11.5px}
@@ -764,6 +764,21 @@ html[data-theme="dark"] .ipad-compat-warning{
   .quiz-tool-row button{flex:1 1 145px}
   .quiz-option-row{grid-template-columns:minmax(0,1fr) 58px}
   .quiz-strike{min-width:58px;padding:7px 5px}
+}
+
+
+/* V30 — accordion do cronograma robusto */
+.week-toggle-btn{
+  min-width:72px;min-height:36px;padding:7px 10px;border:1px solid var(--line);
+  border-radius:10px;background:var(--panel2);color:var(--text);font-size:10px;font-weight:800;
+  cursor:pointer
+}
+.week-toggle-btn:hover{border-color:var(--accent)}
+.week-head:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+@media(max-width:700px){
+  .week-head{align-items:flex-start}
+  .week-summary{flex-wrap:wrap;justify-content:flex-end}
+  .week-toggle-btn{min-width:64px}
 }
 
 </style>
@@ -1678,6 +1693,40 @@ function setupFilters(){
   ["searchSchedule","filterWeek","filterArea","filterStatus"].forEach(id=>$("#"+id).addEventListener("input",renderSchedule));
   $("#todayBtn").onclick=()=>{const cw=currentWeek();if(cw){$("#filterWeek").value=cw.number;renderSchedule();setTimeout(()=>document.querySelector(".week")?.scrollIntoView({behavior:"smooth"}),50)}}
 }
+function setWeekOpenState(card,open){
+  if(!card)return;
+  card.classList.toggle("closed",!open);
+  const head=card.querySelector(".week-head");
+  const btn=card.querySelector(".week-toggle-btn");
+  if(head)head.setAttribute("aria-expanded",open?"true":"false");
+  if(btn)btn.textContent=open?"Fechar":"Abrir";
+}
+function toggleWeekCard(card){
+  if(!card)return;
+  setWeekOpenState(card,card.classList.contains("closed"));
+}
+function bindWeekToggles(){
+  $$(".week-head").forEach(head=>{
+    head.onclick=e=>{
+      if(e.target.closest(".week-toggle-btn"))return;
+      toggleWeekCard(head.closest(".week"));
+    };
+    head.onkeydown=e=>{
+      if(e.key==="Enter"||e.key===" "){
+        e.preventDefault();
+        toggleWeekCard(head.closest(".week"));
+      }
+    };
+  });
+  $$(".week-toggle-btn").forEach(btn=>{
+    btn.onclick=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      toggleWeekCard(btn.closest(".week"));
+    };
+  });
+}
+
 function renderSchedule(){
   const q=$("#searchSchedule").value.toLowerCase().trim(), fw=$("#filterWeek").value, fa=$("#filterArea").value, fs=$("#filterStatus").value;
   const t=todayISO(); const cw=currentWeek();
@@ -1692,14 +1741,15 @@ function renderSchedule(){
     const hourStats=weekHourStats(w);
     const open=(cw&&w.number===cw.number)||(!cw&&w.number===0)||fw!=="";
     return `<div class="card week ${open?"":"closed"}" data-week="${w.number}">
-      <div class="week-head" onclick="this.parentElement.classList.toggle('closed')">
+      <div class="week-head" role="button" tabindex="0" data-week-toggle="${w.number}" aria-expanded="${open?"true":"false"}">
         <div class="left"><div class="week-num">${w.number}</div><div><h3>${w.title}</h3><p>${fmtDate(w.start)} → ${fmtDate(w.end)} • ${w.phase}</p></div></div>
-        <div class="week-summary"><span>${done}/${sess.length}</span><div class="mini-progress"><i style="width:${p}%"></i></div><span>⏱ ${formatStudyDuration(hourStats.actualMinutes,{compact:true})}/${formatStudyDuration(hourStats.suggestedMinutes,{compact:true})}</span><span>meta ${adaptiveInfo(w).target}Q${adaptiveInfo(w).target!==plannedGoal(w)?` <small style="color:var(--muted)">(base ${plannedGoal(w)})</small>`:""}</span><span class="chev">⌄</span></div>
+        <div class="week-summary"><span>${done}/${sess.length}</span><div class="mini-progress"><i style="width:${p}%"></i></div><span>⏱ ${formatStudyDuration(hourStats.actualMinutes,{compact:true})}/${formatStudyDuration(hourStats.suggestedMinutes,{compact:true})}</span><span>meta ${adaptiveInfo(w).target}Q${adaptiveInfo(w).target!==plannedGoal(w)?` <small style="color:var(--muted)">(base ${plannedGoal(w)})</small>`:""}</span><button class="week-toggle-btn" type="button" data-week-toggle-btn="${w.number}">${open?"Fechar":"Abrir"}</button><span class="chev">⌄</span></div>
       </div>
       <div class="week-body"><div class="week-mission"><b>Missão:</b> ${w.mission}<br><span class="week-special">${w.availabilityLabel||"Rotina normal"}${w.specialGoal?` • meta operacional ${w.specialGoal}Q`:""}</span></div><div class="sessions">${sess.map(renderSession).join("")}</div></div>
     </div>`;
   }).join("");
   $("#weeksContainer").innerHTML=blocks||`<div class="card panel-pad">Nenhuma sessão encontrada com esses filtros.</div>`;
+  bindWeekToggles();
   $$(".status-btn").forEach(b=>b.onclick=e=>{e.stopPropagation();cycleStatus(b.dataset.id)});
   $$(".session-open").forEach(b=>b.onclick=e=>{e.stopPropagation();openSession(b.dataset.id)});
   $$(".tech-open").forEach(b=>b.onclick=e=>{e.stopPropagation();openTechnique(b.dataset.tech)});
@@ -2930,7 +2980,6 @@ window.__SEDUC_BOOT_OK=true;
 </script>
 
 <script src="./cloud-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.js" crossorigin="anonymous"></script>
 <script src="./cloud-sync.js"></script>
 <script src="./pwa.js"></script>
 </body>
