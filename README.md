@@ -394,3 +394,51 @@ Ajustes do replanejamento:
 - tempo liberado foi realocado para Administração, Dados, Educação e principalmente Português;
 - Português volta por quatro blocos de reativação conceitual: sintaxe-base, pontuação, concordância/regência, semântica/interpretação;
 - fase de performance permanece orientada por questões e fragilidades.
+
+
+## SEDUC2026 V33 — Educação reorganizada conforme progresso real
+
+- LDB volta ao cronograma imediatamente;
+- revisão rápida do que já foi estudado até o art. 37;
+- fechamento dos arts. 61–67 previstos no edital;
+- PNE 2026–2036 é tratado como conteúdo novo e começa na W6;
+- contraste histórico do PNE fica depois do primeiro estudo do plano atual;
+- Tendências Pedagógicas vira revisão curta, pois já foi estudada para o IF;
+- Didática, teorias da aprendizagem/desenvolvimento, BNCC/DCRC, Educação Integral, formação docente e ECA Digital ficam como conteúdo novo;
+- W11 passa a ser a primeira revisão realmente integral de Educação.
+
+
+## SEDUC2026 V34 — baliza de tempo recalibrada
+
+Nova regra prática:
+- revisão de conteúdo familiar: 45–90 min;
+- Dados/procedimentos já compreendidos: 60–105 min;
+- Português em reativação conceitual: 75–105 min;
+- legislação/documentos normativos novos: 120–150 min;
+- Lei 9.784, por já ter sido estudada, fica em revisão curta;
+- LDB/PNE/Estatuto/BNCC/DCRC e demais normativos novos recebem os blocos mais longos;
+- o tempo do cartão é sugestão, e a meta semanal continua usando apenas o tempo real registrado.
+
+
+## SEDUC2026 V35 — LDB corrigida do art. 38 ao 92
+
+- progresso real reconhecido: LDB já estudada até o art. 37;
+- W5: LDB arts. 38–59;
+- W6: LDB arts. 60–92;
+- PNE 2026–2036 só começa na W7;
+- Tendências Pedagógicas continua como revisão curta;
+- Didática, teorias da aprendizagem, BNCC/DCRC e demais temas educacionais seguem depois;
+- legislação nova mantém blocos de 120–150 min.
+
+
+## SEDUC2026 V36 — baliza baseada no ritmo real
+
+- Biologia/revisões familiares: 30–60 min;
+- Dados: 45–75 min na maior parte dos blocos;
+- Português em reativação: 60–90 min;
+- Administração conceitual: 60–90 min;
+- legislação/documentos normativos novos: 120–150 min;
+- Lei 9.784 continua curta porque já foi estudada;
+- LDB, PNE, Estatuto, BNCC/DCRC e demais normativos novos mantêm os blocos mais longos;
+- tempo sugerido é teto de referência, não obrigação de preencher a janela disponível;
+- se o conteúdo fechar antes, o aluno encerra ou faz questões extras opcionais.
