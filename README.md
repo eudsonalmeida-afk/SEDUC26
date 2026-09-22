@@ -368,3 +368,29 @@ Correções:
 - cada semana ganhou botão explícito `Abrir / Fechar`;
 - teclado Enter/Espaço também abre/fecha a semana;
 - estado atual e semanas antigas continuam expansíveis após cada re-render.
+
+
+## SEDUC2026 V31 — replanejamento total a partir de 22/09/2026
+
+- W0–W2 preservadas;
+- W3–W4 arquivadas, sem cobrança retroativa;
+- recomeço em 22/09;
+- sábado: zero estudo formal;
+- domingo: estudo somente após 16h;
+- conteúdo novo termina em 08/11;
+- 09/11–22/11 = performance, simulados e taper;
+- W10 frontloaded para tolerar possível viagem à Bahia em 30/10–01/11;
+- metas de questões reduzidas no reinício e aumentadas progressivamente;
+- cobertura do conteúdo atrasado redistribuída sem tentar recuperar horas perdidas.
+
+
+## SEDUC2026 V32 — revisões compactas por área
+
+Ajustes do replanejamento:
+- Lei 9.784/1999 deixa de ser tratada como conteúdo novo e vira revisão integral por retrieval + questões;
+- Biologia deixa de ser fatiada como aula nova e passa a ser revisada por grandes áreas;
+- blocos de Biologia foram reduzidos para 60–90 min na maior parte dos casos;
+- o objetivo dos blocos de Biologia é questões + recuperação, abrindo teoria apenas para corrigir lacunas;
+- tempo liberado foi realocado para Administração, Dados, Educação e principalmente Português;
+- Português volta por quatro blocos de reativação conceitual: sintaxe-base, pontuação, concordância/regência, semântica/interpretação;
+- fase de performance permanece orientada por questões e fragilidades.
