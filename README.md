@@ -442,3 +442,20 @@ Nova regra prática:
 - LDB, PNE, Estatuto, BNCC/DCRC e demais normativos novos mantêm os blocos mais longos;
 - tempo sugerido é teto de referência, não obrigação de preencher a janela disponível;
 - se o conteúdo fechar antes, o aluno encerra ou faz questões extras opcionais.
+
+
+## SEDUC2026 V37 — Crosscheck como ferramenta do Estatuto do Ceará
+
+Integração sem transformar a Lei 8.112/90 em conteúdo do edital:
+- sessões relacionadas ao Estatuto exibem o botão `⚡ Conhecimento prévio`;
+- o painel contextual divide o material em:
+  - 🟢 Aproveitar;
+  - 🟡 Comparar;
+  - 🔴 Substituir pela regra do Ceará;
+- cada sessão do Estatuto mostra apenas os contrastes mais relevantes para aquele bloco;
+- há um painel completo no Mapa de Administração Pública;
+- o PDF `crosscheck_8112_estatuto_ceara.pdf` foi incluído em `materiais/` e no cache offline da PWA;
+- aviso explícito: Lei 8.112/90 não integra o edital da SEDUC-CE;
+- Banco de Questões ganhou a natureza de erro `Transferência de outro regime (ex.: 8.112 → Ceará)`;
+- essa natureza aparece apenas para questões de Administração identificadas como relacionadas ao Estatuto do Ceará;
+- erros de transferência entram no mapa de Fragilidades como prioridade intermediária.

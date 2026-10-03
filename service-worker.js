@@ -1,7 +1,8 @@
-const CACHE="seduc2026-pwa-v36-baliza-real";
+const CACHE="seduc2026-pwa-v37-crosscheck-estatuto";
 const CORE=[
   "./","./index.html","./manifest.webmanifest","./cloud-config.js","./cloud-sync.js","./pwa.js",
-  "./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./icons/apple-touch-icon.png"
+  "./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./icons/apple-touch-icon.png",
+  "./materiais/crosscheck_8112_estatuto_ceara.pdf"
 ];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
