@@ -23,7 +23,39 @@
       (s.fragilities||[]).length>0 ||
       Object.keys(s.simulations||{}).length>0 ||
       (s.questionBank||[]).length>0 ||
-      (s.bankAttempts||[]).length>0;
+      (s.bankAttempts||[]).length>0 ||
+      (s.studyLog||[]).length>0 ||
+      Object.keys(s.syllabusProgress||{}).length>0;
+  }
+
+  function newerObject(a,b){
+    if(!a)return b;if(!b)return a;
+    const at=Date.parse(a.updatedAt||a.createdAt||0)||0,bt=Date.parse(b.updatedAt||b.createdAt||0)||0;
+    return bt>at?b:a;
+  }
+  function mergeLearningFields(localState,cloudState){
+    const out=JSON.parse(JSON.stringify(localState||{}));
+    const c=cloudState||{};
+    const tomb={...(out.studyLogDeleted||{}),...(c.studyLogDeleted||{})};
+    Object.keys(out.studyLogDeleted||{}).forEach(id=>{
+      const a=Date.parse(out.studyLogDeleted[id]||0)||0,b=Date.parse(c.studyLogDeleted?.[id]||0)||0;
+      if(a>=b)tomb[id]=out.studyLogDeleted[id];
+    });
+    const map=new Map();
+    [...(out.studyLog||[]),...(c.studyLog||[])].forEach(e=>{
+      if(!e?.id)return;const old=map.get(e.id);map.set(e.id,newerObject(old,e));
+    });
+    out.studyLog=[...map.values()].filter(e=>{
+      const del=Date.parse(tomb[e.id]||0)||0,up=Date.parse(e.updatedAt||e.createdAt||0)||0;
+      return !del||up>del;
+    });
+    out.studyLogDeleted=tomb;
+    out.syllabusProgress={...(out.syllabusProgress||{})};
+    Object.entries(c.syllabusProgress||{}).forEach(([id,v])=>out.syllabusProgress[id]=newerObject(out.syllabusProgress[id],v));
+    out.baselineCoverage={...(out.baselineCoverage||{})};
+    Object.entries(c.baselineCoverage||{}).forEach(([id,v])=>out.baselineCoverage[id]=newerObject(out.baselineCoverage[id],v));
+    out.reviewSettings=newerObject(out.reviewSettings,c.reviewSettings)||out.reviewSettings||c.reviewSettings;
+    return out;
   }
 
   state.meta ||= {};
@@ -261,6 +293,11 @@
     state.simulations ||= {};
     state.questionBank ||= [];
     state.bankAttempts ||= [];
+    state.studyLog ||= [];
+    state.studyLogDeleted ||= {};
+    state.syllabusProgress ||= {};
+    state.baselineCoverage ||= {};
+    state.reviewSettings ||= {intervals:[1,3,7,14,30]};
     state.meta ||= {};
     await ingestLegacyEmbeddedImages(state);
     (state.questionBank||[]).forEach(q=>delete q.imageData);
@@ -278,7 +315,12 @@
         await pushCloud();
         return;
       }
-      const cloudState=remote.payload||{};
+      let cloudState=remote.payload||{};
+      const mergedLearning=mergeLearningFields(state,cloudState);
+      ["studyLog","studyLogDeleted","syllabusProgress","baselineCoverage","reviewSettings"].forEach(k=>{
+        state[k]=mergedLearning[k];
+        cloudState[k]=mergedLearning[k];
+      });
       const localHas=meaningful(state),cloudHas=meaningful(cloudState);
       const localT=Date.parse(state.meta?.updatedAt||0)||0;
       const cloudT=Date.parse(cloudState.meta?.updatedAt||remote.updated_at||0)||0;

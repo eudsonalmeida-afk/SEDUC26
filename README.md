@@ -459,3 +459,26 @@ Integração sem transformar a Lei 8.112/90 em conteúdo do edital:
 - Banco de Questões ganhou a natureza de erro `Transferência de outro regime (ex.: 8.112 → Ceará)`;
 - essa natureza aparece apenas para questões de Administração identificadas como relacionadas ao Estatuto do Ceará;
 - erros de transferência entram no mapa de Fragilidades como prioridade intermediária.
+
+
+## SEDUC2026 V38 — Diário de Estudos e Cobertura do Edital
+
+Primeira etapa do novo sistema de acompanhamento:
+- nova aba Diário de Estudos;
+- mapa hierárquico completo do edital oficial em Educação, Administração, Português, Dados e Biologia;
+- estados Não iniciado / Em estudo / 1ª passagem concluída;
+- pesos transparentes e editáveis por item;
+- cobertura automática por disciplina, bloco e geral;
+- linha de base provisória separada da cobertura calculada (Educação 13%, Administração 60%, Português 90%, Dados/Biologia a aferir);
+- registro manual com data, disciplina, múltiplos tópicos, atividade, minutos, questões, acertos, confiança, recuperação, consulta e observações;
+- edição/exclusão recalculando indicadores;
+- Diário manual alimenta horas e questões semanais sem duplicar registros vinculados;
+- sessões do Cronograma passam a gerar/atualizar um registro vinculado no Diário;
+- blocos concluídos do Banco passam a gerar registros vinculados por área;
+- Dashboard com cobertura × acertos por disciplina e período;
+- evolução da cobertura;
+- revisão de tópicos com intervalos configuráveis 1–3–7–14–30 e adaptação por resultado/consulta;
+- nova aba Revisão consolida tópicos do Diário e a fila já existente do Banco;
+- histórico diário/semanal unificado;
+- novos campos continuam dentro do `payload jsonb` do Supabase, sem migração SQL;
+- merge específico do novo módulo no sincronizador, incluindo tombstones de exclusão.

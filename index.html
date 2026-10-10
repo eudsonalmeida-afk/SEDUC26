@@ -823,6 +823,70 @@ html[data-theme="dark"] .ipad-compat-warning{
   .crosscheck-btn{width:100%}
 }
 
+
+/* V38 — Diário de Estudos + Cobertura do Edital */
+.learning-overview{margin:16px 0}
+.discipline-kpis{display:grid;grid-template-columns:repeat(5,minmax(190px,1fr));gap:10px}
+.discipline-kpi{padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);min-width:0}
+.discipline-kpi-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.discipline-kpi-head b{font-size:12px}.discipline-kpi .cov{font-size:26px;font-weight:900;line-height:1}
+.discipline-kpi .acc{font-size:18px;font-weight:850;margin-top:10px}
+.discipline-kpi small{color:var(--muted);display:block;margin-top:4px;line-height:1.35}
+.coverage-track{height:9px;background:var(--panel);border:1px solid var(--line);border-radius:99px;overflow:hidden;position:relative;margin-top:8px}
+.coverage-track .done{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));position:absolute;left:0;top:0}
+.coverage-track .progress-part{height:100%;background:color-mix(in srgb,var(--warn) 52%,transparent);position:absolute;top:0}
+.learning-summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.learning-summary-grid>div{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.learning-summary-grid b{font-size:19px;display:block}.learning-summary-grid small{color:var(--muted);font-size:10.5px}
+.trend-wrap{height:150px;margin-top:10px;position:relative}.trend-wrap svg{width:100%;height:100%;overflow:visible}
+.trend-axis{stroke:var(--line);stroke-width:1}.trend-line{fill:none;stroke:var(--accent2);stroke-width:3}.trend-dot{fill:var(--accent2)}
+.diary-layout{display:grid;grid-template-columns:minmax(320px,.88fr) minmax(0,1.35fr);gap:16px}
+.diary-form-card{padding:18px;align-self:start;position:sticky;top:86px}
+.diary-topic-picker{max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:9px}
+.diary-topic-picker details{border-bottom:1px solid var(--line);padding:7px 0}.diary-topic-picker details:last-child{border-bottom:0}
+.diary-topic-picker summary{cursor:pointer;font-weight:800;font-size:11.5px;color:var(--text)}
+.topic-check{display:flex;align-items:flex-start;gap:8px;padding:6px 4px;font-size:11px;color:var(--muted);line-height:1.35}
+.topic-check input{margin-top:2px;flex:0 0 auto}
+.diary-performance{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel2)}
+.diary-performance summary{cursor:pointer;font-size:12px;font-weight:800;color:var(--accent2)}
+.diary-score-preview{font-size:11px;color:var(--muted);margin-top:6px}
+.diary-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.diary-history{display:grid;gap:9px}.diary-day{border:1px solid var(--line);border-radius:14px;background:var(--panel2);overflow:hidden}
+.diary-day-head{padding:10px 12px;background:color-mix(in srgb,var(--accent) 5%,var(--panel2));border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}
+.diary-day-head b{font-size:12.5px}.diary-day-head small{color:var(--muted)}
+.diary-entry{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:10px;padding:11px 12px;border-bottom:1px solid var(--line)}
+.diary-entry:last-child{border-bottom:0}.diary-entry-accent{border-radius:99px}.diary-entry h4{font-size:12.5px;margin:0 0 4px}
+.diary-entry p{font-size:10.8px;color:var(--muted);margin:3px 0;line-height:1.4}.diary-entry-actions{display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
+.diary-entry-actions button{padding:5px 7px;font-size:10px}
+.syllabus-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-bottom:12px}
+.syllabus-toolbar .field{min-width:180px}.syllabus-toolbar .field.small{min-width:110px}
+.baseline-card{padding:13px 14px;border:1px dashed var(--line);border-radius:13px;background:var(--panel2);margin-bottom:12px}
+.baseline-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.baseline-row input{width:90px;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px}
+.syllabus-block{border:1px solid var(--line);border-radius:14px;background:var(--panel2);margin-bottom:9px;overflow:hidden}
+.syllabus-block summary{cursor:pointer;padding:11px 13px;font-weight:850;font-size:12.5px}
+.syllabus-block-body{padding:0 10px 10px}.syllabus-topic-title{font-size:11px;font-weight:800;color:var(--muted);padding:7px 3px 4px}
+.syllabus-leaf{display:grid;grid-template-columns:minmax(0,1fr) 145px 80px;gap:8px;align-items:center;padding:8px;border-top:1px solid var(--line)}
+.syllabus-leaf:first-child{border-top:0}.syllabus-leaf .name{font-size:11.2px;line-height:1.4}.syllabus-leaf select,.syllabus-leaf input{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px;font-size:10.5px;width:100%}
+.syllabus-status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}.st-not{background:var(--muted)}.st-prog{background:var(--warn)}.st-done{background:var(--success)}
+.coverage-block-summary{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:10.5px;margin-left:auto}
+.review-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.review-kpi{padding:13px;border:1px solid var(--line);background:var(--panel2);border-radius:13px}
+.review-kpi b{font-size:23px;display:block}.review-kpi small{color:var(--muted);font-size:10.5px}
+.review-list{display:grid;gap:9px}.review-item{border:1px solid var(--line);border-radius:13px;background:var(--panel2);padding:12px;display:grid;grid-template-columns:8px 1fr auto;gap:10px}
+.review-item h4{margin:0 0 4px;font-size:12.5px}.review-item p{margin:3px 0;color:var(--muted);font-size:10.8px;line-height:1.4}
+.review-priority{border-radius:99px}.review-actions{display:flex;gap:6px;align-items:flex-start}.review-settings{display:flex;gap:7px;align-items:end;flex-wrap:wrap}
+.review-settings .field{width:76px}.review-settings input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px}
+.history-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.history-toolbar select{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px}
+.learning-note{font-size:10.8px;color:var(--muted);line-height:1.5}
+@media(max-width:1200px){.discipline-kpis{grid-template-columns:repeat(2,1fr)}.learning-summary-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.diary-layout{grid-template-columns:1fr}.diary-form-card{position:static}.review-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){
+  .discipline-kpis,.learning-summary-grid{grid-template-columns:1fr}
+  .syllabus-leaf{grid-template-columns:1fr 1fr}.syllabus-leaf .name{grid-column:1/-1}
+  .diary-entry{grid-template-columns:6px 1fr}.diary-entry-actions{grid-column:2;justify-content:flex-start}
+  .review-item{grid-template-columns:6px 1fr}.review-actions{grid-column:2}
+  .review-grid{grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 <body>
@@ -843,6 +907,8 @@ html[data-theme="dark"] .ipad-compat-warning{
     <div class="brand"><div class="brand-mark">S</div><div><h1>SEDUC 2026</h1><small>Biologia • plano de estudos</small></div></div>
     <nav class="nav" id="nav">
       <button class="active" data-view="dashboard">Dashboard</button>
+      <button data-view="diario">Diário de Estudos</button>
+      <button data-view="revisao">Revisão</button>
       <button data-view="cronograma">Cronograma</button>
       <button data-view="simulados">Simulados</button>
       <button data-view="extras">Questões extras</button>
@@ -880,6 +946,24 @@ html[data-theme="dark"] .ipad-compat-warning{
     </div>
   </div>
   <div class="metrics" id="metrics"></div>
+
+  <div class="card panel-pad learning-overview">
+    <div class="section-title">
+      <div><h3>Cobertura do edital × acertos</h3><small>Cobertura calculada pela 1ª passagem • desempenho com período identificado</small></div>
+      <select id="dashboardAccuracyPeriod" style="background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:7px">
+        <option value="7">Acertos • últimos 7 dias</option>
+        <option value="30" selected>Acertos • últimos 30 dias</option>
+        <option value="all">Acertos • todo o histórico</option>
+      </select>
+    </div>
+    <div class="discipline-kpis" id="disciplineCoverageCards"></div>
+    <div class="learning-summary-grid" id="learningSummaryGrid"></div>
+  </div>
+  <div class="card panel-pad" style="margin-bottom:18px">
+    <div class="section-title"><h3>Evolução da cobertura</h3><small>1ª passagem concluída ao longo do tempo</small></div>
+    <div class="trend-wrap" id="coverageTrend"></div>
+  </div>
+
   <div class="card adaptive-card" id="adaptiveCard">
     <div class="adaptive-head">
       <div class="adaptive-title-wrap">
@@ -946,6 +1030,129 @@ html[data-theme="dark"] .ipad-compat-warning{
   <div class="footer-note">O app continua <b>offline-first</b>: salva neste aparelho mesmo sem internet. Quando você entra na sua conta e a nuvem está configurada, o progresso é sincronizado com o Supabase e reaparece em outros dispositivos. Exportar/Importar continua disponível como backup extra.</div>
 </section>
 
+
+
+<section id="diario" class="view">
+  <div class="section-title">
+    <div><h3>Diário de Estudos</h3><small>Um registro rápido alimenta horas, questões, cobertura e revisões</small></div>
+    <button class="ghost" id="diaryNewBtn" type="button">+ Novo registro</button>
+  </div>
+
+  <div class="diary-layout">
+    <div class="card diary-form-card">
+      <div class="section-title"><h3 id="diaryFormTitle">Registrar estudo</h3><small id="diaryEditHint">registro manual</small></div>
+      <div class="form-grid">
+        <div class="field"><label>Data</label><input id="diaryDate" type="date"></div>
+        <div class="field"><label>Disciplina</label>
+          <select id="diaryDiscipline">
+            <option>Educação</option><option>Administração</option><option>Português</option><option>Dados</option><option>Biologia</option>
+          </select>
+        </div>
+        <div class="field"><label>Tipo de atividade</label>
+          <select id="diaryActivity">
+            <option value="study_new">Estudo novo</option>
+            <option value="review">Revisão</option>
+            <option value="retention">Teste de retenção</option>
+            <option value="questions">Resolução de questões</option>
+            <option value="simulation">Simulado</option>
+          </select>
+        </div>
+        <div class="field"><label>Tempo de estudo (min)</label><input id="diaryMinutes" type="number" min="0" inputmode="numeric" placeholder="ex.: 75"></div>
+      </div>
+
+      <div class="field" style="margin-top:10px">
+        <label>Tópicos e subtópicos do edital <span id="diaryTopicCount" style="color:var(--accent2)">0 selecionados</span></label>
+        <div class="diary-topic-picker" id="diaryTopicPicker"></div>
+      </div>
+
+      <label class="topic-check" style="margin:8px 0">
+        <input id="diaryFirstPass" type="checkbox">
+        <span><b>Confirmar 1ª passagem concluída</b><br><small style="color:var(--muted)">Só marque quando você realmente considerar os tópicos selecionados cobertos. Poucos minutos ou abrir um material não concluem o tópico automaticamente.</small></span>
+      </label>
+
+      <details class="diary-performance" open>
+        <summary>Desempenho (opcional)</summary>
+        <div class="form-grid" style="margin-top:10px">
+          <div class="field"><label>Questões</label><input id="diaryQuestions" type="number" min="0" inputmode="numeric"></div>
+          <div class="field"><label>Acertos</label><input id="diaryCorrect" type="number" min="0" inputmode="numeric"></div>
+          <div class="field"><label>Confiança prevista (%)</label><input id="diaryConfidence" type="number" min="0" max="100" inputmode="decimal"></div>
+          <div class="field"><label>Resultado da recuperação</label>
+            <select id="diaryRetrieval">
+              <option value="">Não se aplica / não registrado</option>
+              <option value="easy">Fácil</option>
+              <option value="effort">Com esforço</option>
+              <option value="fail">Falha</option>
+            </select>
+          </div>
+        </div>
+        <label class="topic-check"><input id="diaryConsulted" type="checkbox"><span>Houve consulta ao material durante a atividade</span></label>
+        <div class="diary-score-preview" id="diaryAccuracyPreview">Acerto: —</div>
+      </details>
+
+      <div class="field" style="margin-top:10px"><label>Observações (opcional)</label><textarea id="diaryNotes" placeholder="Ex.: Estatuto — confundi vacância com provimento; revisar amanhã."></textarea></div>
+      <div class="diary-actions">
+        <button class="primary" id="diarySaveBtn" type="button">Salvar no Diário</button>
+        <button class="ghost" id="diaryCancelEdit" type="button" style="display:none">Cancelar edição</button>
+      </div>
+      <div class="learning-note" style="margin-top:10px">Uma sessão pode conter vários tópicos sem duplicar o tempo. O tempo total é contabilizado uma única vez.</div>
+    </div>
+
+    <div>
+      <div class="card panel-pad" style="margin-bottom:16px">
+        <div class="section-title">
+          <div><h3>Mapa completo do edital</h3><small>Disciplina → bloco → tópico → subtópico</small></div>
+          <span class="phase-chip" id="syllabusCoverageHeadline">0% geral</span>
+        </div>
+        <div class="syllabus-toolbar">
+          <div class="field"><label>Disciplina</label><select id="syllabusDiscipline"></select></div>
+          <div class="field small"><label>Mostrar</label>
+            <select id="syllabusStatusFilter"><option value="">Todos</option><option value="not_started">Não iniciados</option><option value="in_progress">Em estudo</option><option value="completed">1ª passagem concluída</option></select>
+          </div>
+          <button class="ghost" id="syllabusResetWeights" type="button">Restaurar pesos 1,0</button>
+        </div>
+        <div class="baseline-card" id="baselineCard"></div>
+        <div id="syllabusMap"></div>
+        <div class="learning-note">A cobertura (%) usa apenas itens com <b>1ª passagem concluída</b>. Itens “em estudo” aparecem visualmente como progresso parcial, mas não entram no percentual concluído. Pesos são editáveis por subtópico.</div>
+      </div>
+
+      <div class="card panel-pad">
+        <div class="section-title">
+          <div><h3>Histórico diário e semanal</h3><small>registros originais + fontes já existentes no app</small></div>
+        </div>
+        <div class="history-toolbar">
+          <select id="historyGroup"><option value="week">Agrupar por semana</option><option value="day">Agrupar por dia</option></select>
+          <select id="historyDiscipline"><option value="">Todas as disciplinas</option><option>Educação</option><option>Administração</option><option>Português</option><option>Dados</option><option>Biologia</option></select>
+          <select id="historySource"><option value="">Todas as fontes</option><option value="manual">Diário manual</option><option value="plannedSession">Cronograma</option><option value="bankBlock">Banco</option><option value="extra">Extras</option><option value="simulation">Simulados</option></select>
+        </div>
+        <div class="diary-history" id="diaryHistory"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="revisao" class="view">
+  <div class="section-title">
+    <div><h3>Revisão</h3><small>Tópicos do Diário + fila adaptativa já existente do Banco de Questões</small></div>
+  </div>
+  <div class="review-grid" id="reviewKpis"></div>
+  <div class="card panel-pad" style="margin-bottom:14px">
+    <div class="section-title">
+      <div><h3>Intervalos iniciais</h3><small>pontos de partida configuráveis; o desempenho altera a próxima revisão</small></div>
+    </div>
+    <div class="review-settings" id="reviewSettings"></div>
+  </div>
+  <div class="card panel-pad" style="margin-bottom:14px">
+    <div class="section-title">
+      <div><h3>Prioridades de tópicos</h3><small>atrasos + resultado de recuperação + fragilidades</small></div>
+      <button class="ghost" id="reviewOpenBankDue" type="button">Treinar questões vencidas do Banco</button>
+    </div>
+    <div class="review-list" id="topicReviewList"></div>
+  </div>
+  <div class="card panel-pad">
+    <div class="section-title"><h3>Como o agendamento funciona</h3><small>fase inicial</small></div>
+    <p class="learning-note">Estudo novo agenda a primeira recuperação. Falha traz a revisão para perto; recuperação com esforço mantém intervalo curto; recuperação fácil sem consulta amplia gradualmente. Se houve consulta, o avanço do intervalo é limitado. A cobertura do edital não diminui por esquecimento: esquecimento afeta a fila de revisão, não apaga a 1ª passagem.</p>
+  </div>
+</section>
 
 <section id="extras" class="view">
   <div class="section-title">
@@ -1408,10 +1615,185 @@ const TECH = {"G":{"name":"Geração / pré-teste","desc":"Tente responder, dese
 const PROMPTS = [{"area": "Administração", "q": "Anulação, revogação e convalidação: qual problema cada instituto resolve e qual é a diferença central?"}, {"area": "Administração", "q": "Delegação × avocação: direção, condições e limites."}, {"area": "Administração", "q": "Reintegração × reversão × aproveitamento: em que situação cada um aparece?"}, {"area": "Administração", "q": "Exoneração × demissão: por que não são sinônimos?"}, {"area": "Administração", "q": "Patrimonialismo × burocracia × gerencial: qual problema cada modelo tenta enfrentar?"}, {"area": "Administração", "q": "Órgão × entidade; Administração Direta × Indireta."}, {"area": "Educação", "q": "PNE 2001 × 2014 × 2026: cite três diferenças estruturais ou de foco."}, {"area": "Educação", "q": "BNCC × DCRC: função, alcance e relação entre os documentos."}, {"area": "Educação", "q": "Educação integral × tempo integral."}, {"area": "Educação", "q": "Lei 10.639/03 × Lei 11.645/08: o que a segunda amplia?"}, {"area": "Educação", "q": "Avaliação diagnóstica × formativa × somativa: quando cada uma serve melhor?"}, {"area": "Dados", "q": "Aumento de 60% para 72%: quantos pontos percentuais? Qual aumento relativo?"}, {"area": "Dados", "q": "Média × mediana: quando a mediana representa melhor o conjunto?"}, {"area": "Dados", "q": "Dado × indicador × índice: explique com um exemplo educacional."}, {"area": "Dados", "q": "SPAECE × SAEB × ENEM × PISA: qual escolheria em quatro cenários diferentes?"}, {"area": "Biologia", "q": "Mitose × meiose: o que muda em número de divisões, ploidia e variabilidade?"}, {"area": "Biologia", "q": "Respiração × fermentação: finalidade, aceitador final e rendimento."}, {"area": "Biologia", "q": "DNA × RNA; replicação × transcrição × tradução."}, {"area": "Biologia", "q": "Seleção natural × deriva genética × fluxo gênico: dê um caso de cada."}, {"area": "Biologia", "q": "Xilema × floema: o que transportam, de onde para onde e qual mecanismo central?"}, {"area": "Biologia", "q": "Imunidade inata × adaptativa; ativa × passiva."}, {"area": "Biologia", "q": "Habitat × nicho; matéria cicla × energia flui."}, {"area": "Biologia", "q": "Briófitas → pteridófitas → gimnospermas → angiospermas: quais inovações aparecem?"}, {"area": "Português", "q": "Regência → preposição → crase: explique a cadeia de decisão."}, {"area": "Português", "q": "Em uma frase complexa, como você decide se a vírgula é estruturalmente necessária?"}];
 const SIMS = [{"id": "sim-w1", "date": "2026-08-29", "label": "Semana 1 — 40Q", "total": 40, "bio": 25, "edu": 4, "adm": 4, "port": 4, "dados": 3}, {"id": "sim-w2", "date": "2026-09-05", "label": "Semana 2 — 40Q", "total": 40, "bio": 25, "edu": 4, "adm": 4, "port": 4, "dados": 3}, {"id": "sim-w3", "date": "2026-09-12", "label": "Semana 3 — 40Q", "total": 40, "bio": 25, "edu": 4, "adm": 4, "port": 4, "dados": 3}, {"id": "sim-w4", "date": "2026-09-19", "label": "Semana 4 — 50Q", "total": 50, "bio": 30, "edu": 6, "adm": 5, "port": 5, "dados": 4}, {"id": "sim-w5", "date": "2026-09-26", "label": "Semana 5 — 50Q", "total": 50, "bio": 30, "edu": 6, "adm": 5, "port": 5, "dados": 4}, {"id": "sim-w6", "date": "2026-10-03", "label": "Semana 6 — 60Q", "total": 60, "bio": 38, "edu": 6, "adm": 6, "port": 6, "dados": 4}, {"id": "sim-w7", "date": "2026-10-10", "label": "Semana 7 — 60Q", "total": 60, "bio": 38, "edu": 6, "adm": 6, "port": 6, "dados": 4}, {"id": "sim-w8", "date": "2026-10-17", "label": "Semana 8 — 70Q", "total": 70, "bio": 44, "edu": 7, "adm": 7, "port": 7, "dados": 5}, {"id": "sim-w9", "date": "2026-10-24", "label": "Semana 9 — 75Q", "total": 75, "bio": 47, "edu": 8, "adm": 8, "port": 7, "dados": 5}, {"id": "sim-w10", "date": "2026-10-31", "label": "Semana 10 — 80Q", "total": 80, "bio": 50, "edu": 8, "adm": 8, "port": 8, "dados": 6}, {"id": "sim-w11", "date": "2026-11-07", "label": "Semana 11 — 80Q", "total": 80, "bio": 50, "edu": 8, "adm": 8, "port": 8, "dados": 6}, {"id": "sim-w12", "date": "2026-11-14", "label": "Semana 12 — 80Q", "total": 80, "bio": 50, "edu": 8, "adm": 8, "port": 8, "dados": 6}];
 const EXAM = new Date("2026-11-22T12:00:00-03:00");
+
+const SYLLABUS=[{"id":"educacao","area":"Educação","name":"Educação Brasileira","blocks":[{"id":"edu.b1","name":"1. História da educação brasileira e legislação","topics":[{"id":"edu.1","name":"1. História da educação brasileira: do Movimento dos Pioneiros da Educação aos dias atuais","subs":[{"id":"edu.1.0","name":"Movimento dos Pioneiros da Educação aos dias atuais"},{"id":"edu.1.1","name":"1.1 Lei federal nº 9.394/1996 — LDB"},{"id":"edu.1.2","name":"1.2 Lei federal nº 10.639/2003 — História e Cultura Afro-Brasileira e Africana"},{"id":"edu.1.3","name":"1.3 Lei federal nº 11.645/2008 — História e Cultura Afro-Brasileira e Indígena"},{"id":"edu.1.4","name":"1.4 Planos Nacionais de Educação: 2001–2010; 2014–2025; 2026–2036"}]}]},{"id":"edu.b2","name":"2. Estrutura e funcionamento da Educação Básica","topics":[{"id":"edu.2","name":"2. Estrutura e funcionamento da educação básica","subs":[{"id":"edu.2.1","name":"2.1 Tendências pedagógicas contemporâneas"},{"id":"edu.2.2","name":"2.2 Gestão democrática da escola pública"},{"id":"edu.2.3","name":"2.3 Projeto Político Pedagógico"}]}]},{"id":"edu.b3","name":"3. Didática e ensino-aprendizagem","topics":[{"id":"edu.3","name":"3. A didática e o processo de ensino e aprendizagem","subs":[{"id":"edu.3.1","name":"3.1 Organização do processo didático: planejamento, estratégias e metodologias, avaliação"},{"id":"edu.3.2","name":"3.2 A sala de aula como espaço de aprendizagem"},{"id":"edu.3.3","name":"3.3 A didática como fundamento epistemológico do fazer docente"},{"id":"edu.3.4","name":"3.4 Planejamento de curso, unidade e aula: elementos estruturantes"}]}]},{"id":"edu.b4","name":"4. Teorias da aprendizagem e desenvolvimento","topics":[{"id":"edu.4","name":"4. Principais teorias da aprendizagem","subs":[{"id":"edu.4.1","name":"4.1 Inatismo, comportamentalismo, behaviorismo, interacionismo, cognitivismo"},{"id":"edu.4.2","name":"4.2 Bases empíricas, metodológicas e epistemológicas das teorias de aprendizagem"},{"id":"edu.4.3","name":"4.3 Psicologia do desenvolvimento: aspectos históricos e biopsicossociais"},{"id":"edu.4.4","name":"4.4 Temas contemporâneos: bullying, relações étnico-raciais, educação especial, educação ambiental, protagonismo juvenil"}]}]},{"id":"edu.b5","name":"5. BNCC","topics":[{"id":"edu.5","name":"5. Base Nacional Comum Curricular (BNCC)","subs":[{"id":"edu.5.1","name":"5.1 Fundamentos e princípios que orientam a BNCC"},{"id":"edu.5.2","name":"5.2 O Ensino Médio no contexto da Educação Básica"},{"id":"edu.5.3","name":"5.3 Organização curricular"}]}]},{"id":"edu.b6","name":"6. Professor: formação e profissão","topics":[{"id":"edu.6","name":"6. Professor: formação e profissão","subs":[{"id":"edu.6.1","name":"6.1 Base legal que orienta a formação docente"},{"id":"edu.6.2","name":"6.2 A pesquisa na prática docente"},{"id":"edu.6.3","name":"6.3 A dimensão ética da profissão"}]}]},{"id":"edu.b7","name":"7. Educação Integral em Tempo Integral","topics":[{"id":"edu.7","name":"7. Educação Integral em Tempo Integral no Ensino Médio","subs":[{"id":"edu.7.1","name":"7.1 Marcos legais sobre Educação Integral"},{"id":"edu.7.2","name":"7.2 Currículo e Educação Integral"},{"id":"edu.7.3","name":"7.3 Itinerários Formativos"}]}]},{"id":"edu.b8","name":"8. Avaliações externas em larga escala","topics":[{"id":"edu.8","name":"8. Avaliações externas em larga escala na educação básica","subs":[{"id":"edu.8.1","name":"8.1 SPAECE"},{"id":"edu.8.2","name":"8.2 SAEB"},{"id":"edu.8.3","name":"8.3 PISA"}]}]},{"id":"edu.b9","name":"9–10. Equidade e DCRC","topics":[{"id":"edu.9","name":"9. Políticas de equidade no escopo do PNE 2026–2036"},{"id":"edu.10","name":"10. Documento Curricular Referencial do Ceará (DCRC): Ensino Médio"}]}]},{"id":"administracao","area":"Administração","name":"Administração Pública","blocks":[{"id":"adm.b1","name":"Fundamentos e modelos","topics":[{"id":"adm.1","name":"1. Administração Pública: conceitos e princípios constitucionais e legais aplicáveis"},{"id":"adm.2","name":"2. Evolução histórica das reformas administrativas no Brasil"},{"id":"adm.3","name":"3. Modelos da Administração Pública","subs":[{"id":"adm.3.1","name":"Patrimonialismo"},{"id":"adm.3.2","name":"Modelo burocrático"},{"id":"adm.3.3","name":"Modelo gerencial"}]}]},{"id":"adm.b2","name":"Constituição e processo administrativo","topics":[{"id":"adm.4","name":"4. Administração Pública na Constituição brasileira atual: disposições gerais e servidores públicos"},{"id":"adm.5","name":"5. Lei nº 9.784/1999 — normas básicas do processo administrativo federal"}]},{"id":"adm.b3","name":"Organização, controle e poderes","topics":[{"id":"adm.6","name":"6. Organização e divisão da Administração Pública","subs":[{"id":"adm.6.1","name":"Órgãos, fundos e entidades integrantes da Administração Pública"},{"id":"adm.6.2","name":"Administração Direta e Indireta: características e entidades"}]},{"id":"adm.7","name":"7. Controle da Administração Pública","subs":[{"id":"adm.7.1","name":"Controle administrativo"},{"id":"adm.7.2","name":"Controle legislativo"}]},{"id":"adm.8","name":"8. Poderes da Administração Pública","subs":[{"id":"adm.8.1","name":"Poder vinculado"},{"id":"adm.8.2","name":"Poder discricionário"},{"id":"adm.8.3","name":"Poder normativo"},{"id":"adm.8.4","name":"Poder hierárquico"},{"id":"adm.8.5","name":"Poder disciplinar"},{"id":"adm.8.6","name":"Poder de polícia"}]}]},{"id":"adm.b4","name":"Normativos do PNE e do Estado do Ceará","topics":[{"id":"adm.9","name":"9. Plano Nacional de Educação — Lei Federal nº 15.388/2026"},{"id":"adm.10","name":"10. Modelo de Gestão do Poder Executivo do Estado do Ceará"},{"id":"adm.11","name":"11. Guia de Modelagem de Estrutura Organizacional — 2ª ed., julho/2021"},{"id":"adm.12","name":"12. Código de Ética e Conduta da Administração Pública do Estado do Ceará"},{"id":"adm.13","name":"13. Estatuto dos Servidores do Estado do Ceará"}]}]},{"id":"portugues","area":"Português","name":"Língua Portuguesa","blocks":[{"id":"port.b1","name":"Texto e gêneros","topics":[{"id":"port.1","name":"1. Compreensão e interpretação de textos"},{"id":"port.2","name":"2. Fatores de textualidade"},{"id":"port.3","name":"3. Tipologias textuais"},{"id":"port.4","name":"4. Gêneros discursivos/textuais"}]},{"id":"port.b2","name":"Ortografia, morfologia e crase","topics":[{"id":"port.5","name":"5. Ortografia oficial"},{"id":"port.6","name":"6. Acentuação gráfica"},{"id":"port.7","name":"7. Emprego das classes gramaticais"},{"id":"port.8","name":"8. Formação e estrutura das palavras"},{"id":"port.9","name":"9. Emprego do sinal indicativo de crase"}]},{"id":"port.b3","name":"Sintaxe","topics":[{"id":"port.10","name":"10. Relações de coordenação e subordinação na construção dos sentidos"},{"id":"port.11","name":"11. Relações sintáticas na organização da oração e do período"},{"id":"port.12","name":"12. Pontuação"},{"id":"port.13","name":"13. Concordância nominal e verbal"},{"id":"port.14","name":"14. Regência nominal e verbal"}]},{"id":"port.b4","name":"Semântica e linguagem","topics":[{"id":"port.15","name":"15. Significação das palavras"},{"id":"port.16","name":"16. Funções da linguagem"}]}]},{"id":"dados","area":"Dados","name":"Dados e Indicadores Educacionais","blocks":[{"id":"dados.b1","name":"1. Indicadores educacionais","topics":[{"id":"dados.1","name":"1. Indicadores educacionais","subs":[{"id":"dados.1.1","name":"1.1 O que são e para que servem"},{"id":"dados.1.2","name":"1.2 Indicadores e índices no campo da política educacional"},{"id":"dados.1.3","name":"1.3 Indicadores educacionais calculados pelo Inep"},{"id":"dados.1.4","name":"1.4 Indicadores escolares, docentes e discentes"}]}]},{"id":"dados.b2","name":"2. Indicadores de desempenho dos estudantes","topics":[{"id":"dados.2","name":"2. Indicadores de desempenho dos estudantes","subs":[{"id":"dados.2.1","name":"2.1 SPAECE"},{"id":"dados.2.2","name":"2.2 SAEB"},{"id":"dados.2.3","name":"2.3 ENEM"},{"id":"dados.2.4","name":"2.4 PISA"}]}]},{"id":"dados.b3","name":"3. Leitura e interpretação de dados","topics":[{"id":"dados.3","name":"3. Leitura e interpretação de dados apresentados em formatos variados"}]},{"id":"dados.b4","name":"4. Estatística descritiva","topics":[{"id":"dados.4","name":"4. Resolução de problemas com uso de estatísticas descritivas"}]}]},{"id":"biologia","area":"Biologia","name":"Biologia — Conhecimentos Específicos","blocks":[{"id":"bio.b1","name":"Fundamentos celulares e metabolismo","topics":[{"id":"bio.1","name":"1. Origem da Vida e Organização dos Seres Vivos","subs":[{"id":"bio.1.1","name":"1.1 Origem da vida e teorias evolutivas sobre o surgimento dos seres vivos"},{"id":"bio.1.2","name":"1.2 Características gerais dos seres vivos"},{"id":"bio.1.3","name":"1.3 Níveis de organização biológica"},{"id":"bio.1.4","name":"1.4 Método científico e produção do conhecimento biológico"}]},{"id":"bio.2","name":"2. Biologia Celular","subs":[{"id":"bio.2.1","name":"2.1 Teoria celular e tipos celulares"},{"id":"bio.2.2","name":"2.2 Estrutura e função das organelas celulares"},{"id":"bio.2.3","name":"2.3 Membrana plasmática e transporte celular"},{"id":"bio.2.4","name":"2.4 Núcleo, ciclo celular e divisão celular"},{"id":"bio.2.5","name":"2.5 Noções básicas de microscopia óptica e eletrônica"}]},{"id":"bio.3","name":"3. Reprodução e Desenvolvimento dos Seres Vivos","subs":[{"id":"bio.3.1","name":"3.1 Reprodução assexuada e sexuada"},{"id":"bio.3.2","name":"3.2 Gametogênese e fecundação"},{"id":"bio.3.3","name":"3.3 Desenvolvimento embrionário"},{"id":"bio.3.4","name":"3.4 Reprodução humana, animal e vegetal"}]},{"id":"bio.4","name":"4. Bioquímica e Metabolismo Celular","subs":[{"id":"bio.4.1","name":"4.1 Composição química dos seres vivos"},{"id":"bio.4.2","name":"4.2 Biomoléculas: carboidratos, lipídios, proteínas, ácidos nucleicos, vitaminas e sais minerais"},{"id":"bio.4.3","name":"4.3 Enzimas, ATP e metabolismo energético"},{"id":"bio.4.4","name":"4.4 Respiração celular, fermentação, fotossíntese e quimiossíntese"}]}]},{"id":"bio.b2","name":"Molecular, genética e evolução","topics":[{"id":"bio.5","name":"5. Biologia Molecular e Biotecnologia","subs":[{"id":"bio.5.1","name":"5.1 Estrutura e função do DNA e RNA"},{"id":"bio.5.2","name":"5.2 Replicação, transcrição e tradução"},{"id":"bio.5.3","name":"5.3 Código genético e regulação gênica"},{"id":"bio.5.4","name":"5.4 Engenharia genética, DNA recombinante, OGM, clonagem e terapia gênica"}]},{"id":"bio.6","name":"6. Genética","subs":[{"id":"bio.6.1","name":"6.1 Leis de Mendel"},{"id":"bio.6.2","name":"6.2 Interações gênicas, heranças genéticas e grupos sanguíneos"},{"id":"bio.6.3","name":"6.3 Bases cromossômicas da herança"}]},{"id":"bio.7","name":"7. Evolução Biológica","subs":[{"id":"bio.7.1","name":"7.1 Teorias evolutivas e Teoria Sintética da Evolução"},{"id":"bio.7.2","name":"7.2 Seleção natural, adaptação e especiação"},{"id":"bio.7.3","name":"7.3 Evidências da evolução biológica"},{"id":"bio.7.4","name":"7.4 Evolução humana"}]}]},{"id":"bio.b3","name":"Diversidade, fisiologia humana e botânica","topics":[{"id":"bio.8","name":"8. Sistemática e Diversidade dos Seres Vivos","subs":[{"id":"bio.8.1","name":"8.1 Taxonomia, nomenclatura e sistemática filogenética"},{"id":"bio.8.2","name":"8.2 Características dos vírus"},{"id":"bio.8.3","name":"8.3 Diversidade da vida e principais características dos representantes de cada grupo animal"}]},{"id":"bio.9","name":"9. Anatomia e Fisiologia Humana","subs":[{"id":"bio.9.1","name":"9.1 Histologia e organização do corpo humano"},{"id":"bio.9.2","name":"9.2 Sistemas digestório, respiratório, cardiovascular, urinário, nervoso, endócrino, imunológico, reprodutor e locomotor"}]},{"id":"bio.10","name":"10. Botânica e Fisiologia Vegetal","subs":[{"id":"bio.10.1","name":"10.1 Morfologia, anatomia e tecidos vegetais"},{"id":"bio.10.2","name":"10.2 Classificação e reprodução das plantas"},{"id":"bio.10.3","name":"10.3 Nutrição e transporte vegetal"},{"id":"bio.10.4","name":"10.4 Hormônios, crescimento e desenvolvimento vegetal"}]}]},{"id":"bio.b4","name":"Ecologia, saúde e Ceará socioambiental","topics":[{"id":"bio.11","name":"11. Ecologia, Conservação da Biodiversidade e Sustentabilidade","subs":[{"id":"bio.11.1","name":"11.1 Ecossistemas, habitat, nicho ecológico e fatores ambientais"},{"id":"bio.11.2","name":"11.2 Fluxo de energia, cadeias alimentares e ciclos biogeoquímicos"},{"id":"bio.11.3","name":"11.3 Relações ecológicas e dinâmica de populações"},{"id":"bio.11.4","name":"11.4 Comunidades biológicas e sucessão ecológica"},{"id":"bio.11.5","name":"11.5 Biodiversidade e conservação biológica"},{"id":"bio.11.6","name":"11.6 Impactos ambientais e educação ambiental"}]},{"id":"bio.12","name":"12. Biologia e Saúde","subs":[{"id":"bio.12.1","name":"12.1 Programa Saúde na Escola (PSE) e Saúde Única (One Health)"},{"id":"bio.12.2","name":"12.2 Principais doenças causadas por vírus, bactérias e fungos"},{"id":"bio.12.3","name":"12.3 Parasitoses humanas"},{"id":"bio.12.4","name":"12.4 Imunologia, vacinação e prevenção de doenças"},{"id":"bio.12.5","name":"12.5 Gravidez e métodos anticoncepcionais"}]},{"id":"bio.13","name":"13. Biomas Brasileiros e Questões Socioambientais do Ceará","subs":[{"id":"bio.13.1","name":"13.1 Biomas brasileiros e biodiversidade nacional"},{"id":"bio.13.2","name":"13.2 Caatinga e biodiversidade do Ceará"},{"id":"bio.13.3","name":"13.3 Recursos hídricos, semiárido e desertificação"},{"id":"bio.13.4","name":"13.4 Mudanças climáticas, aquecimento global, poluição e degradação dos ecossistemas"},{"id":"bio.13.5","name":"13.5 Ambiente, sociedade, ciência e tecnologia para desenvolvimento sustentável e justiça socioambiental"}]}]},{"id":"bio.b5","name":"Ensino de Biologia","topics":[{"id":"bio.14","name":"14. Abordagens metodológicas e recursos didáticos no Ensino de Biologia, sala/laboratório, técnicas, materiais e segurança"},{"id":"bio.15","name":"15. Alfabetização científica, letramento científico e Natureza da Ciência"},{"id":"bio.16","name":"16. Currículo, Avaliação, Tecnologias educacionais e Inclusão no Ensino de Biologia"},{"id":"bio.17","name":"17. Competências e habilidades do componente curricular com base na BNCC e DCRC"}]}]}];
+const LEARNING_AREAS=["Educação","Administração","Português","Dados","Biologia"];
+const BASELINE_DEFAULTS={
+  "Educação":{estimate:13,calibrated:false},
+  "Administração":{estimate:60,calibrated:false},
+  "Português":{estimate:90,calibrated:false},
+  "Dados":{estimate:null,calibrated:false},
+  "Biologia":{estimate:null,calibrated:false}
+};
+const ACTIVITY_LABELS={
+  study_new:"Estudo novo",review:"Revisão",retention:"Teste de retenção",
+  questions:"Resolução de questões",simulation:"Simulado"
+};
+const RETRIEVAL_LABELS={easy:"Fácil",effort:"Com esforço",fail:"Falha"};
+function ensureLearningState(){
+  state.studyLog=Array.isArray(state.studyLog)?state.studyLog:[];
+  state.studyLogDeleted=state.studyLogDeleted&&typeof state.studyLogDeleted==="object"?state.studyLogDeleted:{};
+  state.syllabusProgress=state.syllabusProgress&&typeof state.syllabusProgress==="object"?state.syllabusProgress:{};
+  state.baselineCoverage=state.baselineCoverage&&typeof state.baselineCoverage==="object"?state.baselineCoverage:{};
+  LEARNING_AREAS.forEach(a=>{
+    const d=BASELINE_DEFAULTS[a];
+    state.baselineCoverage[a]={...d,...(state.baselineCoverage[a]||{})};
+  });
+  state.reviewSettings=state.reviewSettings&&typeof state.reviewSettings==="object"?state.reviewSettings:{intervals:[1,3,7,14,30]};
+  if(!Array.isArray(state.reviewSettings.intervals)||state.reviewSettings.intervals.length!==5)state.reviewSettings.intervals=[1,3,7,14,30];
+}
+ensureLearningState();
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function syllabusDiscipline(area){return SYLLABUS.find(d=>d.area===area)||null}
+function syllabusLeaves(area=null){
+  const ds=area?[syllabusDiscipline(area)].filter(Boolean):SYLLABUS;
+  return ds.flatMap(d=>d.blocks.flatMap(b=>b.topics.flatMap(t=>
+    (t.subs&&t.subs.length?t.subs:[{id:t.id,name:t.name}]).map(x=>({...x,area:d.area,disciplineId:d.id,blockId:b.id,blockName:b.name,topicId:t.id,topicName:t.name}))
+  )));
+}
+function syllabusLeafById(id){return syllabusLeaves().find(x=>x.id===id)||null}
+function topicWeight(id){const p=state.syllabusProgress[id]||{};const w=Number(p.weight);return Number.isFinite(w)&&w>0?w:1}
+function topicDiaryEntries(id){
+  return (state.studyLog||[]).filter(e=>!(state.studyLogDeleted||{})[e.id] && (e.topicIds||[]).includes(id));
+}
+function topicFirstPassEntries(id){
+  return (state.studyLog||[]).filter(e=>!(state.studyLogDeleted||{})[e.id] && (e.firstPassTopicIds||[]).includes(id));
+}
+function topicCompletionDate(id){
+  const p=state.syllabusProgress[id]||{};
+  const dates=[];
+  if(p.status==="completed"&&p.completedAt)dates.push(String(p.completedAt).slice(0,10));
+  topicFirstPassEntries(id).forEach(e=>dates.push(e.date||String(e.createdAt||"").slice(0,10)));
+  return dates.filter(Boolean).sort()[0]||null;
+}
+function topicDerivedStatus(id){
+  const p=state.syllabusProgress[id]||{};
+  if(p.status==="completed"||topicFirstPassEntries(id).length)return"completed";
+  if(p.status==="in_progress")return"in_progress";
+  const evidence=topicDiaryEntries(id).some(e=>["study_new","review","retention"].includes(e.activityType));
+  return evidence?"in_progress":"not_started";
+}
+function coverageStats(area=null,asOf=null){
+  const leaves=syllabusLeaves(area);
+  let total=0,done=0,progress=0,notStarted=0;
+  leaves.forEach(l=>{
+    const w=topicWeight(l.id);total+=w;
+    const completedDate=topicCompletionDate(l.id);
+    const completed=asOf?!!(completedDate&&completedDate<=asOf):topicDerivedStatus(l.id)==="completed";
+    if(completed){done+=w;return}
+    if(!asOf&&topicDerivedStatus(l.id)==="in_progress")progress+=w;
+    else notStarted+=w;
+  });
+  return {
+    totalWeight:total,doneWeight:done,progressWeight:progress,
+    completedPct:total?done/total*100:0,
+    progressPct:total?progress/total*100:0,
+    leaves:leaves.length,
+    notStarted:leaves.filter(l=>topicDerivedStatus(l.id)==="not_started").length,
+    inProgress:leaves.filter(l=>topicDerivedStatus(l.id)==="in_progress").length,
+    completed:leaves.filter(l=>topicDerivedStatus(l.id)==="completed").length
+  };
+}
+function coverageForBlock(area,blockId){
+  const leaves=syllabusLeaves(area).filter(l=>l.blockId===blockId);
+  let t=0,d=0,p=0;
+  leaves.forEach(l=>{const w=topicWeight(l.id);t+=w;const s=topicDerivedStatus(l.id);if(s==="completed")d+=w;else if(s==="in_progress")p+=w});
+  return{completedPct:t?d/t*100:0,progressPct:t?p/t*100:0};
+}
+function coverageForTopic(area,topicId){
+  const leaves=syllabusLeaves(area).filter(l=>l.topicId===topicId);
+  let t=0,d=0,p=0;
+  leaves.forEach(l=>{const w=topicWeight(l.id);t+=w;const s=topicDerivedStatus(l.id);if(s==="completed")d+=w;else if(s==="in_progress")p+=w});
+  return{completedPct:t?d/t*100:0,progressPct:t?p/t*100:0};
+}
+function manualDiaryEntries(){return (state.studyLog||[]).filter(e=>e.sourceType==="manual"&&!(state.studyLogDeleted||{})[e.id])}
+function diaryEntriesForWeek(w){return manualDiaryEntries().filter(e=>e.date>=w.start&&e.date<=w.end)}
+function diaryMinutesForWeek(w){return diaryEntriesForWeek(w).reduce((a,e)=>a+(+e.minutes||0),0)}
+function diaryQuestionsForWeek(w){return diaryEntriesForWeek(w).reduce((a,e)=>a+(+e.questions||0),0)}
+function diaryCorrectForWeek(w){return diaryEntriesForWeek(w).reduce((a,e)=>a+(+e.correct||0),0)}
+function dayDiff(a,b){const A=new Date(a+"T12:00:00"),B=new Date(b+"T12:00:00");return Math.round((A-B)/86400000)}
+function learningDateTime(e){return `${e.date||""}T${String(e.updatedAt||e.createdAt||"").slice(11,19)||"12:00:00"}`}
+function studyLogUpsert(entry){
+  ensureLearningState();
+  const now=new Date().toISOString();
+  entry.updatedAt=now;entry.createdAt=entry.createdAt||now;
+  const i=state.studyLog.findIndex(x=>x.id===entry.id);
+  if(i>=0)state.studyLog[i]={...state.studyLog[i],...entry};
+  else state.studyLog.push(entry);
+  delete state.studyLogDeleted[entry.id];
+}
+function removeStudyLog(id){
+  state.studyLog=(state.studyLog||[]).filter(e=>e.id!==id);
+  state.studyLogDeleted[id]=new Date().toISOString();
+}
+function normalizedLearningArea(a){
+  return LEARNING_AREAS.includes(a)?a:(a==="Educação Brasileira"?"Educação":a==="Administração Pública"?"Administração":a==="Língua Portuguesa"?"Português":a==="Dados e Indicadores"?"Dados":"Misto");
+}
+function normalizeTextLearning(s){
+  return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+}
+function inferTopicIds(area,text){
+  if(!LEARNING_AREAS.includes(area))return[];
+  const hay=normalizeTextLearning(text),words=new Set(hay.split(/\s+/).filter(w=>w.length>=5));
+  return syllabusLeaves(area).map(l=>{
+    const name=normalizeTextLearning(l.name);
+    const kws=name.split(/\s+/).filter(w=>w.length>=5);
+    let score=kws.filter(w=>words.has(w)).length;
+    if(name&&hay.includes(name.slice(0,Math.min(name.length,40))))score+=4;
+    return{id:l.id,score};
+  }).filter(x=>x.score>=2).sort((a,b)=>b.score-a.score).slice(0,6).map(x=>x.id);
+}
+function linkedDiaryId(type,id,suffix=""){return `linked-${type}-${id}${suffix?`-${suffix}`:""}`}
+function upsertDiaryFromPlannedSession(sessionId){
+  const s=allSessions().find(x=>x.id===sessionId);if(!s)return;
+  const st=sessionState(sessionId),area=normalizedLearningArea(s.area);
+  const id=linkedDiaryId("session",sessionId);
+  const existing=(state.studyLog||[]).find(e=>e.id===id);
+  const activity=/retrieval|revis[aã]o/i.test(s.title)?"review":"study_new";
+  studyLogUpsert({
+    id,sourceType:"plannedSession",sourceId:sessionId,date:s.date,discipline:area,
+    activityType:existing?.activityType||activity,
+    topicIds:existing?.topicIds?.length?existing.topicIds:inferTopicIds(area,`${s.title} ${s.detail}`),
+    firstPassTopicIds:existing?.firstPassTopicIds||[],
+    minutes:+st.minutes||0,questions:+st.questions||0,correct:+st.correct||0,
+    confidence:st.confidence===""?"":Number(st.confidence),retrievalResult:existing?.retrievalResult||"",
+    consulted:existing?.consulted||false,notes:st.notes||existing?.notes||"",linked:true
+  });
+}
+function upsertDiaryFromBankBlock(block){
+  if(!block?.completed)return;
+  const attempts=(state.bankAttempts||[]).filter(a=>a.blockId===block.id);
+  const groups={};
+  attempts.forEach(a=>{
+    const area=normalizedLearningArea(a.area);if(!LEARNING_AREAS.includes(area))return;
+    groups[area] ||= [];groups[area].push(a);
+  });
+  Object.entries(groups).forEach(([area,arr])=>{
+    const qids=[...new Set(arr.map(a=>a.questionId))],qs=qids.map(bankQuestionById).filter(Boolean);
+    const topicIds=[...new Set(qs.flatMap(q=>inferTopicIds(area,`${q.topic||""} ${q.question||""}`)))];
+    const correct=arr.filter(a=>a.correct).length;
+    const id=linkedDiaryId("bank",block.id,area);
+    const existing=(state.studyLog||[]).find(e=>e.id===id);
+    studyLogUpsert({
+      id,sourceType:"bankBlock",sourceId:block.id,date:block.completedAt?String(block.completedAt).slice(0,10):bankToday(),
+      discipline:area,activityType:"questions",topicIds:existing?.topicIds?.length?existing.topicIds:topicIds,
+      firstPassTopicIds:existing?.firstPassTopicIds||[],minutes:existing?.minutes||0,questions:arr.length,correct,
+      confidence:block.confidence??"",retrievalResult:existing?.retrievalResult||"",consulted:existing?.consulted||false,
+      notes:existing?.notes||"Registro automático do Banco de Questões.",linked:true
+    });
+  });
+}
+
 const STATE_KEY = "seduc2026_state_v1";
 const THEME_KEY = "seduc2026_theme";
 let state = JSON.parse(localStorage.getItem(STATE_KEY) || '{"sessions":{},"fragilities":[],"simulations":{}}');
 state.sessions ||= {}; state.fragilities ||= []; state.simulations ||= {}; state.extraQuestions ||= []; state.questionBank ||= []; state.bankAttempts ||= []; state.bankBlocks ||= [];
+state.studyLog ||= [];
+state.studyLogDeleted ||= {};
+state.syllabusProgress ||= {};
+state.baselineCoverage ||= {};
+state.reviewSettings ||= {intervals:[1,3,7,14,30],updatedAt:new Date().toISOString()};
+
 state.adaptive ||= {enabled:true,fixedTargets:{}};
 state.adaptive.fixedTargets ||= {};
 // V24: remove base64 legado do estado para recuperar o localStorage e destravar registros.
@@ -1508,9 +1890,11 @@ function formatStudyDuration(minutes,{compact=false}={}){
 function weekHourStats(w){
   const sessions=w.sessions.filter(s=>s.kind==="study"||s.kind==="exam");
   const suggestedMinutes=sessions.reduce((a,s)=>a+(+s.minutes||0),0);
-  const actualMinutes=sessions.reduce((a,s)=>a+(+sessionState(s.id).minutes||0),0);
-  const withTime=sessions.filter(s=>(+sessionState(s.id).minutes||0)>0).length;
-  return {suggestedMinutes,actualMinutes,withTime,sessions:sessions.length};
+  const sessionMinutes=sessions.reduce((a,s)=>a+(+sessionState(s.id).minutes||0),0);
+  const diaryMinutes=diaryMinutesForWeek(w);
+  const actualMinutes=sessionMinutes+diaryMinutes;
+  const withTime=sessions.filter(s=>(+sessionState(s.id).minutes||0)>0).length+diaryEntriesForWeek(w).filter(e=>(+e.minutes||0)>0).length;
+  return {suggestedMinutes,actualMinutes,sessionMinutes,diaryMinutes,withTime,sessions:sessions.length};
 }
 
 function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
@@ -1524,6 +1908,7 @@ function weekStats(w){
   sess.forEach(s=>{const st=sessionState(s.id);questions+=+st.questions||0;correct+=+st.correct||0});
   extraForWeek(w).forEach(x=>{questions+=+x.questions||0;correct+=+x.correct||0});
   (state.bankAttempts||[]).filter(a=>+a.week===+w.number).forEach(a=>{questions+=1;correct+=a.correct?1:0});
+  questions+=diaryQuestionsForWeek(w);correct+=diaryCorrectForWeek(w);
   return {questions,correct,accuracy:questions?correct/questions:null};
 }
 function plannedWeekQuestionStats(w){
@@ -1549,6 +1934,10 @@ function calibrationBatches(w){
   (state.bankBlocks||[]).filter(b=>+b.week===+w.number && b.completed && (+b.answered||0)>0).forEach(b=>{
     const conf=Number(b.confidence);
     if(b.confidence!==""&&b.confidence!==null&&Number.isFinite(conf)) out.push({q:+b.answered||0,c:+b.correct||0,confidence:clamp(conf,0,100),source:"bank-block"});
+  });
+  diaryEntriesForWeek(w).forEach(e=>{
+    const q=+e.questions||0,c=+e.correct||0,conf=Number(e.confidence);
+    if(q>0&&e.confidence!==""&&e.confidence!==null&&Number.isFinite(conf))out.push({q,c,confidence:clamp(conf,0,100),source:"diary"});
   });
   return out;
 }
@@ -1656,7 +2045,7 @@ function renderAdaptive(){
   }
   const info=adaptiveInfo(w), stats=weekStats(w), planned=plannedWeekQuestionStats(w);
   const extras=extraForWeek(w).reduce((a,x)=>a+(+x.questions||0),0);
-  const bankQ=(state.bankAttempts||[]).filter(a=>+a.week===+w.number).length;
+  const bankQ=(state.bankAttempts||[]).filter(a=>+a.week===+w.number).length;const diaryQ=diaryQuestionsForWeek(w);
   const pct=info.target?stats.questions/info.target*100:0;
   const projected=projectedNextFromWeek(w);
   $("#adaptiveGoal").textContent=info.target.toLocaleString("pt-BR");
@@ -1671,7 +2060,7 @@ function renderAdaptive(){
   $("#weeklyGoalDone").textContent=`${stats.questions.toLocaleString("pt-BR")} / ${info.target.toLocaleString("pt-BR")}`;
   $("#weeklyGoalPct").textContent=`(${Math.round(pct)}%)`;
   $("#weeklyGoalBar").style.width=Math.min(100,pct)+"%";
-  $("#weeklyGoalBreakdown").textContent=`${planned.questions.toLocaleString("pt-BR")} em sessões • ${extras.toLocaleString("pt-BR")} extras • ${bankQ.toLocaleString("pt-BR")} banco`;
+  $("#weeklyGoalBreakdown").textContent=`${planned.questions.toLocaleString("pt-BR")} em sessões • ${extras.toLocaleString("pt-BR")} extras • ${bankQ.toLocaleString("pt-BR")} banco • ${diaryQ.toLocaleString("pt-BR")} diário`;
   const rem=Math.max(0,info.target-stats.questions);
   $("#weeklyGoalRemaining").textContent=rem?`${rem.toLocaleString("pt-BR")} restantes`:`meta atingida${stats.questions>info.target?` • +${(stats.questions-info.target).toLocaleString("pt-BR")} acima`:``}`;
 }
@@ -1690,18 +2079,310 @@ function renderWeeklyHours(){
   $("#weeklyHoursDone").textContent=`${formatStudyDuration(hs.actualMinutes,{compact:true})} / ${formatStudyDuration(hs.suggestedMinutes,{compact:true})}`;
   $("#weeklyHoursPct").textContent=`(${Math.round(pct)}%)`;
   $("#weeklyHoursBar").style.width=Math.min(100,pct)+"%";
-  $("#weeklyHoursBreakdown").textContent=`${formatStudyDuration(hs.actualMinutes)} registradas em ${hs.withTime} sessão(ões) • sugestão semanal ${formatStudyDuration(hs.suggestedMinutes)}`;
+  $("#weeklyHoursBreakdown").textContent=`${formatStudyDuration(hs.actualMinutes)} registradas • ${formatStudyDuration(hs.diaryMinutes||0)} vieram do Diário manual • sugestão semanal ${formatStudyDuration(hs.suggestedMinutes)}`;
   const rem=Math.max(0,hs.suggestedMinutes-hs.actualMinutes);
   $("#weeklyHoursRemaining").textContent=rem
     ?`${formatStudyDuration(rem)} restantes`
     :`meta atingida${hs.actualMinutes>hs.suggestedMinutes?` • +${formatStudyDuration(hs.actualMinutes-hs.suggestedMinutes)} acima`:""}`;
 }
 
+
+let activeDiaryId=null;
+let selectedDiaryTopics=new Set();
+
+function accuracyStatsByArea(area,days=30){
+  const cutoff=days==="all"?"0000-00-00":addDaysISO(todayISO(),-Number(days)+1);
+  let q=0,c=0;
+  allSessions().forEach(s=>{
+    if(s.area!==area||s.date<cutoff)return;
+    const st=sessionState(s.id);q+=+st.questions||0;c+=+st.correct||0;
+  });
+  (state.extraQuestions||[]).forEach(x=>{if(x.area===area&&(x.date||"")>=cutoff){q+=+x.questions||0;c+=+x.correct||0}});
+  (state.bankAttempts||[]).forEach(a=>{if(a.area===area&&(a.date||"")>=cutoff){q+=1;c+=a.correct?1:0}});
+  SIMS.forEach(sim=>{
+    if(sim.date<cutoff)return;const d=state.simulations[sim.id];if(!d?.saved)return;
+    const map={"Biologia":["bio",sim.bio],"Educação":["edu",sim.edu],"Administração":["adm",sim.adm],"Português":["port",sim.port],"Dados":["dados",sim.dados]};
+    const x=map[area];if(x){q+=x[1];c+=+d[x[0]]||0}
+  });
+  manualDiaryEntries().forEach(e=>{if(e.discipline===area&&(e.date||"")>=cutoff){q+=+e.questions||0;c+=+e.correct||0}});
+  return{q,c,pct:q?c/q*100:null};
+}
+function reviewIntervals(){return (state.reviewSettings?.intervals||[1,3,7,14,30]).map(x=>Math.max(1,Math.round(+x||1)))}
+function reviewEventsForTopic(topicId){
+  return (state.studyLog||[]).filter(e=>
+    !(state.studyLogDeleted||{})[e.id] &&
+    (e.topicIds||[]).includes(topicId) &&
+    ["study_new","review","retention"].includes(e.activityType)
+  ).sort((a,b)=>learningDateTime(a).localeCompare(learningDateTime(b)));
+}
+function topicReviewPlan(topicId){
+  const events=reviewEventsForTopic(topicId);if(!events.length)return null;
+  const intervals=reviewIntervals();let step=0,due=null,last=null,lastResult="";
+  events.forEach((e,i)=>{
+    const date=e.date||todayISO();last=e;lastResult=e.retrievalResult||"";
+    if(i===0&&e.activityType==="study_new"&&!e.retrievalResult){step=0;due=addDaysISO(date,intervals[0]);return}
+    if(e.retrievalResult==="fail"){step=0;due=addDaysISO(date,intervals[0]);return}
+    if(e.retrievalResult==="effort"){step=Math.max(0,step-1);due=addDaysISO(date,intervals[step]);return}
+    if(e.retrievalResult==="easy"){
+      if(e.consulted){due=addDaysISO(date,intervals[Math.max(0,step)]);return}
+      step=Math.min(intervals.length-1,step+1);due=addDaysISO(date,intervals[step]);return;
+    }
+    due=addDaysISO(date,intervals[Math.max(0,step)]);
+  });
+  const leaf=syllabusLeafById(topicId);
+  return{topicId,dueDate:due,step,lastDate:last?.date||"",lastResult,consulted:!!last?.consulted,leaf};
+}
+function topicFragilityScore(leaf){
+  if(!leaf)return 0;const ln=normalizeTextLearning(`${leaf.name} ${leaf.topicName||""}`);
+  return (state.fragilities||[]).filter(f=>+f.level>0&&f.area===leaf.area).reduce((sum,f)=>{
+    const fn=normalizeTextLearning(f.topic||"");return sum+((fn&&ln&&(fn.includes(ln.slice(0,24))||ln.includes(fn.slice(0,24))))?(+f.level||1):0);
+  },0);
+}
+function dueTopicReviews(){
+  return syllabusLeaves().map(l=>topicReviewPlan(l.id)).filter(Boolean).map(r=>{
+    const overdue=dayDiff(todayISO(),r.dueDate),frag=topicFragilityScore(r.leaf);
+    return{...r,overdue,frag,priority:(overdue>0?20+overdue:overdue===0?12:0)+frag*3+(r.lastResult==="fail"?8:r.lastResult==="effort"?4:0)};
+  }).filter(r=>r.dueDate<=todayISO()).sort((a,b)=>b.priority-a.priority||a.dueDate.localeCompare(b.dueDate));
+}
+function futureTopicReviews(){
+  return syllabusLeaves().map(l=>topicReviewPlan(l.id)).filter(Boolean).filter(r=>r.dueDate>todayISO()).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+}
+function bankDueCount(){
+  const t=bankToday();return (state.questionBank||[]).filter(q=>q.status!=="mastered"&&(!q.dueDate||q.dueDate<=t)).length;
+}
+function renderLearningDashboard(){
+  ensureLearningState();
+  const period=$("#dashboardAccuracyPeriod")?.value||"30";
+  const cards=LEARNING_AREAS.map(area=>{
+    const cov=coverageStats(area),acc=accuracyStatsByArea(area,period),base=state.baselineCoverage[area]||{};
+    const partial=Math.min(100-cov.completedPct,cov.progressPct);
+    return `<div class="discipline-kpi">
+      <div class="discipline-kpi-head"><b style="color:${areaColor(area)}">${area}</b><span class="phase-chip">${cov.completed}/${cov.leaves}</span></div>
+      <div class="cov">${cov.completedPct.toFixed(0)}%</div>
+      <small>Cobertura calculada • 1ª passagem</small>
+      <div class="coverage-track"><i class="done" style="width:${cov.completedPct}%"></i><i class="progress-part" style="left:${cov.completedPct}%;width:${partial}%"></i></div>
+      <div class="acc">${acc.pct===null?"—":acc.pct.toFixed(0)+"%"}</div>
+      <small>Acertos • ${period==="all"?"todo o histórico":`últimos ${period} dias`} • ${acc.q}Q</small>
+      <small>${cov.completed} concluídos • ${cov.inProgress} em estudo • ${cov.notStarted} não iniciados</small>
+      <small>${base.estimate==null?"Estimativa inicial: a aferir":`Estimativa inicial: ${base.estimate}%${base.calibrated?" • calibrada":" • provisória"}`}</small>
+    </div>`;
+  }).join("");
+  if($("#disciplineCoverageCards"))$("#disciplineCoverageCards").innerHTML=cards;
+  const cw=currentWeek(),hs=cw?weekHourStats(cw):{actualMinutes:0},ws=cw?weekStats(cw):{questions:0};
+  const due=dueTopicReviews(),over=due.filter(x=>x.overdue>0),overall=coverageStats();
+  if($("#learningSummaryGrid"))$("#learningSummaryGrid").innerHTML=[
+    ["Cobertura geral",overall.completedPct.toFixed(1)+"%","ponderada pelos pesos dos itens"],
+    ["Horas na semana",formatStudyDuration(hs.actualMinutes,{compact:true}),"cronograma + Diário manual"],
+    ["Questões na semana",ws.questions+"Q","todas as fontes, sem duplicar Diário vinculado"],
+    ["Revisões hoje",due.filter(x=>x.overdue===0).length,"tópicos do Diário"],
+    ["Revisões atrasadas",over.length,"priorizadas automaticamente"],
+    ["Tópicos não iniciados",overall.notStarted,"itens oficiais ainda pendentes"]
+  ].map(x=>`<div><b>${x[1]}</b><small>${x[0]} • ${x[2]}</small></div>`).join("");
+  renderCoverageTrend();
+}
+function coverageHistoryPoints(){
+  const dates=[...new Set(syllabusLeaves().map(l=>topicCompletionDate(l.id)).filter(Boolean))].sort();
+  const today=todayISO();if(!dates.includes(today))dates.push(today);
+  const start=WEEKS[0]?.start||dates[0]||today;
+  if(!dates.includes(start))dates.unshift(start);
+  const trimmed=dates.slice(-18);
+  return trimmed.map(d=>({date:d,pct:coverageStats(null,d).completedPct}));
+}
+function renderCoverageTrend(){
+  const el=$("#coverageTrend");if(!el)return;
+  const pts=coverageHistoryPoints();if(pts.length<2){el.innerHTML=`<div class="today-item"><small>Marque primeiras passagens para formar a curva de cobertura.</small></div>`;return}
+  const W=700,H=120,pad=12,max=100;
+  const coords=pts.map((p,i)=>({x:pad+i*(W-2*pad)/(pts.length-1),y:H-pad-(p.pct/max)*(H-2*pad),...p}));
+  const poly=coords.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="Evolução da cobertura"><line class="trend-axis" x1="${pad}" x2="${W-pad}" y1="${H-pad}" y2="${H-pad}"/><polyline class="trend-line" points="${poly}"/>${coords.map(p=>`<circle class="trend-dot" cx="${p.x}" cy="${p.y}" r="3"><title>${fmtDate(p.date)} • ${p.pct.toFixed(1)}%</title></circle>`).join("")}</svg><small style="color:var(--muted)">De ${pts[0].pct.toFixed(1)}% em ${fmtDate(pts[0].date)} para ${pts.at(-1).pct.toFixed(1)}% em ${fmtDate(pts.at(-1).date)}.</small>`;
+}
+function renderDiaryTopicPicker(){
+  const area=$("#diaryDiscipline")?.value||"Educação",d=syllabusDiscipline(area),box=$("#diaryTopicPicker");if(!box||!d)return;
+  box.innerHTML=d.blocks.map(b=>`<details open><summary>${esc(b.name)}</summary>${b.topics.map(t=>{
+    const leaves=t.subs&&t.subs.length?t.subs:[{id:t.id,name:t.name}];
+    return `${t.subs?.length?`<div style="font-size:10px;color:var(--muted);padding:6px 4px 2px">${esc(t.name)}</div>`:""}${leaves.map(l=>`<label class="topic-check"><input type="checkbox" class="diary-topic-check" value="${l.id}" ${selectedDiaryTopics.has(l.id)?"checked":""}><span>${esc(l.name)}</span></label>`).join("")}`;
+  }).join("")}</details>`).join("");
+  $$(".diary-topic-check").forEach(ch=>ch.onchange=()=>{ch.checked?selectedDiaryTopics.add(ch.value):selectedDiaryTopics.delete(ch.value);updateDiaryTopicCount()});
+  updateDiaryTopicCount();
+}
+function updateDiaryTopicCount(){if($("#diaryTopicCount"))$("#diaryTopicCount").textContent=`${selectedDiaryTopics.size} selecionado${selectedDiaryTopics.size===1?"":"s"}`}
+function updateDiaryAccuracyPreview(){
+  const q=+$("#diaryQuestions")?.value||0,c=+$("#diaryCorrect")?.value||0;
+  if($("#diaryAccuracyPreview"))$("#diaryAccuracyPreview").textContent=q?`Acerto: ${c}/${q} • ${(c/q*100).toFixed(1)}%`:"Acerto: —";
+}
+function resetDiaryForm(prefill={}){
+  activeDiaryId=null;selectedDiaryTopics=new Set(prefill.topicIds||[]);
+  $("#diaryFormTitle").textContent="Registrar estudo";$("#diaryEditHint").textContent="registro manual";$("#diaryCancelEdit").style.display="none";
+  $("#diaryDate").value=prefill.date||todayISO();$("#diaryDiscipline").value=prefill.discipline||"Educação";$("#diaryActivity").value=prefill.activityType||"study_new";
+  $("#diaryMinutes").value=prefill.minutes??"";$("#diaryQuestions").value=prefill.questions??"";$("#diaryCorrect").value=prefill.correct??"";
+  $("#diaryConfidence").value=prefill.confidence??"";$("#diaryRetrieval").value=prefill.retrievalResult||"";$("#diaryConsulted").checked=!!prefill.consulted;
+  $("#diaryFirstPass").checked=!!prefill.firstPass;$("#diaryNotes").value=prefill.notes||"";
+  renderDiaryTopicPicker();updateDiaryAccuracyPreview();
+}
+function editDiaryEntry(id){
+  const e=(state.studyLog||[]).find(x=>x.id===id);if(!e)return;
+  activeDiaryId=id;selectedDiaryTopics=new Set(e.topicIds||[]);
+  $("#diaryFormTitle").textContent="Editar registro";$("#diaryEditHint").textContent=e.linked?"registro vinculado — edição preserva a fonte":"registro manual";$("#diaryCancelEdit").style.display="";
+  $("#diaryDate").value=e.date||todayISO();if(LEARNING_AREAS.includes(e.discipline))$("#diaryDiscipline").value=e.discipline;
+  $("#diaryActivity").value=e.activityType||"study_new";$("#diaryMinutes").value=e.minutes??"";$("#diaryQuestions").value=e.questions??"";
+  $("#diaryCorrect").value=e.correct??"";$("#diaryConfidence").value=e.confidence??"";$("#diaryRetrieval").value=e.retrievalResult||"";
+  $("#diaryConsulted").checked=!!e.consulted;$("#diaryFirstPass").checked=(e.firstPassTopicIds||[]).length>0;$("#diaryNotes").value=e.notes||"";
+  renderDiaryTopicPicker();updateDiaryAccuracyPreview();window.scrollTo({top:$("#diario").offsetTop-70,behavior:"smooth"});
+}
+function saveDiaryEntry(){
+  ensureLearningState();
+  const date=$("#diaryDate").value||todayISO(),discipline=$("#diaryDiscipline").value,minutes=Math.max(0,+$("#diaryMinutes").value||0);
+  const q=Math.max(0,+$("#diaryQuestions").value||0),c=Math.max(0,+$("#diaryCorrect").value||0),confRaw=$("#diaryConfidence").value;
+  if(c>q){toast("Acertos não podem ser maiores que questões.");return}
+  if(confRaw!==""&&(+confRaw<0||+confRaw>100)){toast("Confiança deve ficar entre 0 e 100%.");return}
+  if(!selectedDiaryTopics.size){toast("Selecione pelo menos um tópico do edital.");return}
+  if(minutes===0&&q===0){toast("Registre tempo ou questões para caracterizar a sessão.");return}
+  const existing=activeDiaryId?(state.studyLog||[]).find(e=>e.id===activeDiaryId):null;
+  const id=activeDiaryId||`diary-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+  const topicIds=[...selectedDiaryTopics];
+  studyLogUpsert({
+    ...(existing||{}),id,sourceType:existing?.sourceType||"manual",sourceId:existing?.sourceId||null,linked:!!existing?.linked,
+    date,discipline,activityType:$("#diaryActivity").value,topicIds,
+    firstPassTopicIds:$("#diaryFirstPass").checked?topicIds:[],
+    minutes,questions:q,correct:c,confidence:confRaw===""?"":+confRaw,
+    retrievalResult:$("#diaryRetrieval").value,consulted:$("#diaryConsulted").checked,notes:$("#diaryNotes").value.trim()
+  });
+  save();resetDiaryForm({date,discipline});toast(existing?"Registro atualizado.":"Estudo registrado no Diário.");
+}
+function syllabusStatusLabel(s){return s==="completed"?"1ª passagem concluída":s==="in_progress"?"Em estudo":"Não iniciado"}
+function setSyllabusManualStatus(id,status){
+  const p=state.syllabusProgress[id]||{};
+  p.status=status;p.updatedAt=new Date().toISOString();
+  if(status==="completed")p.completedAt=p.completedAt||todayISO();else delete p.completedAt;
+  state.syllabusProgress[id]=p;save();
+}
+function setSyllabusWeight(id,value){
+  const p=state.syllabusProgress[id]||{};p.weight=Math.max(.1,Number(value)||1);p.updatedAt=new Date().toISOString();state.syllabusProgress[id]=p;save();
+}
+function renderBaselineCard(area){
+  const b=state.baselineCoverage[area]||BASELINE_DEFAULTS[area],el=$("#baselineCard");if(!el)return;
+  el.innerHTML=`<div class="baseline-row"><div style="flex:1"><b>Linha de base provisória — ${area}</b><small style="display:block;color:var(--muted);margin-top:4px">Estimativa de planejamento; não marca tópicos como concluídos e não entra na cobertura calculada.</small></div>
+    <label style="font-size:11px;color:var(--muted)">Estimativa (%) <input id="baselineEstimateInput" type="number" min="0" max="100" value="${b.estimate??""}" placeholder="a aferir"></label>
+    <button class="ghost" id="baselineSaveBtn">${b.calibrated?"✓ Calibração marcada":"Marcar calibração concluída"}</button></div>`;
+  $("#baselineSaveBtn").onclick=()=>{
+    const v=$("#baselineEstimateInput").value;
+    state.baselineCoverage[area]={estimate:v===""?null:clamp(+v,0,100),calibrated:!b.calibrated,updatedAt:new Date().toISOString()};
+    save();toast("Linha de base atualizada sem alterar a cobertura calculada.");
+  };
+  $("#baselineEstimateInput").onchange=()=>{
+    const v=$("#baselineEstimateInput").value;
+    state.baselineCoverage[area]={...state.baselineCoverage[area],estimate:v===""?null:clamp(+v,0,100),updatedAt:new Date().toISOString()};
+    save();
+  };
+}
+function renderSyllabusMap(){
+  ensureLearningState();
+  const sel=$("#syllabusDiscipline");if(!sel)return;
+  if(!sel.options.length)sel.innerHTML=LEARNING_AREAS.map(a=>`<option>${a}</option>`).join("");
+  const area=sel.value||"Educação",filter=$("#syllabusStatusFilter")?.value||"",d=syllabusDiscipline(area),cov=coverageStats(area);
+  $("#syllabusCoverageHeadline").textContent=`${cov.completedPct.toFixed(1)}% • ${cov.completed}/${cov.leaves}`;
+  renderBaselineCard(area);
+  $("#syllabusMap").innerHTML=d.blocks.map(b=>{
+    const bc=coverageForBlock(area,b.id);
+    const rows=b.topics.map(t=>{
+      const leaves=(t.subs&&t.subs.length?t.subs:[{id:t.id,name:t.name}]).map(l=>syllabusLeafById(l.id)).filter(Boolean).filter(l=>!filter||topicDerivedStatus(l.id)===filter);
+      if(!leaves.length)return"";
+      const tc=coverageForTopic(area,t.id);
+      return `${t.subs?.length?`<div class="syllabus-topic-title" style="display:flex;justify-content:space-between;gap:8px"><span>${esc(t.name)}</span><span>${tc.completedPct.toFixed(0)}%${tc.progressPct?` + ${tc.progressPct.toFixed(0)}% em estudo`:""}</span></div>`:""}${leaves.map(l=>{
+        const st=topicDerivedStatus(l.id),p=state.syllabusProgress[l.id]||{};
+        return `<div class="syllabus-leaf"><div class="name"><span class="syllabus-status-dot ${st==="completed"?"st-done":st==="in_progress"?"st-prog":"st-not"}"></span>${esc(l.name)}</div>
+          <select class="syllabus-status-select" data-topic="${l.id}"><option value="not_started" ${st==="not_started"?"selected":""}>Não iniciado</option><option value="in_progress" ${st==="in_progress"?"selected":""}>Em estudo</option><option value="completed" ${st==="completed"?"selected":""}>1ª passagem concluída</option></select>
+          <input class="syllabus-weight-input" data-topic="${l.id}" type="number" min="0.1" step="0.1" value="${topicWeight(l.id)}" title="Peso"></div>`;
+      }).join("")}`;
+    }).join("");
+    if(!rows.trim())return"";
+    return `<details class="syllabus-block" open><summary>${esc(b.name)} <span class="coverage-block-summary">${bc.completedPct.toFixed(0)}% concluído${bc.progressPct?` • ${bc.progressPct.toFixed(0)}% em estudo`:""}</span></summary><div class="syllabus-block-body">${rows}</div></details>`;
+  }).join("")||`<div class="today-item"><small>Nenhum item com este filtro.</small></div>`;
+  $$(".syllabus-status-select").forEach(x=>x.onchange=()=>setSyllabusManualStatus(x.dataset.topic,x.value));
+  $$(".syllabus-weight-input").forEach(x=>x.onchange=()=>setSyllabusWeight(x.dataset.topic,x.value));
+}
+function historyUnifiedEntries(){
+  const out=[...(state.studyLog||[]).filter(e=>!(state.studyLogDeleted||{})[e.id])].map(e=>({...e,historySource:e.sourceType||"manual",editable:true}));
+  const linkedSessions=new Set(out.filter(e=>e.sourceType==="plannedSession").map(e=>e.sourceId));
+  allSessions().forEach(s=>{
+    const st=sessionState(s.id);if(linkedSessions.has(s.id)||(!st.minutes&&!st.questions&&st.status==="not_started"))return;
+    out.push({id:`virtual-session-${s.id}`,date:s.date,discipline:normalizedLearningArea(s.area),activityType:/revis[aã]o|retrieval/i.test(s.title)?"review":"study_new",topicIds:[],minutes:+st.minutes||0,questions:+st.questions||0,correct:+st.correct||0,confidence:st.confidence||"",notes:st.notes||s.title,historySource:"plannedSession",editable:false});
+  });
+  (state.extraQuestions||[]).forEach(x=>out.push({id:`virtual-extra-${x.id}`,date:x.date,discipline:normalizedLearningArea(x.area),activityType:"questions",topicIds:[],minutes:0,questions:+x.questions||0,correct:+x.correct||0,confidence:x.confidence??"",notes:x.notes||x.context||"Questões extras",historySource:"extra",editable:false}));
+  const linkedBank=new Set(out.filter(e=>e.sourceType==="bankBlock").map(e=>e.sourceId));
+  (state.bankBlocks||[]).filter(b=>b.completed&&!linkedBank.has(b.id)).forEach(b=>{
+    out.push({id:`virtual-bank-${b.id}`,date:b.completedAt?String(b.completedAt).slice(0,10):"",discipline:"Misto",activityType:"questions",topicIds:[],minutes:0,questions:+b.answered||0,correct:+b.correct||0,confidence:b.confidence??"",notes:"Banco de Questões",historySource:"bankBlock",editable:false});
+  });
+  SIMS.forEach(sim=>{const d=state.simulations[sim.id];if(!d?.saved)return;const c=["bio","edu","adm","port","dados"].reduce((a,k)=>a+(+d[k]||0),0);out.push({id:`virtual-sim-${sim.id}`,date:sim.date,discipline:"Misto",activityType:"simulation",topicIds:[],minutes:0,questions:sim.total,correct:c,notes:sim.label,historySource:"simulation",editable:false})});
+  return out.filter(e=>e.date).sort((a,b)=>b.date.localeCompare(a.date)||(b.updatedAt||b.createdAt||"").localeCompare(a.updatedAt||a.createdAt||""));
+}
+function historyGroupKey(e,mode){
+  if(mode==="day")return e.date;
+  const d=new Date(e.date+"T12:00:00"),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10);
+}
+function renderDiaryHistory(){
+  const box=$("#diaryHistory");if(!box)return;
+  const mode=$("#historyGroup")?.value||"week",area=$("#historyDiscipline")?.value||"",source=$("#historySource")?.value||"";
+  const rows=historyUnifiedEntries().filter(e=>(!area||e.discipline===area)&&(!source||e.historySource===source));
+  const groups={};rows.forEach(e=>{const k=historyGroupKey(e,mode);groups[k] ||= [];groups[k].push(e)});
+  const keys=Object.keys(groups).sort().reverse();
+  box.innerHTML=keys.length?keys.map(k=>{
+    const es=groups[k],mins=es.reduce((a,e)=>a+(+e.minutes||0),0),q=es.reduce((a,e)=>a+(+e.questions||0),0),c=es.reduce((a,e)=>a+(+e.correct||0),0);
+    const label=mode==="day"?fmtDate(k):`Semana de ${fmtDate(k)}`;
+    return `<div class="diary-day"><div class="diary-day-head"><b>${label}</b><small>${formatStudyDuration(mins,{compact:true})} • ${q}Q${q?` • ${(c/q*100).toFixed(0)}%`:""}</small></div>${es.map(e=>{
+      const topics=(e.topicIds||[]).map(id=>syllabusLeafById(id)?.name).filter(Boolean);
+      const gain=(e.firstPassTopicIds||[]).length;
+      return `<div class="diary-entry"><div class="diary-entry-accent" style="background:${areaColor(e.discipline)}"></div><div><h4>${fmtDate(e.date)} • ${e.discipline} • ${ACTIVITY_LABELS[e.activityType]||e.activityType}</h4>
+        <p>${topics.length?topics.slice(0,4).map(esc).join(" • ")+(topics.length>4?` • +${topics.length-4}`:""):"Sem tópico do mapa vinculado"}${gain?` • <b>+${gain} 1ª passagem(ns)</b>`:""}</p>
+        <p>${e.minutes?formatStudyDuration(e.minutes):"sem tempo registrado"}${e.questions?` • ${e.correct||0}/${e.questions} (${((+e.correct||0)/(+e.questions)*100).toFixed(1)}%)`:""}${e.retrievalResult?` • recuperação: ${RETRIEVAL_LABELS[e.retrievalResult]}`:""}${e.consulted?" • com consulta":""}</p>
+        ${e.notes?`<p>${esc(e.notes)}</p>`:""}<p>Fonte: ${e.historySource==="manual"?"Diário manual":e.historySource==="plannedSession"?"Cronograma":e.historySource==="bankBlock"?"Banco de Questões":e.historySource==="extra"?"Questões extras":"Simulados"}</p></div>
+        <div class="diary-entry-actions">${e.editable?`<button class="ghost diary-edit" data-id="${e.id}">Editar</button><button class="danger-btn diary-delete" data-id="${e.id}">Excluir</button>`:`<small style="color:var(--muted)">edite na fonte</small>`}</div></div>`;
+    }).join("")}</div>`;
+  }).join(""):`<div class="today-item"><small>Nenhum registro encontrado.</small></div>`;
+  $$(".diary-edit").forEach(b=>b.onclick=()=>editDiaryEntry(b.dataset.id));
+  $$(".diary-delete").forEach(b=>b.onclick=()=>{if(confirm("Excluir este registro do Diário? Os indicadores serão recalculados.")){removeStudyLog(b.dataset.id);save();toast("Registro excluído e indicadores recalculados.")}});
+}
+function renderDiary(){
+  ensureLearningState();
+  if(!$("#diaryDate")?.value)resetDiaryForm({date:todayISO(),discipline:"Educação"});
+  renderSyllabusMap();renderDiaryHistory();
+}
+function openDiaryForReview(topicId){
+  const leaf=syllabusLeafById(topicId);if(!leaf)return;
+  document.querySelector('#nav button[data-view="diario"]')?.click();
+  resetDiaryForm({date:todayISO(),discipline:leaf.area,activityType:"review",topicIds:[topicId]});
+  setTimeout(()=>window.scrollTo({top:$("#diario").offsetTop-65,behavior:"smooth"}),80);
+}
+function renderReviewCenter(){
+  const due=dueTopicReviews(),future=futureTopicReviews(),over=due.filter(x=>x.overdue>0),bankDue=bankDueCount();
+  if($("#reviewKpis"))$("#reviewKpis").innerHTML=[
+    ["Hoje",due.filter(x=>x.overdue===0).length,"tópicos"],
+    ["Atrasadas",over.length,"tópicos"],
+    ["Próximas",future.length,"agendadas"],
+    ["Banco vencido",bankDue,"questões"]
+  ].map(x=>`<div class="review-kpi"><b>${x[1]}</b><small>${x[0]} • ${x[2]}</small></div>`).join("");
+  const intervals=reviewIntervals();
+  if($("#reviewSettings"))$("#reviewSettings").innerHTML=intervals.map((v,i)=>`<div class="field"><label>${i+1}ª</label><input class="review-interval-input" data-i="${i}" type="number" min="1" value="${v}"></div>`).join("")+`<button class="ghost" id="saveReviewSettings" type="button">Salvar intervalos</button>`;
+  $("#saveReviewSettings")?.addEventListener("click",()=>{
+    const vals=$$(".review-interval-input").map(x=>Math.max(1,+x.value||1));
+    state.reviewSettings={intervals:vals,updatedAt:new Date().toISOString()};save();toast("Intervalos atualizados.");
+  });
+  const list=[...due,...future.slice(0,8)];
+  if($("#topicReviewList"))$("#topicReviewList").innerHTML=list.length?list.map(r=>{
+    const isDue=r.dueDate<=todayISO(),overdue=isDue?Math.max(0,dayDiff(todayISO(),r.dueDate)):0;
+    return `<div class="review-item"><div class="review-priority" style="background:${isDue?(overdue? "var(--danger)":"var(--warn)"):"var(--accent2)"}"></div><div><h4>${esc(r.leaf?.name||r.topicId)}</h4>
+      <p>${r.leaf?.area||""} • próxima: ${fmtDate(r.dueDate)}${overdue?` • ${overdue} dia(s) atrasada`:""}${r.frag?` • fragilidade relacionada +${r.frag}`:""}</p>
+      <p>Última recuperação: ${r.lastResult?RETRIEVAL_LABELS[r.lastResult]:"sem resultado"}${r.consulted?" • com consulta":""} • estágio ${r.step+1}/${reviewIntervals().length}</p></div>
+      <div class="review-actions"><button class="ghost topic-review-log" data-topic="${r.topicId}">Registrar revisão</button></div></div>`;
+  }).join(""):`<div class="today-item"><b>Nenhuma revisão de tópico agendada.</b><small>Registre um estudo com tópico do edital para iniciar a sequência.</small></div>`;
+  $$(".topic-review-log").forEach(b=>b.onclick=()=>openDiaryForReview(b.dataset.topic));
+}
+
 function renderDashboard(){
   const sessions=allSessions().filter(s=>s.kind==="study"||s.kind==="exam");
   const planned=sessions.reduce((a,s)=>a+s.minutes,0);
   const doneSessions=sessions.filter(s=>sessionState(s.id).status==="done").length;
-  const actualMin=sessions.reduce((a,s)=>a+(+sessionState(s.id).minutes||0),0);
+  const actualMin=sessions.reduce((a,s)=>a+(+sessionState(s.id).minutes||0),0)+manualDiaryEntries().reduce((a,e)=>a+(+e.minutes||0),0);
   const extraQ=(state.extraQuestions||[]).reduce((a,x)=>a+(+x.questions||0),0);
   const extraC=(state.extraQuestions||[]).reduce((a,x)=>a+(+x.correct||0),0);
   const q=sessions.reduce((a,s)=>a+(+sessionState(s.id).questions||0),0)+extraQ;
@@ -1714,6 +2395,7 @@ function renderDashboard(){
   const plannedHours=(planned/60).toFixed(1), actualHours=(actualMin/60).toFixed(1);
   const qGoalTotal=adaptivePlan().reduce((a,w)=>a+w.target,0);
   const metrics=[
+    ["Cobertura edital",coverageStats().completedPct.toFixed(1)+"%","1ª passagem ponderada"],
     ["Sessões",`${doneSessions}/${sessions.length}`,"concluídas"],
     ["Horas registradas",`${actualHours}h`,`${plannedHours}h de sugestão total do cronograma`],
     ["Questões",q.toLocaleString("pt-BR"),`${qGoalTotal.toLocaleString("pt-BR")} meta adaptativa total`],
@@ -1723,7 +2405,7 @@ function renderDashboard(){
   ];
   $("#metrics").innerHTML=metrics.map(m=>`<div class="card metric"><div class="k">${m[0]}</div><div class="v">${m[1]}</div><div class="s">${m[2]}</div></div>`).join("");
   $("#todayDate").textContent=new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"long"});
-  renderAdaptive(); renderWeeklyHours(); renderToday(); renderAreaBars(); renderWeekProgress(); renderDashboardWeak();
+  renderAdaptive(); renderWeeklyHours(); renderToday(); renderAreaBars(); renderWeekProgress(); renderDashboardWeak(); renderLearningDashboard();
 }
 function renderToday(){
   const all=allSessions().filter(s=>s.kind!=="rest");
@@ -1748,6 +2430,7 @@ function areaStats(){
     if(out[x.area]){out[x.area].q+=+x.questions||0;out[x.area].c+=+x.correct||0}
   });
   (state.bankAttempts||[]).forEach(a=>{if(out[a.area]){out[a.area].q+=1;out[a.area].c+=a.correct?1:0}});
+  manualDiaryEntries().forEach(e=>{if(out[e.discipline]){out[e.discipline].q+=+e.questions||0;out[e.discipline].c+=+e.correct||0}});
   return out;
 }
 function renderAreaBars(){
@@ -2036,7 +2719,8 @@ $("#saveSession").onclick=()=>{
   if(mins>59){toast("Os minutos adicionais devem ficar entre 0 e 59.");return}
   const actualMinutes=Math.round(hours*60+mins);
   state.sessions[activeSessionId]={status:$("#mStatus").value,minutes:actualMinutes,questions:q,correct:c,confidence:$("#mConfidence").value,notes:$("#mNotes").value};
-  save();sessionDialog.close();toast(`Sessão salva • ${formatStudyDuration(actualMinutes)} contabilizadas na meta semanal.`);
+  upsertDiaryFromPlannedSession(activeSessionId);
+  save();sessionDialog.close();toast(`Sessão salva • ${formatStudyDuration(actualMinutes)} contabilizadas na meta semanal e vinculada ao Diário.`);
 };
 
 function openTechnique(code){
@@ -2727,7 +3411,7 @@ $("#bankBuilderStart")?.addEventListener("click",()=>{
   startBankQuiz(block.questionIds,block.id);
 });
 function activeBankBlock(){return (state.bankBlocks||[]).find(b=>b.id===bankActiveBlockId)||null}
-function finalizeBankBlock(){const b=activeBankBlock();if(!b||b.completed)return;b.completed=true;b.completedAt=new Date().toISOString();const acc=b.answered?b.correct/b.answered*100:0,gap=b.confidence-acc;const marked=(b.questionIds||[]).map(bankQuestionById).filter(q=>q?.manualReview).length;const html=`<div class="bank-block-result"><b>Bloco concluído:</b> ${b.correct}/${b.answered} acertos (${acc.toFixed(1)}%). Confiança prevista ${b.confidence.toFixed(0)}%. Diferença ${gap>=0?"+":""}${gap.toFixed(1)} p.p. — ${Math.abs(gap)<=5?"boa calibração":gap>5?"você superestimou o domínio neste bloco":"você subestimou o domínio neste bloco"}${marked?` • ★ ${marked} marcada${marked===1?"":"s"} para revisar`:""}.</div>`;$("#bankQuizFeedback").innerHTML+=html;$("#bankQuizFeedback").classList.add("show");save()}
+function finalizeBankBlock(){const b=activeBankBlock();if(!b||b.completed)return;b.completed=true;b.completedAt=new Date().toISOString();upsertDiaryFromBankBlock(b);const acc=b.answered?b.correct/b.answered*100:0,gap=b.confidence-acc;const marked=(b.questionIds||[]).map(bankQuestionById).filter(q=>q?.manualReview).length;const html=`<div class="bank-block-result"><b>Bloco concluído:</b> ${b.correct}/${b.answered} acertos (${acc.toFixed(1)}%). Confiança prevista ${b.confidence.toFixed(0)}%. Diferença ${gap>=0?"+":""}${gap.toFixed(1)} p.p. — ${Math.abs(gap)<=5?"boa calibração":gap>5?"você superestimou o domínio neste bloco":"você subestimou o domínio neste bloco"}${marked?` • ★ ${marked} marcada${marked===1?"":"s"} para revisar`:""}.</div>`;$("#bankQuizFeedback").innerHTML+=html;$("#bankQuizFeedback").classList.add("show");save()}
 
 function shuffleArray(arr){
   const a=[...arr];
@@ -3150,15 +3834,40 @@ function exportData(){
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`seduc2026-backup-${todayISO()}.json`;a.click();URL.revokeObjectURL(a.href);
 }
 $("#exportBtn").onclick=exportData; $("#importBtn").onclick=()=>$("#importFile").click();
-$("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const obj=JSON.parse(r.result);state=obj.state||obj;save();toast("Backup importado.");}catch{toast("Arquivo inválido.");}};r.readAsText(f)};
+$("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const obj=JSON.parse(r.result);state=obj.state||obj;ensureLearningState();save();toast("Backup importado.");}catch{toast("Arquivo inválido.");}};r.readAsText(f)};
 
 function setupTheme(){
   const saved=localStorage.getItem(THEME_KEY)||"dark";document.documentElement.dataset.theme=saved;
   $("#themeBtn").onclick=()=>{const n=document.documentElement.dataset.theme==="light"?"dark":"light";document.documentElement.dataset.theme=n;localStorage.setItem(THEME_KEY,n)}
 }
 
-function renderAll(){renderDashboard();renderSchedule();renderSims();renderExtras();renderBank();renderFrag();}
-renderNav();setupFilters();renderTech();setupRetrieval();setupTheme();renderAll();
+function renderAll(){ensureLearningState();renderDashboard();renderSchedule();renderSims();renderExtras();renderBank();renderFrag();renderDiary();renderReviewCenter();}
+
+function setupLearningModule(){
+  $("#dashboardAccuracyPeriod")?.addEventListener("change",renderLearningDashboard);
+  $("#diaryDiscipline")?.addEventListener("change",()=>{selectedDiaryTopics=new Set();renderDiaryTopicPicker()});
+  $("#diaryQuestions")?.addEventListener("input",updateDiaryAccuracyPreview);
+  $("#diaryCorrect")?.addEventListener("input",updateDiaryAccuracyPreview);
+  $("#diarySaveBtn")?.addEventListener("click",saveDiaryEntry);
+  $("#diaryNewBtn")?.addEventListener("click",()=>resetDiaryForm({date:todayISO(),discipline:$("#diaryDiscipline")?.value||"Educação"}));
+  $("#diaryCancelEdit")?.addEventListener("click",()=>resetDiaryForm({date:todayISO(),discipline:$("#diaryDiscipline")?.value||"Educação"}));
+  $("#syllabusDiscipline")?.addEventListener("change",renderSyllabusMap);
+  $("#syllabusStatusFilter")?.addEventListener("change",renderSyllabusMap);
+  $("#syllabusResetWeights")?.addEventListener("click",()=>{
+    const area=$("#syllabusDiscipline").value;if(!confirm(`Restaurar peso 1,0 em todos os itens de ${area}?`))return;
+    syllabusLeaves(area).forEach(l=>{const p=state.syllabusProgress[l.id]||{};delete p.weight;p.updatedAt=new Date().toISOString();state.syllabusProgress[l.id]=p});save();toast("Pesos restaurados.");
+  });
+  $("#historyGroup")?.addEventListener("change",renderDiaryHistory);
+  $("#historyDiscipline")?.addEventListener("change",renderDiaryHistory);
+  $("#historySource")?.addEventListener("change",renderDiaryHistory);
+  $("#reviewOpenBankDue")?.addEventListener("click",()=>{
+    document.querySelector('#nav button[data-view="banco"]')?.click();
+    setTimeout(()=>openBankBuilder("auto"),80);
+  });
+  resetDiaryForm({date:todayISO(),discipline:"Educação"});
+}
+
+renderNav();setupFilters();renderTech();setupRetrieval();setupTheme();setupLearningModule();renderAll();
 window.__SEDUC_BOOT_OK=true;
 </script>
 

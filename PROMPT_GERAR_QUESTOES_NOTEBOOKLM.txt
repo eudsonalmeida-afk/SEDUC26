@@ -1,0 +1,41 @@
+PROMPT — GERAR QUESTÕES PARA O BANCO SEDUC 2026
+
+Use somente as fontes selecionadas deste NotebookLM.
+
+Gere questões de concurso em JSON estritamente válido, SEM markdown e SEM texto antes/depois.
+
+Cada objeto deve seguir exatamente:
+{
+  "area": "Biologia | Educação | Administração | Português | Dados",
+  "topic": "nome específico da unidade ou conteúdo",
+  "sourceType": "NotebookLM",
+  "difficulty": "Fácil | Média | Difícil",
+  "question": "enunciado completo",
+  "options": {
+    "A": "alternativa A",
+    "B": "alternativa B",
+    "C": "alternativa C",
+    "D": "alternativa D",
+    "E": "alternativa E"
+  },
+  "answer": "A|B|C|D|E",
+  "explanation": "justificativa da correta + por que as demais estão erradas ou qual é a pegadinha",
+  "tags": ["conceito","contraste","aplicação"]
+}
+
+REGRAS:
+1. Não invente conteúdo que não esteja nas fontes.
+2. Pelo menos metade deve exigir aplicação, interpretação, contraste ou resolução de caso.
+3. Evite questões puramente decorativas quando o conteúdo permitir raciocínio.
+4. Misture dificuldades.
+5. Não torne a alternativa correta sistematicamente maior que as demais.
+6. Distratores devem ser plausíveis e derivados de confusões reais entre conceitos próximos.
+7. Para legislação, preserve a literalidade da fonte e não atualize por conhecimento externo.
+8. Para Dados, inclua cálculos e interpretação; explicite quando for ponto percentual vs variação percentual.
+9. Para Biologia, privilegie mecanismo, comparação, causalidade e transferência para casos novos.
+10. Entregue somente o ARRAY JSON final.
+
+Sugestão de lote inicial:
+- 20 questões por unidade/conteúdo.
+- 6 fáceis, 9 médias, 5 difíceis.
+- 5 de conceito/contraste, 10 de aplicação/interpretação, 5 de transferência/pegadinha.
