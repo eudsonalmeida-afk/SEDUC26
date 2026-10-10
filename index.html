@@ -1038,7 +1038,7 @@ html[data-theme="dark"] .ipad-compat-warning{
     <button class="ghost" id="diaryNewBtn" type="button">+ Novo registro</button>
   </div>
 
-  <div class="diary-layout">
+  <div class="card panel-pad" style="margin-bottom:16px"><div class="section-title"><h3>Importar Histórico de Estudos</h3><small>JSON independente do Banco de Questões</small></div><div class="form-grid"><div class="field"><label>Arquivo JSON</label><input id="historyImportFile" type="file" accept=".json,application/json"></div><div class="field"><label>Calibrações por semana</label><select id="historyCalibrationLimit"><option value="3">3</option><option value="5" selected>5</option><option value="8">8</option></select></div></div><div id="historyImportPreview" class="learning-note" style="margin:12px 0">Selecione um arquivo para conferir os registros antes de salvar.</div><div class="diary-actions"><button class="primary" id="historyImportConfirm" disabled>Confirmar importação</button><button class="ghost" id="historyImportUndo">Desfazer última importação segura</button></div><div id="historyImportResult" class="learning-note"></div></div><div class="diary-layout">
     <div class="card diary-form-card">
       <div class="section-title"><h3 id="diaryFormTitle">Registrar estudo</h3><small id="diaryEditHint">registro manual</small></div>
       <div class="form-grid">
@@ -1631,6 +1631,11 @@ const ACTIVITY_LABELS={
 };
 const RETRIEVAL_LABELS={easy:"Fácil",effort:"Com esforço",fail:"Falha"};
 function ensureLearningState(){
+  state.learningImports ||= {};
+  state.importedLearning ||= {};
+  state.historicalAssessments ||= {};
+  state.learningCalibrationQueue ||= {};
+  state.learningImportUndo ||= {};
   state.studyLog=Array.isArray(state.studyLog)?state.studyLog:[];
   state.studyLogDeleted=state.studyLogDeleted&&typeof state.studyLogDeleted==="object"?state.studyLogDeleted:{};
   state.syllabusProgress=state.syllabusProgress&&typeof state.syllabusProgress==="object"?state.syllabusProgress:{};
@@ -1663,12 +1668,15 @@ function topicCompletionDate(id){
   const dates=[];
   if(p.status==="completed"&&p.completedAt)dates.push(String(p.completedAt).slice(0,10));
   topicFirstPassEntries(id).forEach(e=>dates.push(e.date||String(e.createdAt||"").slice(0,10)));
+  Object.values(state.importedLearning||{}).filter(r=>r.topicId===id&&r.status==="completed"&&["user_confirmed","activity_record"].includes(r.confidence)).forEach(r=>dates.push(r.studyDate||r.importedAt?.slice(0,10)));
   return dates.filter(Boolean).sort()[0]||null;
 }
 function topicDerivedStatus(id){
   const p=state.syllabusProgress[id]||{};
   if(p.status==="completed"||topicFirstPassEntries(id).length)return"completed";
+  if(Object.values(state.importedLearning||{}).some(r=>r.topicId===id&&r.status==="completed"&&["user_confirmed","activity_record"].includes(r.confidence)))return"completed";
   if(p.status==="in_progress")return"in_progress";
+  if(Object.values(state.importedLearning||{}).some(r=>r.topicId===id&&r.status==="in_progress"&&["user_confirmed","activity_record"].includes(r.confidence)))return"in_progress";
   const evidence=topicDiaryEntries(id).some(e=>["study_new","review","retention"].includes(e.activityType));
   return evidence?"in_progress":"not_started";
 }
@@ -3843,6 +3851,126 @@ function setupTheme(){
 
 function renderAll(){ensureLearningState();renderDashboard();renderSchedule();renderSims();renderExtras();renderBank();renderFrag();renderDiary();renderReviewCenter();}
 
+
+// V40 — Histórico: prévia sem mutação, IDs estáveis, reimportação e reversão conservadora.
+let pendingHistoricalImport=null;
+const HISTORY_FORMAT="seduc2026-learning-history",HISTORY_VERSION=1;
+const HISTORY_STATUSES=["not_started","in_progress","completed"];
+const HISTORY_CONFIDENCES=["user_confirmed","activity_record","inferred","pending"];
+const HISTORY_SOURCES=["IFCE","SEDUC","ChatGPT","other"];
+function historyImportNormalize(obj){
+  if(!obj||obj.format!==HISTORY_FORMAT||obj.version!==HISTORY_VERSION)throw Error("Formato ou versão incompatível: esperado seduc2026-learning-history v1.");
+  for(const k of ["baselines","contents","diagnostics","weaknesses"]){if(!Array.isArray(obj[k]))throw Error(`Campo ${k} deve ser uma lista.`)}
+  const errors=[],seen=new Set(),items=[];
+  const sourceRecords=[["baselines",obj.baselines],["contents",obj.contents],["diagnostics",obj.diagnostics],["weaknesses",obj.weaknesses]];
+  sourceRecords.forEach(([type,records])=>records.forEach((r,i)=>{
+    const path=`${type}[${i}]`;
+    if(!r||typeof r!=="object"||typeof r.id!=="string"||!r.id.trim()){errors.push(`${path}: identificador estável obrigatório`);return}
+    const key=`${type}:${r.id}`;
+    if(seen.has(key)){errors.push(`${path}: ID repetido no arquivo`);return}seen.add(key);
+    const item={...r,_type:type,_key:key,_index:i};
+    if(type==="baselines"){
+      if(!LEARNING_AREAS.includes(r.discipline))errors.push(`${path}: disciplina inválida`);
+      if(r.estimate!==null&&r.estimate!==undefined&&(!Number.isFinite(r.estimate)||r.estimate<0||r.estimate>100))errors.push(`${path}: estimativa inválida`);
+    }
+    if(type==="contents"){
+      if(!LEARNING_AREAS.includes(r.discipline))errors.push(`${path}: disciplina inválida`);
+      if(!HISTORY_STATUSES.includes(r.status))errors.push(`${path}: situação inválida`);
+      if(!HISTORY_CONFIDENCES.includes(r.confidence))errors.push(`${path}: grau de confirmação inválido`);
+      if(!HISTORY_SOURCES.includes(r.source))errors.push(`${path}: origem inválida`);
+      if(r.studyDate&&!/^\d{4}-\d{2}-\d{2}$/.test(r.studyDate))errors.push(`${path}: data inválida`);
+      const leaf=syllabusLeafById(r.topicId);
+      if(!leaf||leaf.area!==r.discipline){item._unmatched=true;item._suggestions=syllabusLeaves(r.discipline).slice(0,6);}
+      else item._matched=leaf;
+    }
+    if(type==="diagnostics"){
+      if(!LEARNING_AREAS.includes(r.discipline))errors.push(`${path}: disciplina inválida`);
+      if(r.questions!==undefined&&(!Number.isInteger(r.questions)||r.questions<0))errors.push(`${path}: quantidade inválida`);
+      if(r.correct!==undefined&&(!Number.isInteger(r.correct)||r.correct<0||r.correct>(r.questions??Infinity)))errors.push(`${path}: acertos inválidos`);
+    }
+    if(type==="weaknesses"&&!LEARNING_AREAS.includes(r.discipline))errors.push(`${path}: disciplina inválida`);
+    items.push(item);
+  }));
+  return{items,errors,filename:obj.filename||"",version:obj.version};
+}
+function historyImportExisting(item){
+  if(item._type==="contents")return state.importedLearning?.[item.id];
+  if(item._type==="diagnostics")return state.historicalAssessments?.[item.id];
+  if(item._type==="weaknesses")return state.importedWeaknesses?.[item.id];
+  return state.baselineCoverage?.[item.discipline]?.historyImportId===item.id?state.baselineCoverage[item.discipline]:null;
+}
+function historyImportPreview(){
+  const el=$("#historyImportPreview"),data=pendingHistoricalImport;if(!el)return;
+  if(!data){el.textContent="Selecione um arquivo para conferir os registros antes de salvar.";return}
+  const {items,errors}=data,unmatched=items.filter(x=>x._unmatched),dups=items.filter(x=>historyImportExisting(x));
+  const ready=items.filter(x=>x._type==="contents"&&!x._unmatched&&["user_confirmed","activity_record"].includes(x.confidence)&&x.status==="completed");
+  const pending=items.filter(x=>x._type==="contents"&&(x._unmatched||["inferred","pending"].includes(x.confidence)));
+  el.innerHTML=`<b>${items.length} registros</b> • ${ready.length} conclusões confirmadas • ${pending.length} pendentes • ${items.filter(x=>x._type==="diagnostics").length} diagnósticos • ${dups.length} IDs já importados • ${unmatched.length} sem correspondência.<br>${errors.map(x=>`<p style="color:var(--danger)">${esc(x)}</p>`).join("")}
+    ${items.filter(x=>x._type==="contents").map(x=>`<div style="border-top:1px solid var(--line);padding:9px 0"><b>${esc(x.id)}</b> — ${esc(x.content||"")} <small>(${esc(x.confidence||"")}, ${esc(x.status||"")})</small><br><label>Associação oficial: <select class="history-topic-map" data-id="${esc(x.id)}"><option value="">${x._unmatched?"Pendente de correspondência":"Pendente de validação"}</option>${syllabusLeaves(x.discipline).map(l=>`<option value="${l.id}" ${x.topicId===l.id?"selected":""}>${esc(l.name)}</option>`).join("")}</select></label></div>`).join("")}`;
+  el.querySelectorAll(".history-topic-map").forEach(sel=>sel.onchange=()=>{
+    const item=data.items.find(x=>x._type==="contents"&&x.id===sel.dataset.id);
+    item.topicId=sel.value;item._unmatched=!syllabusLeafById(sel.value);
+    // Não muda o status nem o grau de confirmação; somente corrige associação.
+  });
+  $("#historyImportConfirm").disabled=!!errors.length;
+}
+async function historyImportRead(file){
+  pendingHistoricalImport=null;$("#historyImportConfirm").disabled=true;
+  try{const obj=JSON.parse(await file.text());pendingHistoricalImport=historyImportNormalize(obj);historyImportPreview()}
+  catch(e){$("#historyImportPreview").textContent=`Arquivo rejeitado: ${e.message}`}
+}
+function historyImportCommit(){
+  const data=pendingHistoricalImport;if(!data||data.errors.length)return;
+  const unmatched=data.items.filter(x=>x._type==="contents"&&x._unmatched);
+  if(unmatched.length&&!confirm(`${unmatched.length} conteúdos sem associação válida ficarão pendentes de validação. Continuar?`))return;
+  ensureLearningState();state.importedWeaknesses||={};
+  const stamp=new Date().toISOString(),batchId=`import-${Date.now()}`;
+  const snapshot={};let added=0,updated=0;
+  data.items.forEach(x=>{
+    const old=historyImportExisting(x);
+    const bucket=x._type==="contents"?"importedLearning":x._type==="diagnostics"?"historicalAssessments":x._type==="weaknesses"?"importedWeaknesses":"baselineCoverage";
+    const key=bucket==="baselineCoverage"?x.discipline:x.id;
+    snapshot[`${bucket}:${key}`]=old?JSON.parse(JSON.stringify(old)):null;
+    const record={...x};delete record._type;delete record._key;delete record._index;delete record._matched;delete record._suggestions;delete record._unmatched;
+    record.importedAt=old?.importedAt||stamp;record.updatedAt=stamp;record.importBatchId=batchId;
+    if(bucket==="baselineCoverage"){
+      state.baselineCoverage[key]={...(old||{}),estimate:record.estimate??null,calibrated:old?.calibrated||false,historyImportId:x.id,updatedAt:stamp,importBatchId:batchId};
+    }else{
+      if(bucket==="importedLearning"&&!syllabusLeafById(record.topicId)){record.topicId=null;record.needsValidation=true}
+      state[bucket][key]=record;
+    }
+    old?updated++:added++;
+  });
+  state.learningImports[batchId]={id:batchId,importedAt:stamp,filename:$("#historyImportFile").files[0]?.name||"arquivo.json",ids:data.items.map(x=>x._key),count:data.items.length};
+  state.learningImportUndo[batchId]={snapshot,createdAt:stamp};
+  // Fila de calibração SEM criar sessões, horas, questões ou datas fictícias.
+  const limit=+$("#historyCalibrationLimit").value||5;
+  const pending=Object.values(state.importedLearning).filter(x=>x.needsReview||x.needsValidation||["inferred","pending"].includes(x.confidence));
+  pending.forEach((x,i)=>{if(!state.learningCalibrationQueue[x.id])state.learningCalibrationQueue[x.id]={id:x.id,topicId:x.topicId||null,weekSlot:Math.floor(i/limit)+1,status:"pending",createdByBatch:batchId}});
+  save();pendingHistoricalImport=null;$("#historyImportConfirm").disabled=true;
+  $("#historyImportResult").textContent=`Importação concluída: ${added} novos, ${updated} atualizados, ${unmatched.length} sem correspondência. Nenhuma hora ou questão foi adicionada.`;
+  historyImportPreview();
+}
+function historyImportUndoLast(){
+  const batches=Object.values(state.learningImports||{}).sort((a,b)=>b.importedAt.localeCompare(a.importedAt));
+  const b=batches[0];if(!b){toast("Nenhuma importação para desfazer.");return}
+  const undo=state.learningImportUndo?.[b.id];if(!undo){toast("Reversão indisponível para esta importação.");return}
+  let conflicts=0;Object.entries(undo.snapshot).forEach(([ref,old])=>{
+    const [bucket,key]=ref.split(":");const cur=state[bucket]?.[key];
+    if(!cur||cur.importBatchId!==b.id)conflicts++;
+  });
+  if(conflicts){toast(`${conflicts} registros alterados depois da importação: desfazer bloqueado para proteger dados novos.`);return}
+  if(!confirm(`Desfazer a importação ${b.filename}? Os registros criados depois serão preservados.`))return;
+  Object.entries(undo.snapshot).forEach(([ref,old])=>{const [bucket,key]=ref.split(":");if(old===null)delete state[bucket][key];else state[bucket][key]=old});
+  Object.entries(state.learningCalibrationQueue||{}).forEach(([id,r])=>{if(r.createdByBatch===b.id&&r.status==="pending")delete state.learningCalibrationQueue[id]});
+  delete state.learningImports[b.id];delete state.learningImportUndo[b.id];save();toast("Importação desfeita com segurança.");
+}
+function setupHistoricalImporter(){
+  $("#historyImportFile")?.addEventListener("change",e=>{const f=e.target.files?.[0];if(f)historyImportRead(f)});
+  $("#historyImportConfirm")?.addEventListener("click",historyImportCommit);
+  $("#historyImportUndo")?.addEventListener("click",historyImportUndoLast);
+}
+
 function setupLearningModule(){
   $("#dashboardAccuracyPeriod")?.addEventListener("change",renderLearningDashboard);
   $("#diaryDiscipline")?.addEventListener("change",()=>{selectedDiaryTopics=new Set();renderDiaryTopicPicker()});
@@ -3867,7 +3995,7 @@ function setupLearningModule(){
   resetDiaryForm({date:todayISO(),discipline:"Educação"});
 }
 
-renderNav();setupFilters();renderTech();setupRetrieval();setupTheme();setupLearningModule();renderAll();
+renderNav();setupFilters();renderTech();setupRetrieval();setupTheme();setupLearningModule();setupHistoricalImporter();renderAll();
 window.__SEDUC_BOOT_OK=true;
 </script>
 

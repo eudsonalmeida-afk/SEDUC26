@@ -54,6 +54,9 @@
     Object.entries(c.syllabusProgress||{}).forEach(([id,v])=>out.syllabusProgress[id]=newerObject(out.syllabusProgress[id],v));
     out.baselineCoverage={...(out.baselineCoverage||{})};
     Object.entries(c.baselineCoverage||{}).forEach(([id,v])=>out.baselineCoverage[id]=newerObject(out.baselineCoverage[id],v));
+    for(const k of ["importedLearning","historicalAssessments","importedWeaknesses","learningImports","learningImportUndo","learningCalibrationQueue"]){
+      out[k]={...(out[k]||{})};Object.entries(c[k]||{}).forEach(([id,v])=>out[k][id]=newerObject(out[k][id],v));
+    }
     out.reviewSettings=newerObject(out.reviewSettings,c.reviewSettings)||out.reviewSettings||c.reviewSettings;
     return out;
   }
@@ -298,6 +301,8 @@
     state.syllabusProgress ||= {};
     state.baselineCoverage ||= {};
     state.reviewSettings ||= {intervals:[1,3,7,14,30]};
+    state.importedLearning ||= {};state.historicalAssessments ||= {};state.importedWeaknesses ||= {};
+    state.learningImports ||= {};state.learningImportUndo ||= {};state.learningCalibrationQueue ||= {};
     state.meta ||= {};
     await ingestLegacyEmbeddedImages(state);
     (state.questionBank||[]).forEach(q=>delete q.imageData);
@@ -317,7 +322,7 @@
       }
       let cloudState=remote.payload||{};
       const mergedLearning=mergeLearningFields(state,cloudState);
-      ["studyLog","studyLogDeleted","syllabusProgress","baselineCoverage","reviewSettings"].forEach(k=>{
+      ["studyLog","studyLogDeleted","syllabusProgress","baselineCoverage","reviewSettings","importedLearning","historicalAssessments","importedWeaknesses","learningImports","learningImportUndo","learningCalibrationQueue"].forEach(k=>{
         state[k]=mergedLearning[k];
         cloudState[k]=mergedLearning[k];
       });
